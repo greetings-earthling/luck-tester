@@ -3,18 +3,24 @@
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width,initial-scale=1" />
-  <title>Feeling Lucky? Take Today’s Luck Test</title>
+  <title>Luck Test</title>
   <meta name="description" content="Pick one symbol. One click per day. Your luck, measured lightly." />
   <style>
     :root {
       --bg: #ffffff;
       --fg: #111111;
       --muted: #666666;
-      --card: #f6f6f6;
       --border: #e6e6e6;
-      --good: #0a7a2f;
-      --bad: #b00020;
+
+      --g1: rgba(10, 122, 47, 1);     /* solid green */
+      --g50: rgba(10, 122, 47, 0.5);  /* 50% green */
+      --g25: rgba(10, 122, 47, 0.25); /* 25% green */
+
+      --r1: rgba(176, 0, 32, 1);      /* solid red */
+      --r50: rgba(176, 0, 32, 0.5);   /* 50% red */
+      --r25: rgba(176, 0, 32, 0.25);  /* 25% red */
     }
+
     html, body {
       margin: 0;
       padding: 0;
@@ -22,59 +28,57 @@
       color: var(--fg);
       font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
     }
+
     .wrap {
       max-width: 980px;
       margin: 0 auto;
-      padding: 18px 14px 40px;
+      padding: 12px 12px 22px;
     }
+
     header {
-      display: flex;
-      flex-direction: column;
-      gap: 8px;
-      margin-bottom: 14px;
+      display: grid;
+      gap: 6px;
+      margin-bottom: 10px;
     }
+
     h1 {
-      font-size: clamp(22px, 2.6vw, 34px);
-      line-height: 1.1;
+      font-size: clamp(18px, 2.1vw, 26px);
+      line-height: 1.15;
       margin: 0;
       letter-spacing: -0.02em;
     }
+
     .sub {
-      font-size: 14px;
+      font-size: 13px;
       color: var(--muted);
       line-height: 1.4;
     }
+
     .row {
       display: flex;
-      gap: 10px;
+      gap: 8px;
       flex-wrap: wrap;
       align-items: center;
     }
-    a {
-      color: var(--fg);
-      text-decoration: underline;
-      text-underline-offset: 2px;
-    }
+
     .pill {
       display: inline-flex;
       align-items: center;
-      gap: 8px;
-      padding: 8px 10px;
+      padding: 6px 10px;
       border: 1px solid var(--border);
       border-radius: 999px;
-      font-size: 13px;
+      font-size: 12px;
       color: var(--muted);
       background: #fff;
     }
+
     .grid {
       display: grid;
       grid-template-columns: repeat(5, minmax(0, 1fr));
-      gap: 10px;
-      margin-top: 12px;
+      gap: 8px;
+      margin-top: 8px;
     }
-    @media (max-width: 520px) {
-      .grid { gap: 8px; }
-    }
+
     .tile {
       border: 1px solid var(--border);
       background: #fff;
@@ -87,182 +91,169 @@
       transition: transform 120ms ease, box-shadow 120ms ease, border-color 120ms ease;
       position: relative;
       overflow: hidden;
+      padding: 0;
     }
+
     .tile:hover {
       transform: translateY(-1px);
-      box-shadow: 0 6px 18px rgba(0,0,0,0.06);
+      box-shadow: 0 6px 16px rgba(0,0,0,0.06);
       border-color: #d8d8d8;
     }
+
     .tile:active {
       transform: translateY(0px) scale(0.99);
       box-shadow: 0 4px 12px rgba(0,0,0,0.06);
     }
+
     .tile[disabled] {
       cursor: not-allowed;
-      opacity: 0.65;
+      opacity: 0.8;
       transform: none;
       box-shadow: none;
     }
+
+    /* Smaller icons so grid fits better */
     .icon {
-      width: min(46px, 9vw);
-      height: min(46px, 9vw);
-      max-width: 54px;
-      max-height: 54px;
+      width: min(38px, 10vw);
+      height: min(38px, 10vw);
+      max-width: 44px;
+      max-height: 44px;
       color: var(--fg);
     }
-    .label {
+
+    /* Colour overlays after reveal */
+    .overlay {
       position: absolute;
-      bottom: 8px;
-      left: 8px;
-      right: 8px;
-      font-size: 11px;
-      color: transparent;
-      text-align: center;
+      inset: 0;
+      opacity: 0;
+      transition: opacity 140ms ease;
       pointer-events: none;
     }
 
-    .panel {
-      margin-top: 14px;
-      border: 1px solid var(--border);
-      background: var(--card);
-      border-radius: 16px;
-      padding: 12px;
-      display: grid;
-      gap: 10px;
+    .revealed .overlay { opacity: 1; }
+
+    .o-g1 { background: var(--g1); }
+    .o-g50 { background: var(--g50); }
+    .o-g25 { background: var(--g25); }
+
+    .o-r1 { background: var(--r1); }
+    .o-r50 { background: var(--r50); }
+    .o-r25 { background: var(--r25); }
+
+    /* Keep icon readable on solid colours */
+    .revealed .icon {
+      filter: drop-shadow(0 1px 0 rgba(255,255,255,0.5));
     }
+
+    .panel {
+      margin-top: 10px;
+      border: 1px solid var(--border);
+      background: #f7f7f7;
+      border-radius: 16px;
+      padding: 10px;
+      display: grid;
+      gap: 8px;
+    }
+
     .result {
       background: #fff;
       border: 1px solid var(--border);
       border-radius: 14px;
-      padding: 12px;
+      padding: 10px;
       display: grid;
       gap: 6px;
     }
+
     .result h2 {
       margin: 0;
-      font-size: 16px;
+      font-size: 14px;
     }
+
     .result p {
       margin: 0;
       color: var(--muted);
       line-height: 1.45;
-      font-size: 14px;
-    }
-    .tagline {
       font-size: 13px;
-      color: var(--muted);
     }
-    .scoreline {
+
+    .badgeRow {
       display: flex;
       gap: 8px;
       flex-wrap: wrap;
       align-items: center;
-      margin-top: 4px;
+      margin-top: 2px;
     }
+
     .badge {
       padding: 6px 10px;
       border-radius: 999px;
       border: 1px solid var(--border);
       background: #fff;
-      font-size: 13px;
-      color: var(--fg);
-      display: inline-flex;
-      gap: 8px;
-      align-items: center;
-    }
-    .badge.good { border-color: rgba(10,122,47,0.25); }
-    .badge.bad { border-color: rgba(176,0,32,0.25); }
-    .badge.good strong { color: var(--good); }
-    .badge.bad strong { color: var(--bad); }
-
-    .stats {
-      display: grid;
-      gap: 8px;
-      grid-template-columns: repeat(4, minmax(0, 1fr));
-    }
-    @media (max-width: 760px) {
-      .stats { grid-template-columns: repeat(2, minmax(0, 1fr)); }
-    }
-    .stat {
-      background: #fff;
-      border: 1px solid var(--border);
-      border-radius: 14px;
-      padding: 10px;
-    }
-    .stat .k {
       font-size: 12px;
-      color: var(--muted);
-      margin-bottom: 4px;
-    }
-    .stat .v {
-      font-size: 18px;
-      font-weight: 650;
-      letter-spacing: -0.01em;
+      color: var(--fg);
     }
 
-    .btnrow {
-      display: flex;
-      gap: 10px;
-      flex-wrap: wrap;
-      align-items: center;
-      justify-content: space-between;
-    }
-    button {
-      appearance: none;
-      border: 1px solid var(--border);
-      background: #fff;
-      color: var(--fg);
-      border-radius: 999px;
-      padding: 10px 12px;
-      font-size: 13px;
-      cursor: pointer;
-    }
-    button:hover { border-color: #d8d8d8; }
     .tiny {
       font-size: 12px;
       color: var(--muted);
     }
+
+    .btnRow {
+      display: flex;
+      justify-content: space-between;
+      gap: 10px;
+      align-items: center;
+      flex-wrap: wrap;
+    }
+
+    button.reset {
+      appearance: none;
+      border: 1px solid var(--border);
+      background: #fff;
+      color: var(--muted);
+      border-radius: 999px;
+      padding: 8px 10px;
+      font-size: 12px;
+      cursor: pointer;
+    }
+
+    button.reset:hover { border-color: #d8d8d8; }
   </style>
 </head>
 <body>
   <div class="wrap">
     <header>
-      <h1>Feeling lucky? Take today’s Luck Test.</h1>
-      <div class="sub">
-        One click per day. Pick a symbol. Get a reading.
-        From the author of <em>Getting Lucky</em>.
-        <span id="buyWrap" style="display:none;"> <a id="buyLink" href="#" rel="noopener">Buy the book</a></span>
-      </div>
+      <h1>Choose an icon below to find out your luck score for the day.</h1>
+      <div class="sub">One click per day. No do-overs. Not science.</div>
       <div class="row">
-        <div class="pill" id="todayPill">Today: </div>
-        <div class="pill" id="rulePill">Rule: one pick per day</div>
+        <div class="pill" id="todayPill">Today:</div>
+        <div class="pill" id="lockPill">Status:</div>
       </div>
     </header>
 
     <div class="grid" id="grid" aria-label="Luck symbol grid"></div>
 
-    <div class="panel" id="panel">
-      <div class="result" id="resultBox">
-        <h2 id="resultTitle">Pick your lucky symbol for today.</h2>
-        <p id="resultText">No hints. No do-overs. We are not calling this science.</p>
-        <div class="scoreline" id="scoreLine" style="display:none;"></div>
+    <div class="panel">
+      <div class="result">
+        <h2 id="resultTitle">Pick one.</h2>
+        <p id="resultText">Then we see what the universe thinks of you today.</p>
+        <div class="badgeRow" id="badgeRow" style="display:none;"></div>
       </div>
 
-      <div class="btnrow">
+      <div class="btnRow">
         <div class="tiny" id="lockNote"></div>
-        <button id="resetBtn" type="button" title="Clears your local stats and lets you test again today (for development only).">Dev: reset local data</button>
+        <button class="reset" id="resetBtn" type="button" title="Clears today's lock on this device.">
+          Dev reset
+        </button>
       </div>
-
-      <div class="stats" id="statsBox" style="display:none;"></div>
     </div>
   </div>
 
 <script>
   // ---------------------------
-  // Utilities: date + seeded RNG
+  // Date + per-device identity
   // ---------------------------
   function formatDateLocal(d) {
-    // Uses user's local time. Easy and expected.
     const yyyy = d.getFullYear();
     const mm = String(d.getMonth() + 1).padStart(2, "0");
     const dd = String(d.getDate()).padStart(2, "0");
@@ -270,7 +261,6 @@
   }
 
   function hashString(str) {
-    // Simple 32-bit hash
     let h = 2166136261 >>> 0;
     for (let i = 0; i < str.length; i++) {
       h ^= str.charCodeAt(i);
@@ -288,37 +278,29 @@
     }
   }
 
-  function pickUniqueIndices(rng, n, count) {
-    const pool = Array.from({ length: n }, (_, i) => i);
-    // Fisher-Yates partial shuffle
-    for (let i = n - 1; i > 0; i--) {
-      const j = Math.floor(rng() * (i + 1));
-      [pool[i], pool[j]] = [pool[j], pool[i]];
-    }
-    return pool.slice(0, count);
-  }
-
-  // ---------------------------
-  // Identity (per device)
-  // ---------------------------
-  const LS = {
-    uid: "lucktest_uid_v1",
-    last: "lucktest_last_v1",
-    stats: "lucktest_stats_v1",
-  };
-
   function getOrCreateUID() {
-    let uid = localStorage.getItem(LS.uid);
+    const key = "luck_uid_v2";
+    let uid = localStorage.getItem(key);
     if (!uid) {
       uid = (crypto && crypto.randomUUID) ? crypto.randomUUID() : String(Date.now()) + "_" + Math.random().toString(16).slice(2);
-      localStorage.setItem(LS.uid, uid);
+      localStorage.setItem(key, uid);
     }
     return uid;
   }
 
+  const LS_LAST = "luck_last_v2";
+
+  function loadLast() {
+    try { return JSON.parse(localStorage.getItem(LS_LAST) || "null"); }
+    catch { return null; }
+  }
+  function saveLast(obj) {
+    localStorage.setItem(LS_LAST, JSON.stringify(obj));
+  }
+
   // ---------------------------
-  // SVG Icon Set (25 unique)
-  // Minimal, consistent stroke style
+  // Icons (25 unique SVGs)
+  // Same set you already had, kept black on white.
   // ---------------------------
   const ICONS = [
     { name: "Clover", svg: `<svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><path d="M12 14c-1.2 2.5-3.7 4-6 4 0-2.7 1.8-5 4.2-5.6"/><path d="M12 14c1.2 2.5 3.7 4 6 4 0-2.7-1.8-5-4.2-5.6"/><path d="M12 14c-2.4 0-4.5-1.6-4.5-4 0-1.7 1.3-3 3-3 1.2 0 2.2.7 2.6 1.7.4-1 1.4-1.7 2.6-1.7 1.7 0 3 1.3 3 3 0 2.4-2.1 4-4.7 4"/><path d="M12 14v7"/></svg>` },
@@ -348,105 +330,128 @@
     { name: "Maple", svg: `<svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><path d="M12 2l1.5 4L18 4l-2 4 4 1.5-4 1.5 2 4-4.5-2L12 22l-1.5-9L6 15l2-4-4-1.5L8 8 6 4l4.5 2L12 2z"/></svg>` }
   ];
 
-  // Ensure we have exactly 25 icons for 5x5
-  if (ICONS.length !== 25) {
-    console.warn("Expected 25 icons, found:", ICONS.length);
-  }
-
   // ---------------------------
-  // Daily layout and category assignment
+  // Core setup
   // ---------------------------
   const gridEl = document.getElementById("grid");
   const todayPill = document.getElementById("todayPill");
+  const lockPill = document.getElementById("lockPill");
   const resultTitle = document.getElementById("resultTitle");
   const resultText = document.getElementById("resultText");
-  const scoreLine = document.getElementById("scoreLine");
-  const statsBox = document.getElementById("statsBox");
+  const badgeRow = document.getElementById("badgeRow");
   const lockNote = document.getElementById("lockNote");
   const resetBtn = document.getElementById("resetBtn");
-  const buyWrap = document.getElementById("buyWrap");
-  const buyLink = document.getElementById("buyLink");
-
-  // Optional: set this to your future book page
-  // buyLink.href = "https://example.com";
-  // buyWrap.style.display = "inline";
 
   const uid = getOrCreateUID();
   const todayKey = formatDateLocal(new Date());
   todayPill.textContent = `Today: ${todayKey}`;
 
-  // Lock state stored per day
-  function loadLast() {
-    try { return JSON.parse(localStorage.getItem(LS.last) || "null"); }
-    catch { return null; }
-  }
-  function saveLast(obj) {
-    localStorage.setItem(LS.last, JSON.stringify(obj));
-  }
-
-  function loadStats() {
-    try {
-      return JSON.parse(localStorage.getItem(LS.stats) || "null") || {
-        plays: 0,
-        mega: 0,
-        lucky: 0,
-        meh: 0,
-        unlucky: 0
-      };
-    } catch {
-      return { plays: 0, mega: 0, lucky: 0, meh: 0, unlucky: 0 };
-    }
-  }
-  function saveStats(s) {
-    localStorage.setItem(LS.stats, JSON.stringify(s));
-  }
-
-  // Create a deterministic daily shuffle for THIS user
-  const seedBase = `${todayKey}|${uid}|v1`;
+  const seedBase = `${todayKey}|${uid}|luckgrid_v3`;
   const rng = mulberry32(hashString(seedBase));
 
-  // Shuffle icon positions daily so the grid "feels" new
-  const iconOrder = pickUniqueIndices(rng, 25, 25);
-
-  // Pick category cells: 1 mega, 3 lucky, 1 unlucky
-  const chosen = pickUniqueIndices(rng, 25, 5);
-  const megaIdx = chosen[0];
-  const luckyIdxs = [chosen[1], chosen[2], chosen[3]];
-  const unluckyIdx = chosen[4];
-
-  function categoryForCell(cellIndex) {
-    if (cellIndex === megaIdx) return "MEGA LUCKY";
-    if (luckyIdxs.includes(cellIndex)) return "LUCKY";
-    if (cellIndex === unluckyIdx) return "UNLUCKY";
-    return "MEH";
+  // Shuffle icon placement daily
+  const iconOrder = Array.from({ length: 25 }, (_, i) => i);
+  for (let i = iconOrder.length - 1; i > 0; i--) {
+    const j = Math.floor(rng() * (i + 1));
+    [iconOrder[i], iconOrder[j]] = [iconOrder[j], iconOrder[i]];
   }
 
-  function badgeHTML(cat) {
-    if (cat === "MEGA LUCKY") return `<span class="badge good"><strong>MEGA LUCKY</strong> 1 of 25</span>`;
-    if (cat === "LUCKY") return `<span class="badge good"><strong>LUCKY</strong> 3 of 25</span>`;
-    if (cat === "UNLUCKY") return `<span class="badge bad"><strong>UNLUCKY</strong> 1 of 25</span>`;
-    return `<span class="badge"><strong>MEH</strong> 20 of 25</span>`;
+  // Pick the Lucky cell (0..24)
+  const luckyCell = Math.floor(rng() * 25);
+
+  // Manhattan distance helper
+  function rc(idx) {
+    return { r: Math.floor(idx / 5), c: idx % 5 };
+  }
+  function manhattan(a, b) {
+    const A = rc(a), B = rc(b);
+    return Math.abs(A.r - B.r) + Math.abs(A.c - B.c);
   }
 
-  function copyFor(cat) {
-    if (cat === "MEGA LUCKY") return "Bang on. Either you’re blessed today, or you have a suspicious relationship with randomness.";
-    if (cat === "LUCKY") return "A good day to take the long way, try the thing, send the message, or buy the toast.";
-    if (cat === "UNLUCKY") return "Not dangerous. Just mildly cursed. Keep your drinks away from your keyboard.";
-    return "Nothing dramatic. A normal day in a universe that does not care.";
+  // Pick the Unlucky cell as the farthest from Lucky
+  const distances = Array.from({ length: 25 }, (_, i) => ({ i, d: manhattan(i, luckyCell) }));
+  const maxD = Math.max(...distances.map(x => x.d));
+  const farthest = distances.filter(x => x.d === maxD).map(x => x.i);
+
+  // Deterministic pick among ties
+  const unluckyCell = farthest[Math.floor(rng() * farthest.length)];
+
+  function inBounds(r, c) {
+    return r >= 0 && r < 5 && c >= 0 && c < 5;
+  }
+  function idxOf(r, c) { return r * 5 + c; }
+
+  // Build score map: default MEH (5)
+  const scoreMap = new Array(25).fill(5);
+  const overlayMap = new Array(25).fill(""); // class names
+
+  // Apply unlucky zones first (lower priority), then lucky zones override them
+  function setCell(idx, score, overlayClass) {
+    scoreMap[idx] = score;
+    overlayMap[idx] = overlayClass;
   }
 
-  function renderStats() {
-    const s = loadStats();
-    statsBox.style.display = "grid";
-    statsBox.innerHTML = `
-      <div class="stat"><div class="k">Days tested</div><div class="v">${s.plays}</div></div>
-      <div class="stat"><div class="k">Mega lucky</div><div class="v">${s.mega}</div></div>
-      <div class="stat"><div class="k">Lucky</div><div class="v">${s.lucky}</div></div>
-      <div class="stat"><div class="k">Unlucky</div><div class="v">${s.unlucky}</div></div>
-    `;
+  // Unlucky zones
+  setCell(unluckyCell, 0, "o-r1");
+
+  {
+    const U = rc(unluckyCell);
+    // Adjacent (N S E W) = 3/10, 50% red
+    const adj = [
+      [U.r - 1, U.c], [U.r + 1, U.c], [U.r, U.c - 1], [U.r, U.c + 1]
+    ];
+    adj.forEach(([r, c]) => {
+      if (inBounds(r, c)) setCell(idxOf(r, c), 3, "o-r50");
+    });
+
+    // Diagonal adjacent = 4/10, 25% red
+    const diag = [
+      [U.r - 1, U.c - 1], [U.r - 1, U.c + 1],
+      [U.r + 1, U.c - 1], [U.r + 1, U.c + 1]
+    ];
+    diag.forEach(([r, c]) => {
+      if (inBounds(r, c)) setCell(idxOf(r, c), 4, "o-r25");
+    });
   }
 
-  function lockGrid(locked) {
+  // Lucky zones override unlucky zones if overlap
+  setCell(luckyCell, 10, "o-g1");
+
+  {
+    const L = rc(luckyCell);
+
+    // Up to 4 above and below in same column = 8/10, 50% green
+    for (let k = 1; k <= 4; k++) {
+      const up = [L.r - k, L.c];
+      const down = [L.r + k, L.c];
+      if (inBounds(up[0], up[1])) setCell(idxOf(up[0], up[1]), 8, "o-g50");
+      if (inBounds(down[0], down[1])) setCell(idxOf(down[0], down[1]), 8, "o-g50");
+    }
+
+    // Diagonal adjacent to lucky = 6/10, 25% green
+    const diag = [
+      [L.r - 1, L.c - 1], [L.r - 1, L.c + 1],
+      [L.r + 1, L.c - 1], [L.r + 1, L.c + 1]
+    ];
+    diag.forEach(([r, c]) => {
+      if (inBounds(r, c)) setCell(idxOf(r, c), 6, "o-g25");
+    });
+
+    // Re-assert lucky cell at the end
+    setCell(luckyCell, 10, "o-g1");
+  }
+
+  // ---------------------------
+  // Locking once per day
+  // ---------------------------
+  function isLockedToday() {
+    const last = loadLast();
+    return last && last.date === todayKey;
+  }
+
+  function setLockedUI(locked) {
+    lockPill.textContent = locked ? "Status: locked for today" : "Status: one pick available";
+    lockNote.textContent = locked ? "Come back tomorrow." : "Pick one icon. That is your only pick today.";
     const tiles = gridEl.querySelectorAll(".tile");
     tiles.forEach(t => {
       if (locked) t.setAttribute("disabled", "true");
@@ -454,93 +459,103 @@
     });
   }
 
-  function showResult(chosenCell, chosenIconName) {
-    const cat = categoryForCell(chosenCell);
-    resultTitle.textContent = `Result: ${cat}`;
-    resultText.textContent = copyFor(cat);
-    scoreLine.style.display = "flex";
-    scoreLine.innerHTML = `
-      ${badgeHTML(cat)}
-      <span class="badge">You picked: <strong>${chosenIconName}</strong></span>
-      <span class="badge">One pick per day</span>
-    `;
+  function labelForScore(score) {
+    if (score === 10) return "SUPER LUCKY DAY";
+    if (score === 8) return "VERY LUCKY DAY";
+    if (score === 6) return "SLIGHTLY LUCKY";
+    if (score === 5) return "MEH";
+    if (score === 4) return "A BIT OFF";
+    if (score === 3) return "UNLUCKY-ISH";
+    if (score === 0) return "BAD LUCK DAY";
+    return "MEH";
+  }
 
-    // Update stats
-    const s = loadStats();
-    s.plays += 1;
-    if (cat === "MEGA LUCKY") s.mega += 1;
-    else if (cat === "LUCKY") s.lucky += 1;
-    else if (cat === "UNLUCKY") s.unlucky += 1;
-    else s.meh += 1;
-    saveStats(s);
-    renderStats();
+  function messageForScore(score) {
+    if (score === 10) return "Perfect hit. You should probably do something reckless, but in a wholesome way.";
+    if (score === 8) return "Very lucky. Things may line up without you asking.";
+    if (score === 6) return "Slightly lucky. Not magic, but the day might be a little smoother.";
+    if (score === 5) return "Meh. A standard day in the chaos factory.";
+    if (score === 4) return "A bit off. Not cursed, just… mildly resisted.";
+    if (score === 3) return "Unlucky-ish. Not terrible, but don’t expect the universe to cooperate.";
+    if (score === 0) return "Bad luck day. Keep liquids away from electronics. Maybe skip the lotto.";
+    return "Meh.";
+  }
 
-    // Save daily lock
-    saveLast({
-      date: todayKey,
-      chosenCell,
-      chosenIconName,
-      category: cat
+  function revealAllTiles() {
+    const tiles = gridEl.querySelectorAll(".tile");
+    tiles.forEach((tile, i) => {
+      tile.classList.add("revealed");
+      const overlay = tile.querySelector(".overlay");
+      overlay.className = `overlay ${overlayMap[i] || ""}`;
     });
-
-    lockNote.textContent = "Locked for today. Come back tomorrow.";
-    lockGrid(true);
   }
 
-  function restoreIfPlayed() {
-    const last = loadLast();
-    if (last && last.date === todayKey) {
-      // Restore the saved result
-      resultTitle.textContent = `Result: ${last.category}`;
-      resultText.textContent = copyFor(last.category);
-      scoreLine.style.display = "flex";
-      scoreLine.innerHTML = `
-        ${badgeHTML(last.category)}
-        <span class="badge">You picked: <strong>${last.chosenIconName}</strong></span>
-        <span class="badge">One pick per day</span>
-      `;
-      renderStats();
-      lockNote.textContent = "Locked for today. Come back tomorrow.";
-      lockGrid(true);
-      return true;
-    }
-    lockNote.textContent = "Not locked. One pick available today.";
-    renderStats();
-    return false;
-  }
-
-  // ---------------------------
-  // Render grid
-  // ---------------------------
   function renderGrid() {
     gridEl.innerHTML = "";
     for (let cell = 0; cell < 25; cell++) {
       const iconIndex = iconOrder[cell];
       const icon = ICONS[iconIndex];
+
       const tile = document.createElement("button");
       tile.type = "button";
       tile.className = "tile";
       tile.setAttribute("aria-label", `Pick ${icon.name}`);
-      tile.innerHTML = icon.svg + `<div class="label">${icon.name}</div>`;
+
+      tile.innerHTML = `
+        ${icon.svg}
+        <div class="overlay"></div>
+      `;
+
       tile.addEventListener("click", () => {
-        const last = loadLast();
-        if (last && last.date === todayKey) return; // already played
-        showResult(cell, icon.name);
+        if (isLockedToday()) return;
+
+        const score = scoreMap[cell];
+        const label = labelForScore(score);
+
+        resultTitle.textContent = `${score}/10: ${label}`;
+        resultText.textContent = messageForScore(score);
+
+        badgeRow.style.display = "flex";
+        badgeRow.innerHTML = `
+          <span class="badge">You picked: <strong>${icon.name}</strong></span>
+          <span class="badge">Luck score: <strong>${score}/10</strong></span>
+        `;
+
+        revealAllTiles();
+        saveLast({ date: todayKey, chosenCell: cell, chosenIcon: icon.name, score });
+        setLockedUI(true);
       });
+
       gridEl.appendChild(tile);
     }
   }
 
-  // Dev reset (kept simple)
+  function restoreIfPlayed() {
+    const last = loadLast();
+    if (last && last.date === todayKey) {
+      resultTitle.textContent = `${last.score}/10: ${labelForScore(last.score)}`;
+      resultText.textContent = messageForScore(last.score);
+      badgeRow.style.display = "flex";
+      badgeRow.innerHTML = `
+        <span class="badge">You picked: <strong>${last.chosenIcon}</strong></span>
+        <span class="badge">Luck score: <strong>${last.score}/10</strong></span>
+      `;
+      revealAllTiles();
+      setLockedUI(true);
+      return;
+    }
+    setLockedUI(false);
+  }
+
   resetBtn.addEventListener("click", () => {
-    localStorage.removeItem(LS.last);
-    localStorage.removeItem(LS.stats);
-    resultTitle.textContent = "Pick your lucky symbol for today.";
-    resultText.textContent = "No hints. No do-overs. We are not calling this science.";
-    scoreLine.style.display = "none";
-    lockNote.textContent = "Not locked. One pick available today.";
-    renderStats();
-    lockGrid(false);
+    localStorage.removeItem(LS_LAST);
+    resultTitle.textContent = "Pick one.";
+    resultText.textContent = "Then we see what the universe thinks of you today.";
+    badgeRow.style.display = "none";
+    // Remove reveal state
+    gridEl.querySelectorAll(".tile").forEach(tile => tile.classList.remove("revealed"));
+    gridEl.querySelectorAll(".overlay").forEach(o => o.className = "overlay");
+    setLockedUI(false);
   });
 
   renderGrid();
