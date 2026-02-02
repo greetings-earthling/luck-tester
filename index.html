@@ -5,6 +5,7 @@
   <meta name="viewport" content="width=device-width,initial-scale=1" />
   <title>Luck Test</title>
   <meta name="description" content="Pick one symbol. One click per day. Your luck, measured lightly." />
+
   <style>
     :root {
       --bg: #ffffff;
@@ -12,13 +13,14 @@
       --muted: #666666;
       --border: #e6e6e6;
 
-      --g1: rgba(10, 122, 47, 1);     /* solid green */
-      --g50: rgba(10, 122, 47, 0.5);  /* 50% green */
-      --g25: rgba(10, 122, 47, 0.25); /* 25% green */
+      /* Translucent overlays so icons remain visible */
+      --g10: rgba(10, 122, 47, 0.45);  /* 10/10 */
+      --g8:  rgba(10, 122, 47, 0.26);  /* 8/10 */
+      --g6:  rgba(10, 122, 47, 0.14);  /* 6/10 */
 
-      --r1: rgba(176, 0, 32, 1);      /* solid red */
-      --r50: rgba(176, 0, 32, 0.5);   /* 50% red */
-      --r25: rgba(176, 0, 32, 0.25);  /* 25% red */
+      --r0:  rgba(176, 0, 32, 0.45);   /* 0/10 */
+      --r3:  rgba(176, 0, 32, 0.26);   /* 3/10 */
+      --r4:  rgba(176, 0, 32, 0.14);   /* 4/10 */
     }
 
     html, body {
@@ -72,18 +74,26 @@
       background: #fff;
     }
 
+    /* Grid: 8 columns desktop, 3 columns mobile */
     .grid {
       display: grid;
-      grid-template-columns: repeat(5, minmax(0, 1fr));
       gap: 8px;
       margin-top: 8px;
+      grid-template-columns: repeat(8, minmax(0, 1fr));
     }
 
+    @media (max-width: 640px) {
+      .grid {
+        grid-template-columns: repeat(3, minmax(0, 1fr));
+      }
+    }
+
+    /* Rectangular tiles */
     .tile {
       border: 1px solid var(--border);
       background: #fff;
       border-radius: 14px;
-      aspect-ratio: 1 / 1;
+      height: 76px;
       display: grid;
       place-items: center;
       cursor: pointer;
@@ -92,6 +102,10 @@
       position: relative;
       overflow: hidden;
       padding: 0;
+    }
+
+    @media (max-width: 640px) {
+      .tile { height: 74px; }
     }
 
     .tile:hover {
@@ -107,21 +121,18 @@
 
     .tile[disabled] {
       cursor: not-allowed;
-      opacity: 0.8;
+      opacity: 0.92;
       transform: none;
       box-shadow: none;
     }
 
-    /* Smaller icons so grid fits better */
     .icon {
-      width: min(38px, 10vw);
-      height: min(38px, 10vw);
-      max-width: 44px;
-      max-height: 44px;
+      width: 30px;
+      height: 30px;
       color: var(--fg);
     }
 
-    /* Colour overlays after reveal */
+    /* Overlays */
     .overlay {
       position: absolute;
       inset: 0;
@@ -130,19 +141,26 @@
       pointer-events: none;
     }
 
-    .revealed .overlay { opacity: 1; }
+    .revealed .overlay {
+      opacity: 1;
+    }
 
-    .o-g1 { background: var(--g1); }
-    .o-g50 { background: var(--g50); }
-    .o-g25 { background: var(--g25); }
+    .o-g10 { background: var(--g10); }
+    .o-g8  { background: var(--g8); }
+    .o-g6  { background: var(--g6); }
 
-    .o-r1 { background: var(--r1); }
-    .o-r50 { background: var(--r50); }
-    .o-r25 { background: var(--r25); }
+    .o-r0  { background: var(--r0); }
+    .o-r3  { background: var(--r3); }
+    .o-r4  { background: var(--r4); }
 
-    /* Keep icon readable on solid colours */
-    .revealed .icon {
-      filter: drop-shadow(0 1px 0 rgba(255,255,255,0.5));
+    /* Selected tile ring */
+    .selectedRing::after {
+      content: "";
+      position: absolute;
+      inset: 6px;
+      border: 3px solid #111;
+      border-radius: 10px;
+      pointer-events: none;
     }
 
     .panel {
@@ -160,8 +178,49 @@
       border: 1px solid var(--border);
       border-radius: 14px;
       padding: 10px;
+    }
+
+    .resultRow {
       display: grid;
-      gap: 6px;
+      grid-template-columns: 92px 1fr;
+      gap: 10px;
+      align-items: center;
+    }
+
+    @media (max-width: 640px) {
+      .resultRow {
+        grid-template-columns: 86px 1fr;
+      }
+    }
+
+    .previewTile {
+      width: 92px;
+      height: 72px;
+      border-radius: 14px;
+      border: 1px solid var(--border);
+      background: #fff;
+      display: grid;
+      place-items: center;
+      position: relative;
+      overflow: hidden;
+    }
+
+    @media (max-width: 640px) {
+      .previewTile {
+        width: 86px;
+        height: 70px;
+      }
+    }
+
+    .previewTile .icon {
+      width: 28px;
+      height: 28px;
+    }
+
+    .previewOverlay {
+      position: absolute;
+      inset: 0;
+      pointer-events: none;
     }
 
     .result h2 {
@@ -174,6 +233,7 @@
       color: var(--muted);
       line-height: 1.45;
       font-size: 13px;
+      margin-top: 4px;
     }
 
     .badgeRow {
@@ -181,7 +241,7 @@
       gap: 8px;
       flex-wrap: wrap;
       align-items: center;
-      margin-top: 2px;
+      margin-top: 8px;
     }
 
     .badge {
@@ -217,13 +277,16 @@
       cursor: pointer;
     }
 
-    button.reset:hover { border-color: #d8d8d8; }
+    button.reset:hover {
+      border-color: #d8d8d8;
+    }
   </style>
 </head>
+
 <body>
   <div class="wrap">
     <header>
-      <h1>Choose an icon below to find out your luck score for the day.</h1>
+      <h1>Choose an icon below to find out your luck score for the day!</h1>
       <div class="sub">One click per day. No do-overs. Not science.</div>
       <div class="row">
         <div class="pill" id="todayPill">Today:</div>
@@ -235,9 +298,18 @@
 
     <div class="panel">
       <div class="result">
-        <h2 id="resultTitle">Pick one.</h2>
-        <p id="resultText">Then we see what the universe thinks of you today.</p>
-        <div class="badgeRow" id="badgeRow" style="display:none;"></div>
+        <div class="resultRow">
+          <div class="previewTile" id="previewTile" aria-label="Your selected tile preview">
+            <div class="previewOverlay" id="previewOverlay"></div>
+            <div id="previewIcon"></div>
+          </div>
+
+          <div>
+            <h2 id="resultTitle">Pick one.</h2>
+            <p id="resultText">Then we see what the universe thinks of you today.</p>
+            <div class="badgeRow" id="badgeRow" style="display:none;"></div>
+          </div>
+        </div>
       </div>
 
       <div class="btnRow">
@@ -251,7 +323,7 @@
 
 <script>
   // ---------------------------
-  // Date + per-device identity
+  // Utilities
   // ---------------------------
   function formatDateLocal(d) {
     const yyyy = d.getFullYear();
@@ -275,32 +347,51 @@
       t = Math.imul(t ^ (t >>> 15), t | 1);
       t ^= t + Math.imul(t ^ (t >>> 7), t | 61);
       return ((t ^ (t >>> 14)) >>> 0) / 4294967296;
-    }
+    };
   }
 
   function getOrCreateUID() {
-    const key = "luck_uid_v2";
+    const key = "luck_uid_v3";
     let uid = localStorage.getItem(key);
     if (!uid) {
-      uid = (crypto && crypto.randomUUID) ? crypto.randomUUID() : String(Date.now()) + "_" + Math.random().toString(16).slice(2);
+      uid = (crypto && crypto.randomUUID)
+        ? crypto.randomUUID()
+        : String(Date.now()) + "_" + Math.random().toString(16).slice(2);
       localStorage.setItem(key, uid);
     }
     return uid;
   }
 
-  const LS_LAST = "luck_last_v2";
+  // ---------------------------
+  // Config: 8x3 (24 tiles)
+  // ---------------------------
+  const COLS = 8;
+  const ROWS = 3;
+  const CELL_COUNT = COLS * ROWS;
 
-  function loadLast() {
-    try { return JSON.parse(localStorage.getItem(LS_LAST) || "null"); }
-    catch { return null; }
+  function rc(idx) { return { r: Math.floor(idx / COLS), c: idx % COLS }; }
+  function idxOf(r, c) { return r * COLS + c; }
+  function inBounds(r, c) { return r >= 0 && r < ROWS && c >= 0 && c < COLS; }
+
+  function manhattan(a, b) {
+    const A = rc(a), B = rc(b);
+    return Math.abs(A.r - B.r) + Math.abs(A.c - B.c);
   }
-  function saveLast(obj) {
-    localStorage.setItem(LS_LAST, JSON.stringify(obj));
+
+  function orthogonalNeighbors(centerIdx) {
+    const C = rc(centerIdx);
+    const coords = [[C.r - 1, C.c], [C.r + 1, C.c], [C.r, C.c - 1], [C.r, C.c + 1]];
+    return coords.filter(([r,c]) => inBounds(r,c)).map(([r,c]) => idxOf(r,c));
+  }
+
+  function diagonalNeighbors(centerIdx) {
+    const C = rc(centerIdx);
+    const coords = [[C.r - 1, C.c - 1], [C.r - 1, C.c + 1], [C.r + 1, C.c - 1], [C.r + 1, C.c + 1]];
+    return coords.filter(([r,c]) => inBounds(r,c)).map(([r,c]) => idxOf(r,c));
   }
 
   // ---------------------------
-  // Icons (25 unique SVGs)
-  // Same set you already had, kept black on white.
+  // Icons: use 24 unique SVGs
   // ---------------------------
   const ICONS = [
     { name: "Clover", svg: `<svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><path d="M12 14c-1.2 2.5-3.7 4-6 4 0-2.7 1.8-5 4.2-5.6"/><path d="M12 14c1.2 2.5 3.7 4 6 4 0-2.7-1.8-5-4.2-5.6"/><path d="M12 14c-2.4 0-4.5-1.6-4.5-4 0-1.7 1.3-3 3-3 1.2 0 2.2.7 2.6 1.7.4-1 1.4-1.7 2.6-1.7 1.7 0 3 1.3 3 3 0 2.4-2.1 4-4.7 4"/><path d="M12 14v7"/></svg>` },
@@ -326,124 +417,116 @@
     { name: "Gem", svg: `<svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><path d="M6 3h12l3 6-9 12L3 9l3-6z"/><path d="M3 9h18"/><path d="M9 9l3 12 3-12"/></svg>` },
     { name: "Spiral", svg: `<svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><path d="M12 5a7 7 0 1 0 7 7c0-2.5-2-4-4.5-4S10 9.3 10 11.2c0 1.5 1.2 2.3 2.6 2.3 1.1 0 2-.7 2-1.7"/></svg>` },
     { name: "Hand", svg: `<svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><path d="M7 12V6a1 1 0 0 1 2 0v5"/><path d="M9 11V5a1 1 0 0 1 2 0v6"/><path d="M11 11V6a1 1 0 0 1 2 0v5"/><path d="M13 12V7a1 1 0 0 1 2 0v8c0 3-2 5-5 5H8c-2.2 0-4-1.8-4-4v-3c0-.8.7-1.5 1.5-1.5S7 12 7 12z"/></svg>` },
-    { name: "Cup", svg: `<svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><path d="M7 4h10v7a5 5 0 0 1-10 0V4z"/><path d="M17 6h2a2 2 0 0 1 0 4h-2"/><path d="M8 20h8"/></svg>` },
-    { name: "Maple", svg: `<svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><path d="M12 2l1.5 4L18 4l-2 4 4 1.5-4 1.5 2 4-4.5-2L12 22l-1.5-9L6 15l2-4-4-1.5L8 8 6 4l4.5 2L12 2z"/></svg>` }
+    { name: "Cup", svg: `<svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><path d="M7 4h10v7a5 5 0 0 1-10 0V4z"/><path d="M17 6h2a2 2 0 0 1 0 4h-2"/><path d="M8 20h8"/></svg>` }
   ];
 
   // ---------------------------
-  // Core setup
+  // DOM
   // ---------------------------
   const gridEl = document.getElementById("grid");
   const todayPill = document.getElementById("todayPill");
   const lockPill = document.getElementById("lockPill");
-  const resultTitle = document.getElementById("resultTitle");
-  const resultText = document.getElementById("resultText");
-  const badgeRow = document.getElementById("badgeRow");
   const lockNote = document.getElementById("lockNote");
   const resetBtn = document.getElementById("resetBtn");
 
+  const resultTitle = document.getElementById("resultTitle");
+  const resultText = document.getElementById("resultText");
+  const badgeRow = document.getElementById("badgeRow");
+
+  const previewTile = document.getElementById("previewTile");
+  const previewOverlay = document.getElementById("previewOverlay");
+  const previewIcon = document.getElementById("previewIcon");
+
+  // ---------------------------
+  // Daily lock
+  // ---------------------------
+  const LS_LAST = "luck_last_v3";
+  function loadLast() {
+    try { return JSON.parse(localStorage.getItem(LS_LAST) || "null"); }
+    catch { return null; }
+  }
+  function saveLast(obj) {
+    localStorage.setItem(LS_LAST, JSON.stringify(obj));
+  }
+
+  // ---------------------------
+  // Seed per user per day
+  // ---------------------------
   const uid = getOrCreateUID();
   const todayKey = formatDateLocal(new Date());
   todayPill.textContent = `Today: ${todayKey}`;
 
-  const seedBase = `${todayKey}|${uid}|luckgrid_v3`;
-  const rng = mulberry32(hashString(seedBase));
+  const rng = mulberry32(hashString(`${todayKey}|${uid}|luckgrid_v3`));
 
-  // Shuffle icon placement daily
-  const iconOrder = Array.from({ length: 25 }, (_, i) => i);
+  // ---------------------------
+  // Shuffle icon placement, use all 24 once
+  // ---------------------------
+  const iconOrder = Array.from({ length: CELL_COUNT }, (_, i) => i);
   for (let i = iconOrder.length - 1; i > 0; i--) {
     const j = Math.floor(rng() * (i + 1));
     [iconOrder[i], iconOrder[j]] = [iconOrder[j], iconOrder[i]];
   }
 
-  // Pick the Lucky cell (0..24)
-  const luckyCell = Math.floor(rng() * 25);
+  // ---------------------------
+  // Pick lucky and unlucky
+  // ---------------------------
+  const luckyCell = Math.floor(rng() * CELL_COUNT);
 
-  // Manhattan distance helper
-  function rc(idx) {
-    return { r: Math.floor(idx / 5), c: idx % 5 };
-  }
-  function manhattan(a, b) {
-    const A = rc(a), B = rc(b);
-    return Math.abs(A.r - B.r) + Math.abs(A.c - B.c);
-  }
-
-  // Pick the Unlucky cell as the farthest from Lucky
-  const distances = Array.from({ length: 25 }, (_, i) => ({ i, d: manhattan(i, luckyCell) }));
+  const distances = Array.from({ length: CELL_COUNT }, (_, i) => ({ i, d: manhattan(i, luckyCell) }));
   const maxD = Math.max(...distances.map(x => x.d));
   const farthest = distances.filter(x => x.d === maxD).map(x => x.i);
-
-  // Deterministic pick among ties
   const unluckyCell = farthest[Math.floor(rng() * farthest.length)];
 
-  function inBounds(r, c) {
-    return r >= 0 && r < 5 && c >= 0 && c < 5;
-  }
-  function idxOf(r, c) { return r * 5 + c; }
+  // ---------------------------
+  // Score + overlay maps
+  // ---------------------------
+  const scoreMap = new Array(CELL_COUNT).fill(5);
+  const overlayMap = new Array(CELL_COUNT).fill("");
+  const prio = new Array(CELL_COUNT).fill(0);
 
-  // Build score map: default MEH (5)
-  const scoreMap = new Array(25).fill(5);
-  const overlayMap = new Array(25).fill(""); // class names
-
-  // Apply unlucky zones first (lower priority), then lucky zones override them
-  function setCell(idx, score, overlayClass) {
-    scoreMap[idx] = score;
-    overlayMap[idx] = overlayClass;
-  }
-
-  // Unlucky zones
-  setCell(unluckyCell, 0, "o-r1");
-
-  {
-    const U = rc(unluckyCell);
-    // Adjacent (N S E W) = 3/10, 50% red
-    const adj = [
-      [U.r - 1, U.c], [U.r + 1, U.c], [U.r, U.c - 1], [U.r, U.c + 1]
-    ];
-    adj.forEach(([r, c]) => {
-      if (inBounds(r, c)) setCell(idxOf(r, c), 3, "o-r50");
-    });
-
-    // Diagonal adjacent = 4/10, 25% red
-    const diag = [
-      [U.r - 1, U.c - 1], [U.r - 1, U.c + 1],
-      [U.r + 1, U.c - 1], [U.r + 1, U.c + 1]
-    ];
-    diag.forEach(([r, c]) => {
-      if (inBounds(r, c)) setCell(idxOf(r, c), 4, "o-r25");
-    });
-  }
-
-  // Lucky zones override unlucky zones if overlap
-  setCell(luckyCell, 10, "o-g1");
-
-  {
-    const L = rc(luckyCell);
-
-    // Up to 4 above and below in same column = 8/10, 50% green
-    for (let k = 1; k <= 4; k++) {
-      const up = [L.r - k, L.c];
-      const down = [L.r + k, L.c];
-      if (inBounds(up[0], up[1])) setCell(idxOf(up[0], up[1]), 8, "o-g50");
-      if (inBounds(down[0], down[1])) setCell(idxOf(down[0], down[1]), 8, "o-g50");
+  function setCell(idx, score, overlayClass, priority) {
+    if (priority >= prio[idx]) {
+      prio[idx] = priority;
+      scoreMap[idx] = score;
+      overlayMap[idx] = overlayClass;
     }
-
-    // Diagonal adjacent to lucky = 6/10, 25% green
-    const diag = [
-      [L.r - 1, L.c - 1], [L.r - 1, L.c + 1],
-      [L.r + 1, L.c - 1], [L.r + 1, L.c + 1]
-    ];
-    diag.forEach(([r, c]) => {
-      if (inBounds(r, c)) setCell(idxOf(r, c), 6, "o-g25");
-    });
-
-    // Re-assert lucky cell at the end
-    setCell(luckyCell, 10, "o-g1");
   }
 
+  // Unlucky zones first (lower priority)
+  setCell(unluckyCell, 0, "o-r0", 2);
+  orthogonalNeighbors(unluckyCell).forEach(i => setCell(i, 3, "o-r3", 1));
+  diagonalNeighbors(unluckyCell).forEach(i => setCell(i, 4, "o-r4", 1));
+
+  // Lucky zones override (higher priority)
+  setCell(luckyCell, 10, "o-g10", 4);
+  orthogonalNeighbors(luckyCell).forEach(i => setCell(i, 8, "o-g8", 3));
+  diagonalNeighbors(luckyCell).forEach(i => setCell(i, 6, "o-g6", 3));
+
   // ---------------------------
-  // Locking once per day
+  // Copy
   // ---------------------------
+  function labelForScore(score) {
+    if (score === 10) return "SUPER LUCKY DAY";
+    if (score === 8) return "VERY LUCKY DAY";
+    if (score === 6) return "SLIGHTLY LUCKY";
+    if (score === 5) return "MEH";
+    if (score === 4) return "A BIT OFF";
+    if (score === 3) return "UNLUCKY-ISH";
+    if (score === 0) return "BAD LUCK DAY";
+    return "MEH";
+  }
+
+  function messageForScore(score) {
+    if (score === 10) return "Perfect hit. If you’ve been waiting for a sign, this is it.";
+    if (score === 8) return "Very lucky. Things may line up without you asking.";
+    if (score === 6) return "Slightly lucky. Not magic, but the day might be a little smoother.";
+    if (score === 5) return "Meh. A standard day in the chaos factory.";
+    if (score === 4) return "A bit off. Not cursed. Just mildly resisted.";
+    if (score === 3) return "Unlucky-ish. Not terrible, but I would not expect the universe to cooperate.";
+    if (score === 0) return "Bad luck day. Keep liquids away from electronics. Maybe skip the lotto.";
+    return "Meh.";
+  }
+
   function isLockedToday() {
     const last = loadLast();
     return last && last.date === todayKey;
@@ -459,40 +542,42 @@
     });
   }
 
-  function labelForScore(score) {
-    if (score === 10) return "SUPER LUCKY DAY";
-    if (score === 8) return "VERY LUCKY DAY";
-    if (score === 6) return "SLIGHTLY LUCKY";
-    if (score === 5) return "MEH";
-    if (score === 4) return "A BIT OFF";
-    if (score === 3) return "UNLUCKY-ISH";
-    if (score === 0) return "BAD LUCK DAY";
-    return "MEH";
+  // ---------------------------
+  // Preview tile
+  // ---------------------------
+  function applyPreview(iconSvg, overlayClass) {
+    previewIcon.innerHTML = iconSvg;
+    previewOverlay.className = `previewOverlay ${overlayClass || ""}`;
+    previewTile.classList.add("selectedRing");
   }
 
-  function messageForScore(score) {
-    if (score === 10) return "Perfect hit. You should probably do something reckless, but in a wholesome way.";
-    if (score === 8) return "Very lucky. Things may line up without you asking.";
-    if (score === 6) return "Slightly lucky. Not magic, but the day might be a little smoother.";
-    if (score === 5) return "Meh. A standard day in the chaos factory.";
-    if (score === 4) return "A bit off. Not cursed, just… mildly resisted.";
-    if (score === 3) return "Unlucky-ish. Not terrible, but don’t expect the universe to cooperate.";
-    if (score === 0) return "Bad luck day. Keep liquids away from electronics. Maybe skip the lotto.";
-    return "Meh.";
+  function clearPreview() {
+    previewIcon.innerHTML = "";
+    previewOverlay.className = "previewOverlay";
+    previewTile.classList.remove("selectedRing");
   }
 
-  function revealAllTiles() {
+  // ---------------------------
+  // Reveal all tiles
+  // ---------------------------
+  function revealAllTiles(chosenCell) {
     const tiles = gridEl.querySelectorAll(".tile");
     tiles.forEach((tile, i) => {
       tile.classList.add("revealed");
       const overlay = tile.querySelector(".overlay");
       overlay.className = `overlay ${overlayMap[i] || ""}`;
+
+      tile.classList.remove("selectedRing");
+      if (i === chosenCell) tile.classList.add("selectedRing");
     });
   }
 
+  // ---------------------------
+  // Render grid
+  // ---------------------------
   function renderGrid() {
     gridEl.innerHTML = "";
-    for (let cell = 0; cell < 25; cell++) {
+    for (let cell = 0; cell < CELL_COUNT; cell++) {
       const iconIndex = iconOrder[cell];
       const icon = ICONS[iconIndex];
 
@@ -501,10 +586,7 @@
       tile.className = "tile";
       tile.setAttribute("aria-label", `Pick ${icon.name}`);
 
-      tile.innerHTML = `
-        ${icon.svg}
-        <div class="overlay"></div>
-      `;
+      tile.innerHTML = `${icon.svg}<div class="overlay"></div>`;
 
       tile.addEventListener("click", () => {
         if (isLockedToday()) return;
@@ -521,8 +603,18 @@
           <span class="badge">Luck score: <strong>${score}/10</strong></span>
         `;
 
-        revealAllTiles();
-        saveLast({ date: todayKey, chosenCell: cell, chosenIcon: icon.name, score });
+        revealAllTiles(cell);
+        applyPreview(icon.svg, overlayMap[cell]);
+
+        saveLast({
+          date: todayKey,
+          chosenCell: cell,
+          chosenIcon: icon.name,
+          score: score,
+          overlayClass: overlayMap[cell],
+          iconSvg: icon.svg
+        });
+
         setLockedUI(true);
       });
 
@@ -530,34 +622,51 @@
     }
   }
 
+  // ---------------------------
+  // Restore if already played
+  // ---------------------------
   function restoreIfPlayed() {
     const last = loadLast();
     if (last && last.date === todayKey) {
       resultTitle.textContent = `${last.score}/10: ${labelForScore(last.score)}`;
       resultText.textContent = messageForScore(last.score);
+
       badgeRow.style.display = "flex";
       badgeRow.innerHTML = `
         <span class="badge">You picked: <strong>${last.chosenIcon}</strong></span>
         <span class="badge">Luck score: <strong>${last.score}/10</strong></span>
       `;
-      revealAllTiles();
+
+      revealAllTiles(last.chosenCell);
+      applyPreview(last.iconSvg, last.overlayClass);
       setLockedUI(true);
       return;
     }
+
+    clearPreview();
     setLockedUI(false);
   }
 
+  // ---------------------------
+  // Dev reset
+  // ---------------------------
   resetBtn.addEventListener("click", () => {
     localStorage.removeItem(LS_LAST);
+
     resultTitle.textContent = "Pick one.";
     resultText.textContent = "Then we see what the universe thinks of you today.";
     badgeRow.style.display = "none";
-    // Remove reveal state
-    gridEl.querySelectorAll(".tile").forEach(tile => tile.classList.remove("revealed"));
+
+    clearPreview();
+
+    // Remove reveal state and rings
+    gridEl.querySelectorAll(".tile").forEach(tile => tile.classList.remove("revealed", "selectedRing"));
     gridEl.querySelectorAll(".overlay").forEach(o => o.className = "overlay");
+
     setLockedUI(false);
   });
 
+  // Init
   renderGrid();
   restoreIfPlayed();
 </script>
