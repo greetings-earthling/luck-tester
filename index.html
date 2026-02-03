@@ -3,16 +3,16 @@
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width,initial-scale=1" />
-  <title>Luck Test</title>
-  <meta name="description" content="Pick one symbol. Your luck, measured lightly." />
+  <title>Luck Tester</title>
+  <meta name="description" content="Choose an icon to find out how lucky you are today. Not science." />
   <link rel="stylesheet" href="styles.css" />
 </head>
 
 <body>
   <div class="wrap">
     <header>
-      <h1>Choose an icon to test your luck</h1>
-      <div class="sub">Not science. Just vibes.</div>
+      <h1>How lucky are you today?</h1>
+      <div class="sub">Choose an icon to find out!</div>
 
       <div class="row">
         <div class="pill" id="statusPill">Status: ready</div>
@@ -24,25 +24,21 @@
     <div class="panel" aria-live="polite">
       <div class="result">
         <div class="resultRow">
-          <div class="previewTile" id="previewTile">
+          <div class="previewTile" id="previewTile" aria-label="Your selected tile preview">
             <div class="previewOverlay" id="previewOverlay"></div>
             <div id="previewIcon"></div>
           </div>
 
           <div>
             <h2 id="resultTitle">Pick one.</h2>
-            <p id="resultText">Then we see what the universe does with it.</p>
+            <p id="resultText">No science here. Just a tiny ritual.</p>
             <div class="badgeRow" id="badgeRow" style="display:none;"></div>
-            <div class="srOnly" id="srStatus" role="status"></div>
+            <div class="srOnly" id="srStatus" role="status" aria-live="polite"></div>
           </div>
         </div>
       </div>
 
-      <div class="btnRow">
-        <button class="reset" id="resetBtn" type="button">
-          Try again
-        </button>
-      </div>
+      <div class="tiny" id="lockNote"></div>
     </div>
   </div>
 
