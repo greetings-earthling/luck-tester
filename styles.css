@@ -22,7 +22,7 @@ html,body{
 }
 
 .wrap{
-  width: min(72vw, 980px);
+  width: min(68vw, 920px);
   margin: 0 auto;
   padding: 12px 12px 22px;
 }
