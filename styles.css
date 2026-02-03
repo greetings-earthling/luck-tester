@@ -22,24 +22,11 @@ html,body{
 }
 
 .wrap{
-  width: min(68vw, 920px);
+  width: min(64vw, 900px);
   margin: 0 auto;
-  padding: 12px 12px 22px;
+  padding: 10px 12px 18px;
 }
 
-@media (min-width: 900px){
-  .gridWrap{
-    padding: 8px;
-  }
-
-  .grid{
-    gap: 8px;
-  }
-
-  .tile{
-    border-radius: 12px;
-  }
-}
 
 header{
   display:grid;
@@ -128,6 +115,16 @@ h1{
 
 @media (max-width: 640px){
   .symbol{ font-size: 20px; }
+}
+
+@media (min-width: 900px){
+  .grid{
+    gap: 7px;
+  }
+
+  .gridWrap{
+    padding: 6px;
+  }
 }
 
 /* Overlays go BEHIND the symbol */
