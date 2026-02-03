@@ -4,7 +4,7 @@
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width,initial-scale=1" />
   <title>Luck Tester</title>
-  <meta name="description" content="Choose a character that holds meaning for you today. Not science." />
+  <meta name="description" content="Choose a symbol that holds meaning for you, or a spot that feels right. Not science." />
   <link rel="stylesheet" href="styles.css" />
 </head>
 
@@ -12,17 +12,19 @@
   <div class="wrap">
     <header>
       <h1>How lucky are you today?</h1>
-      <div class="sub">Choose a character that holds meaning for you today.</div>
+      <div class="sub">Choose a symbol that holds meaning for you, or a spot that feels right.</div>
     </header>
 
-    <div class="grid" id="grid" aria-label="Luck character grid"></div>
+    <div class="gridWrap" aria-label="Luck board">
+      <div class="grid" id="grid"></div>
+    </div>
 
     <div class="panel" aria-live="polite">
       <div class="result">
         <div class="resultRow">
-          <div class="previewTile" id="previewTile" aria-label="Your selected character preview">
+          <div class="previewTile" id="previewTile" aria-label="Your selected symbol preview">
             <div class="previewOverlay" id="previewOverlay"></div>
-            <div id="previewIcon"></div>
+            <div id="previewIcon" class="previewSymbol"></div>
           </div>
 
           <div>
@@ -36,7 +38,7 @@
     </div>
   </div>
 
-  <script src="icons.js"></script>
+  <script src="symbols.js"></script>
   <script src="script.js" defer></script>
 </body>
 </html>
