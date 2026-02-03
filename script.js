@@ -2,15 +2,9 @@
   "use strict";
 
   const SYMBOLS = Array.isArray(window.SYMBOLS) ? window.SYMBOLS : [];
-  if (!SYMBOLS.length) {
-    console.error("SYMBOLS missing. Make sure icons.js loads before script.js.");
-    return;
-  }
+  if (!SYMBOLS.length) return;
 
-  // DOM
   const gridEl = document.getElementById("grid");
-  const statusPill = document.getElementById("statusPill");
-  const lockNote = document.getElementById("lockNote");
   const resultTitle = document.getElementById("resultTitle");
   const resultText = document.getElementById("resultText");
   const badgeRow = document.getElementById("badgeRow");
@@ -19,7 +13,7 @@
   const previewIcon = document.getElementById("previewIcon");
   const srStatus = document.getElementById("srStatus");
 
-  // Random
+  // Random utilities
   function hashString(str) {
     let h = 2166136261 >>> 0;
     for (let i = 0; i < str.length; i++) {
@@ -38,103 +32,63 @@
     };
   }
 
-  // New roll on every refresh
+  // Fresh roll each load
   const rng = mulberry32(hashString(`${Date.now()}|${Math.random()}|luck`));
 
-  // Grid sizing: 36 symbols
-  const CELL_COUNT = SYMBOLS.length; // should be 36
+  // Fixed 6x6 grid
   const COLS = 6;
   const ROWS = 6;
-
-  gridEl.style.gridTemplateColumns = `repeat(${COLS}, minmax(0, 1fr))`;
+  const CELL_COUNT = 36;
 
   function rc(idx) { return { r: Math.floor(idx / COLS), c: idx % COLS }; }
-  function idxOf(r, c) { return r * COLS + c; }
-  function inBounds(r, c) { return r >= 0 && r < ROWS && c >= 0 && c < COLS; }
 
-  function manhattan(a, b) {
+  // Chebyshev distance makes a nice square ripple:
+  // 0 = bullseye, 1 = immediate ring, 2 = outer ring.
+  function chebyshev(a, b) {
     const A = rc(a), B = rc(b);
-    return Math.abs(A.r - B.r) + Math.abs(A.c - B.c);
+    return Math.max(Math.abs(A.r - B.r), Math.abs(A.c - B.c));
   }
 
-  function orthogonalNeighbors(centerIdx) {
-    const C = rc(centerIdx);
-    const coords = [[C.r - 1, C.c], [C.r + 1, C.c], [C.r, C.c - 1], [C.r, C.c + 1]];
-    return coords.filter(([r, c]) => inBounds(r, c)).map(([r, c]) => idxOf(r, c));
-  }
-
-  function diagonalNeighbors(centerIdx) {
-    const C = rc(centerIdx);
-    const coords = [[C.r - 1, C.c - 1], [C.r - 1, C.c + 1], [C.r + 1, C.c - 1], [C.r + 1, C.c + 1]];
-    return coords.filter(([r, c]) => inBounds(r, c)).map(([r, c]) => idxOf(r, c));
-  }
-
-  // Lucky/unlucky selection (random cells)
+  // Choose the lucky cell uniformly
   const luckyCell = Math.floor(rng() * CELL_COUNT);
 
-  const distances = Array.from({ length: CELL_COUNT }, (_, i) => ({ i, d: manhattan(i, luckyCell) }));
-  const maxD = Math.max(...distances.map(x => x.d));
-  const farthest = distances.filter(x => x.d === maxD).map(x => x.i);
-  const unluckyCell = farthest[Math.floor(rng() * farthest.length)];
-
-  // Score + overlay maps
+  // Build score/overlay by ripple
+  // dist 0: 10 (o-g80)
+  // dist 1: 8  (o-g60)
+  // dist 2: 6  (o-g40)
+  // else: 5 (white)
   const scoreMap = new Array(CELL_COUNT).fill(5);
   const overlayMap = new Array(CELL_COUNT).fill("");
-  const prio = new Array(CELL_COUNT).fill(0);
 
-  function setCell(idx, score, overlayClass, priority) {
-    if (priority >= prio[idx]) {
-      prio[idx] = priority;
-      scoreMap[idx] = score;
-      overlayMap[idx] = overlayClass;
+  for (let i = 0; i < CELL_COUNT; i++) {
+    const d = chebyshev(i, luckyCell);
+    if (d === 0) {
+      scoreMap[i] = 10;
+      overlayMap[i] = "o-g80";
+    } else if (d === 1) {
+      scoreMap[i] = 8;
+      overlayMap[i] = "o-g60";
+    } else if (d === 2) {
+      scoreMap[i] = 6;
+      overlayMap[i] = "o-g40";
     }
   }
 
-  // Unlucky zones first (lower priority)
-  setCell(unluckyCell, 0, "o-r0", 2);
-  orthogonalNeighbors(unluckyCell).forEach(i => setCell(i, 3, "o-r3", 1));
-  diagonalNeighbors(unluckyCell).forEach(i => setCell(i, 4, "o-r4", 1));
-
-  // Lucky zones override (higher priority)
-  setCell(luckyCell, 10, "o-g10", 4);
-  orthogonalNeighbors(luckyCell).forEach(i => setCell(i, 8, "o-g8", 3));
-  diagonalNeighbors(luckyCell).forEach(i => setCell(i, 6, "o-g6", 3));
-
-  // Copy
-  function labelForScore(score) {
-    if (score === 10) return "SUPER LUCKY";
-    if (score === 8) return "VERY LUCKY";
-    if (score === 6) return "SLIGHTLY LUCKY";
-    if (score === 5) return "MEH";
-    if (score === 4) return "A BIT OFF";
-    if (score === 3) return "UNLUCKY-ISH";
-    if (score === 0) return "BAD LUCK";
-    return "MEH";
+  function labelForScore(s) {
+    if (s === 10) return "BULLSEYE";
+    if (s === 8) return "SO CLOSE";
+    if (s === 6) return "MAYBE";
+    return "NOT IN THE CARDS";
   }
 
-  function messageForScore(score) {
-    if (score === 10) return "Lucky, lucky!";
-    if (score === 8) return "Pretty good odds for a nonsense machine.";
-    if (score === 6) return "A small tailwind. Nothing dramatic.";
-    if (score === 5) return "Neutral. You are floating normally.";
-    if (score === 4) return "A little friction. Nothing personal.";
-    if (score === 3) return "Today may require patience and snacks.";
-    if (score === 0) return "Proceed carefully. Keep beverages away from keyboards.";
-    return "Neutral.";
+  function messageForScore(s) {
+    if (s === 10) return "Luck is on your side today.";
+    if (s === 8) return "Good vibes are all around you.";
+    if (s === 6) return "You may just have some good luck today.";
+    return "It’s not in the cards today, but you never know. Luck is a funny thing.";
   }
 
-  // UI
   let locked = false;
-
-  function setLockedUI(isLocked) {
-    locked = isLocked;
-    statusPill.textContent = isLocked ? "Status: revealed" : "Status: ready";
-    lockNote.textContent = isLocked ? "Refresh to try again." : "Pick one symbol.";
-    gridEl.querySelectorAll(".tile").forEach(t => {
-      if (isLocked) t.setAttribute("disabled", "true");
-      else t.removeAttribute("disabled");
-    });
-  }
 
   function applyPreview(symbolText, overlayClass) {
     previewIcon.textContent = symbolText;
@@ -148,16 +102,21 @@
       tile.classList.add("revealed");
       const overlay = tile.querySelector(".overlay");
       overlay.className = `overlay ${overlayMap[i] || ""}`;
-
       tile.classList.toggle("selectedRing", i === chosenCell);
     });
+  }
+
+  function lockGrid() {
+    locked = true;
+    gridEl.querySelectorAll(".tile").forEach(t => t.setAttribute("disabled", "true"));
   }
 
   function renderGrid() {
     gridEl.innerHTML = "";
 
     for (let cell = 0; cell < CELL_COUNT; cell++) {
-      const sym = SYMBOLS[cell]; // fixed order
+      const sym = SYMBOLS[cell]; // fixed A-Z, then 0-9
+
       const tile = document.createElement("button");
       tile.type = "button";
       tile.className = "tile tileText";
@@ -168,9 +127,8 @@
         if (locked) return;
 
         const s = scoreMap[cell];
-        const label = labelForScore(s);
 
-        resultTitle.textContent = `${s}/10: ${label}`;
+        resultTitle.textContent = `${s}/10: ${labelForScore(s)}`;
         resultText.textContent = messageForScore(s);
 
         badgeRow.style.display = "flex";
@@ -179,11 +137,11 @@
           <span class="badge">Luck score: <strong>${s}/10</strong></span>
         `;
 
-        srStatus.textContent = `Luck score ${s} out of 10. ${label}.`;
+        srStatus.textContent = `Luck score ${s} out of 10. ${labelForScore(s)}.`;
 
         revealAllTiles(cell);
         applyPreview(sym.symbol, overlayMap[cell]);
-        setLockedUI(true);
+        lockGrid();
       });
 
       gridEl.appendChild(tile);
@@ -191,5 +149,4 @@
   }
 
   renderGrid();
-  setLockedUI(false);
 })();
