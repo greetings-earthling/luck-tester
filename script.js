@@ -2,13 +2,26 @@
   "use strict";
 
   const ICONS = Array.isArray(window.ICONS) ? window.ICONS : [];
+  const gridEl = document.getElementById("grid");
+
+  function showError(msg) {
+    console.error(msg);
+    if (!gridEl) return;
+    gridEl.style.gridTemplateColumns = "1fr";
+    gridEl.innerHTML = `
+      <div style="border:1px solid #e6e6e6;border-radius:14px;padding:14px;color:#666;background:#fff;">
+        <strong style="color:#111;">Luck Tester error</strong><br>
+        ${msg}
+      </div>
+    `;
+  }
+
   if (!ICONS.length) {
-    console.error("ICONS missing. Make sure icons.js loads before script.js.");
+    showError("Icons did not load. Check that <code>icons.js</code> exists in the repo root and is referenced in <code>index.html</code>.");
     return;
   }
 
-  // --------- DOM ----------
-  const gridEl = document.getElementById("grid");
+  // DOM
   const statusPill = document.getElementById("statusPill");
   const lockNote = document.getElementById("lockNote");
   const resultTitle = document.getElementById("resultTitle");
@@ -19,7 +32,7 @@
   const previewIcon = document.getElementById("previewIcon");
   const srStatus = document.getElementById("srStatus");
 
-  // --------- Random ----------
+  // Random
   function hashString(str) {
     let h = 2166136261 >>> 0;
     for (let i = 0; i < str.length; i++) {
@@ -40,7 +53,7 @@
 
   const rng = mulberry32(hashString(`${Date.now()}|${Math.random()}|luck`));
 
-  // --------- Grid sizing ----------
+  // Grid sizing
   const CELL_COUNT = ICONS.length;
   const COLS = (CELL_COUNT === 21) ? 7 : 8;
   const ROWS = Math.ceil(CELL_COUNT / COLS);
@@ -74,14 +87,14 @@
       .filter(x => x >= 0 && x < CELL_COUNT);
   }
 
-  // --------- Shuffle icon placement ----------
+  // Shuffle icon placement
   const iconOrder = Array.from({ length: CELL_COUNT }, (_, i) => i);
   for (let i = iconOrder.length - 1; i > 0; i--) {
     const j = Math.floor(rng() * (i + 1));
     [iconOrder[i], iconOrder[j]] = [iconOrder[j], iconOrder[i]];
   }
 
-  // --------- Choose lucky/unlucky ----------
+  // Lucky and unlucky
   const luckyCell = Math.floor(rng() * CELL_COUNT);
 
   const dists = Array.from({ length: CELL_COUNT }, (_, i) => ({ i, d: manhattan(i, luckyCell) }));
@@ -89,7 +102,7 @@
   const farthest = dists.filter(x => x.d === maxD).map(x => x.i);
   const unluckyCell = farthest[Math.floor(rng() * farthest.length)];
 
-  // --------- Scores & overlays ----------
+  // Score + overlay maps
   const score = new Array(CELL_COUNT).fill(5);
   const overlay = new Array(CELL_COUNT).fill("");
   const prio = new Array(CELL_COUNT).fill(0);
@@ -103,12 +116,10 @@
     }
   }
 
-  // Unlucky first (lower priority)
   setCell(unluckyCell, 0, "o-r0", 2);
   ortho(unluckyCell).forEach(i => setCell(i, 3, "o-r3", 1));
   diag(unluckyCell).forEach(i => setCell(i, 4, "o-r4", 1));
 
-  // Lucky overrides (higher priority)
   setCell(luckyCell, 10, "o-g10", 4);
   ortho(luckyCell).forEach(i => setCell(i, 8, "o-g8", 3));
   diag(luckyCell).forEach(i => setCell(i, 6, "o-g6", 3));
@@ -135,14 +146,12 @@
     return "Neutral.";
   }
 
-  // --------- UI ----------
   let locked = false;
 
   function setLockedUI(isLocked) {
     locked = isLocked;
     statusPill.textContent = isLocked ? "Status: revealed" : "Status: ready";
     lockNote.textContent = isLocked ? "Refresh to try again." : "Pick one icon.";
-
     gridEl.querySelectorAll(".tile").forEach(t => {
       if (isLocked) t.setAttribute("disabled", "true");
       else t.removeAttribute("disabled");
@@ -156,24 +165,18 @@
   }
 
   function revealAll(chosenCell) {
-    const tiles = gridEl.querySelectorAll(".tile");
-    tiles.forEach((tile, i) => {
+    gridEl.querySelectorAll(".tile").forEach((tile, i) => {
       tile.classList.add("revealed");
-
       const o = tile.querySelector(".overlay");
       if (o) o.className = `overlay ${overlay[i] || ""}`;
-
-      tile.classList.remove("selectedRing");
-      if (i === chosenCell) tile.classList.add("selectedRing");
+      tile.classList.toggle("selectedRing", i === chosenCell);
     });
   }
 
   function renderGrid() {
     gridEl.innerHTML = "";
-
     for (let cell = 0; cell < CELL_COUNT; cell++) {
       const icon = ICONS[iconOrder[cell]];
-
       const tile = document.createElement("button");
       tile.type = "button";
       tile.className = "tile";
@@ -200,13 +203,6 @@
         revealAll(cell);
         applyPreview(icon.svg, overlay[cell]);
         setLockedUI(true);
-      });
-
-      tile.addEventListener("keydown", (e) => {
-        if (e.key === "Enter" || e.key === " ") {
-          e.preventDefault();
-          tile.click();
-        }
       });
 
       gridEl.appendChild(tile);
