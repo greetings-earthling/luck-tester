@@ -5,10 +5,36 @@
   --border:#e6e6e6;
 
   /* Stronger green contrast */
-  --g10: rgba(10,122,47,0.55); /* bullseye */
-  --g8:  rgba(10,122,47,0.34); /* ring 1 */
-  --g6:  rgba(10,122,47,0.22); /* ring 2 */
-  --g4:  rgba(10,122,47,0.14); /* ring 3 */
+  --g10: rgba(10,122,47,0.62); /* bullseye, stronger */
+  --g8:  rgba(10,122,47,0.36);
+  --g6:  rgba(10,122,47,0.22);
+  --g4:  rgba(10,122,47,0.14);
+}
+
+/* Bullseye sparkle marker (only appears after reveal on the lucky tile) */
+.bullseye::before{
+  content: "✨";
+  position: absolute;
+  top: 6px;
+  right: 6px;
+  font-size: 14px;
+  line-height: 1;
+  z-index: 3;
+  filter: drop-shadow(0 1px 1px rgba(0,0,0,0.15));
+}
+
+/* Make sure marker stays visible above overlay */
+.bullseye .overlay{
+  z-index: 1;
+}
+.symbol{
+  z-index: 2;
+  position: relative;
+}
+
+/* Optional: on mobile, bump symbol size a touch */
+@media (max-width: 640px){
+  .symbol{ font-size: 21px; }
 }
 
 html,body{
