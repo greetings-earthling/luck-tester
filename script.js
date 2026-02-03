@@ -1,27 +1,14 @@
 (function () {
   "use strict";
 
-  const ICONS = Array.isArray(window.ICONS) ? window.ICONS : [];
-  const gridEl = document.getElementById("grid");
-
-  function showError(msg) {
-    console.error(msg);
-    if (!gridEl) return;
-    gridEl.style.gridTemplateColumns = "1fr";
-    gridEl.innerHTML = `
-      <div style="border:1px solid #e6e6e6;border-radius:14px;padding:14px;color:#666;background:#fff;">
-        <strong style="color:#111;">Luck Tester error</strong><br>
-        ${msg}
-      </div>
-    `;
-  }
-
-  if (!ICONS.length) {
-    showError("Icons did not load. Check that <code>icons.js</code> exists in the repo root and is referenced in <code>index.html</code>.");
+  const SYMBOLS = Array.isArray(window.SYMBOLS) ? window.SYMBOLS : [];
+  if (!SYMBOLS.length) {
+    console.error("SYMBOLS missing. Make sure icons.js loads before script.js.");
     return;
   }
 
   // DOM
+  const gridEl = document.getElementById("grid");
   const statusPill = document.getElementById("statusPill");
   const lockNote = document.getElementById("lockNote");
   const resultTitle = document.getElementById("resultTitle");
@@ -51,12 +38,13 @@
     };
   }
 
+  // New roll on every refresh
   const rng = mulberry32(hashString(`${Date.now()}|${Math.random()}|luck`));
 
-  // Grid sizing
-  const CELL_COUNT = ICONS.length;
-  const COLS = (CELL_COUNT === 21) ? 7 : 8;
-  const ROWS = Math.ceil(CELL_COUNT / COLS);
+  // Grid sizing: 36 symbols
+  const CELL_COUNT = SYMBOLS.length; // should be 36
+  const COLS = 6;
+  const ROWS = 6;
 
   gridEl.style.gridTemplateColumns = `repeat(${COLS}, minmax(0, 1fr))`;
 
@@ -69,124 +57,117 @@
     return Math.abs(A.r - B.r) + Math.abs(A.c - B.c);
   }
 
-  function ortho(i) {
-    const C = rc(i);
+  function orthogonalNeighbors(centerIdx) {
+    const C = rc(centerIdx);
     const coords = [[C.r - 1, C.c], [C.r + 1, C.c], [C.r, C.c - 1], [C.r, C.c + 1]];
-    return coords
-      .filter(([r, c]) => inBounds(r, c))
-      .map(([r, c]) => idxOf(r, c))
-      .filter(x => x >= 0 && x < CELL_COUNT);
+    return coords.filter(([r, c]) => inBounds(r, c)).map(([r, c]) => idxOf(r, c));
   }
 
-  function diag(i) {
-    const C = rc(i);
+  function diagonalNeighbors(centerIdx) {
+    const C = rc(centerIdx);
     const coords = [[C.r - 1, C.c - 1], [C.r - 1, C.c + 1], [C.r + 1, C.c - 1], [C.r + 1, C.c + 1]];
-    return coords
-      .filter(([r, c]) => inBounds(r, c))
-      .map(([r, c]) => idxOf(r, c))
-      .filter(x => x >= 0 && x < CELL_COUNT);
+    return coords.filter(([r, c]) => inBounds(r, c)).map(([r, c]) => idxOf(r, c));
   }
 
-  // Shuffle icon placement
-  const iconOrder = Array.from({ length: CELL_COUNT }, (_, i) => i);
-  for (let i = iconOrder.length - 1; i > 0; i--) {
-    const j = Math.floor(rng() * (i + 1));
-    [iconOrder[i], iconOrder[j]] = [iconOrder[j], iconOrder[i]];
-  }
-
-  // Lucky and unlucky
+  // Lucky/unlucky selection (random cells)
   const luckyCell = Math.floor(rng() * CELL_COUNT);
 
-  const dists = Array.from({ length: CELL_COUNT }, (_, i) => ({ i, d: manhattan(i, luckyCell) }));
-  const maxD = Math.max(...dists.map(x => x.d));
-  const farthest = dists.filter(x => x.d === maxD).map(x => x.i);
+  const distances = Array.from({ length: CELL_COUNT }, (_, i) => ({ i, d: manhattan(i, luckyCell) }));
+  const maxD = Math.max(...distances.map(x => x.d));
+  const farthest = distances.filter(x => x.d === maxD).map(x => x.i);
   const unluckyCell = farthest[Math.floor(rng() * farthest.length)];
 
   // Score + overlay maps
-  const score = new Array(CELL_COUNT).fill(5);
-  const overlay = new Array(CELL_COUNT).fill("");
+  const scoreMap = new Array(CELL_COUNT).fill(5);
+  const overlayMap = new Array(CELL_COUNT).fill("");
   const prio = new Array(CELL_COUNT).fill(0);
 
-  function setCell(i, s, o, p) {
-    if (i < 0 || i >= CELL_COUNT) return;
-    if (p >= prio[i]) {
-      prio[i] = p;
-      score[i] = s;
-      overlay[i] = o;
+  function setCell(idx, score, overlayClass, priority) {
+    if (priority >= prio[idx]) {
+      prio[idx] = priority;
+      scoreMap[idx] = score;
+      overlayMap[idx] = overlayClass;
     }
   }
 
+  // Unlucky zones first (lower priority)
   setCell(unluckyCell, 0, "o-r0", 2);
-  ortho(unluckyCell).forEach(i => setCell(i, 3, "o-r3", 1));
-  diag(unluckyCell).forEach(i => setCell(i, 4, "o-r4", 1));
+  orthogonalNeighbors(unluckyCell).forEach(i => setCell(i, 3, "o-r3", 1));
+  diagonalNeighbors(unluckyCell).forEach(i => setCell(i, 4, "o-r4", 1));
 
+  // Lucky zones override (higher priority)
   setCell(luckyCell, 10, "o-g10", 4);
-  ortho(luckyCell).forEach(i => setCell(i, 8, "o-g8", 3));
-  diag(luckyCell).forEach(i => setCell(i, 6, "o-g6", 3));
+  orthogonalNeighbors(luckyCell).forEach(i => setCell(i, 8, "o-g8", 3));
+  diagonalNeighbors(luckyCell).forEach(i => setCell(i, 6, "o-g6", 3));
 
-  function labelForScore(s) {
-    if (s === 10) return "SUPER LUCKY";
-    if (s === 8) return "VERY LUCKY";
-    if (s === 6) return "SLIGHTLY LUCKY";
-    if (s === 5) return "MEH";
-    if (s === 4) return "A BIT OFF";
-    if (s === 3) return "UNLUCKY-ISH";
-    if (s === 0) return "BAD LUCK";
+  // Copy
+  function labelForScore(score) {
+    if (score === 10) return "SUPER LUCKY";
+    if (score === 8) return "VERY LUCKY";
+    if (score === 6) return "SLIGHTLY LUCKY";
+    if (score === 5) return "MEH";
+    if (score === 4) return "A BIT OFF";
+    if (score === 3) return "UNLUCKY-ISH";
+    if (score === 0) return "BAD LUCK";
     return "MEH";
   }
 
-  function messageForScore(s) {
-    if (s === 10) return "Clean hit. Take the win.";
-    if (s === 8) return "Pretty good odds for a nonsense machine.";
-    if (s === 6) return "A small tailwind. Nothing dramatic.";
-    if (s === 5) return "Neutral. You are floating normally.";
-    if (s === 4) return "A little friction. Nothing personal.";
-    if (s === 3) return "Today may require patience and snacks.";
-    if (s === 0) return "Proceed carefully. Keep beverages away from keyboards.";
+  function messageForScore(score) {
+    if (score === 10) return "Lucky, lucky!";
+    if (score === 8) return "Pretty good odds for a nonsense machine.";
+    if (score === 6) return "A small tailwind. Nothing dramatic.";
+    if (score === 5) return "Neutral. You are floating normally.";
+    if (score === 4) return "A little friction. Nothing personal.";
+    if (score === 3) return "Today may require patience and snacks.";
+    if (score === 0) return "Proceed carefully. Keep beverages away from keyboards.";
     return "Neutral.";
   }
 
+  // UI
   let locked = false;
 
   function setLockedUI(isLocked) {
     locked = isLocked;
     statusPill.textContent = isLocked ? "Status: revealed" : "Status: ready";
-    lockNote.textContent = isLocked ? "Refresh to try again." : "Pick one icon.";
+    lockNote.textContent = isLocked ? "Refresh to try again." : "Pick one symbol.";
     gridEl.querySelectorAll(".tile").forEach(t => {
       if (isLocked) t.setAttribute("disabled", "true");
       else t.removeAttribute("disabled");
     });
   }
 
-  function applyPreview(iconSvg, overlayClass) {
-    previewIcon.innerHTML = iconSvg;
+  function applyPreview(symbolText, overlayClass) {
+    previewIcon.textContent = symbolText;
     previewOverlay.className = `previewOverlay ${overlayClass || ""}`;
     previewTile.classList.add("selectedRing");
   }
 
-  function revealAll(chosenCell) {
-    gridEl.querySelectorAll(".tile").forEach((tile, i) => {
+  function revealAllTiles(chosenCell) {
+    const tiles = gridEl.querySelectorAll(".tile");
+    tiles.forEach((tile, i) => {
       tile.classList.add("revealed");
-      const o = tile.querySelector(".overlay");
-      if (o) o.className = `overlay ${overlay[i] || ""}`;
+      const overlay = tile.querySelector(".overlay");
+      overlay.className = `overlay ${overlayMap[i] || ""}`;
+
       tile.classList.toggle("selectedRing", i === chosenCell);
     });
   }
 
   function renderGrid() {
     gridEl.innerHTML = "";
+
     for (let cell = 0; cell < CELL_COUNT; cell++) {
-      const icon = ICONS[iconOrder[cell]];
+      const sym = SYMBOLS[cell]; // fixed order
       const tile = document.createElement("button");
       tile.type = "button";
-      tile.className = "tile";
-      tile.setAttribute("aria-label", `Pick ${icon.name}`);
-      tile.innerHTML = `${icon.svg}<div class="overlay"></div>`;
+      tile.className = "tile tileText";
+      tile.setAttribute("aria-label", `Pick ${sym.name}`);
+      tile.innerHTML = `<span class="symbol">${sym.symbol}</span><div class="overlay"></div>`;
 
       tile.addEventListener("click", () => {
         if (locked) return;
 
-        const s = score[cell];
+        const s = scoreMap[cell];
         const label = labelForScore(s);
 
         resultTitle.textContent = `${s}/10: ${label}`;
@@ -194,14 +175,14 @@
 
         badgeRow.style.display = "flex";
         badgeRow.innerHTML = `
-          <span class="badge">You picked: <strong>${icon.name}</strong></span>
+          <span class="badge">You picked: <strong>${sym.symbol}</strong></span>
           <span class="badge">Luck score: <strong>${s}/10</strong></span>
         `;
 
         srStatus.textContent = `Luck score ${s} out of 10. ${label}.`;
 
-        revealAll(cell);
-        applyPreview(icon.svg, overlay[cell]);
+        revealAllTiles(cell);
+        applyPreview(sym.symbol, overlayMap[cell]);
         setLockedUI(true);
       });
 
