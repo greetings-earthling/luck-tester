@@ -197,16 +197,10 @@ h1 {
 }
 
 @media (max-width: 640px) {
-  .previewTile {
-    width: 86px;
-    height: 70px;
-  }
+  .previewTile { width: 86px; height: 70px; }
 }
 
-.previewTile .icon {
-  width: 28px;
-  height: 28px;
-}
+.previewTile .icon { width: 28px; height: 28px; }
 
 .previewOverlay {
   position: absolute;
@@ -249,35 +243,11 @@ h1 {
   color: var(--muted);
 }
 
-.btnRow {
-  display: flex;
-  justify-content: space-between;
-  gap: 10px;
-  align-items: center;
-  flex-wrap: wrap;
-}
-
-button.reset {
-  appearance: none;
-  border: 1px solid var(--border);
-  background: #fff;
-  color: var(--muted);
-  border-radius: 999px;
-  padding: 8px 10px;
-  font-size: 12px;
-  cursor: pointer;
-}
-
-button.reset:hover {
-  border-color: #d8d8d8;
-}
-
 /* Reduced motion */
 @media (prefers-reduced-motion: reduce) {
   .tile,
-  .overlay {
-    transition: none;
-  }
+  .overlay { transition: none; }
+
   .tile:hover {
     transform: none;
     box-shadow: none;
