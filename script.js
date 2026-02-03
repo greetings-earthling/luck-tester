@@ -21,16 +21,11 @@
     return;
   }
 
-  // Use first 100. If more exist, ignore extras. If fewer, we still render what we have.
   const CELL_COUNT = Math.min(100, RAW.length);
   const SYMBOLS = RAW.slice(0, CELL_COUNT);
 
-  // Fixed 10x10 board assumptions only hold if we have 100.
-  // If fewer symbols exist, we still render a grid, but luck math uses the active cell count.
   const COLS = 10;
-  const ROWS = Math.ceil(CELL_COUNT / COLS);
 
-  // DOM
   const resultTitle = document.getElementById("resultTitle");
   const resultText = document.getElementById("resultText");
   const badgeRow = document.getElementById("badgeRow");
@@ -39,7 +34,6 @@
   const previewIcon = document.getElementById("previewIcon");
   const srStatus = document.getElementById("srStatus");
 
-  // Random
   function hashString(str) {
     let h = 2166136261 >>> 0;
     for (let i = 0; i < str.length; i++) {
@@ -67,10 +61,8 @@
     return Math.max(Math.abs(A.r - B.r), Math.abs(A.c - B.c));
   }
 
-  // Pick lucky cell uniformly over whatever we have
   const luckyCell = Math.floor(rng() * CELL_COUNT);
 
-  // 4-layer ripple
   const scoreMap = new Array(CELL_COUNT).fill(5);
   const overlayMap = new Array(CELL_COUNT).fill("");
 
@@ -130,7 +122,6 @@
 
     for (let cell = 0; cell < CELL_COUNT; cell++) {
       const item = SYMBOLS[cell];
-
       if (!item || typeof item.symbol !== "string") {
         showError("A symbol entry is malformed. Each item must be { name, symbol }.");
         return;
