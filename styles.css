@@ -22,10 +22,23 @@ html,body{
 }
 
 .wrap{
-  width: 80vw;
-  max-width: 1100px;
+  width: min(72vw, 980px);
   margin: 0 auto;
   padding: 12px 12px 22px;
+}
+
+@media (min-width: 900px){
+  .gridWrap{
+    padding: 8px;
+  }
+
+  .grid{
+    gap: 8px;
+  }
+
+  .tile{
+    border-radius: 12px;
+  }
 }
 
 header{
