@@ -1,9 +1,25 @@
 (function () {
   "use strict";
 
-  // ---------------------------
-  // Utilities
-  // ---------------------------
+  const ICONS = Array.isArray(window.ICONS) ? window.ICONS : [];
+  if (!ICONS.length) {
+    console.error("ICONS missing. Make sure icons.js loads before script.js.");
+    return;
+  }
+
+  // --------- DOM ----------
+  const gridEl = document.getElementById("grid");
+  const statusPill = document.getElementById("statusPill");
+  const lockNote = document.getElementById("lockNote");
+  const resultTitle = document.getElementById("resultTitle");
+  const resultText = document.getElementById("resultText");
+  const badgeRow = document.getElementById("badgeRow");
+  const previewTile = document.getElementById("previewTile");
+  const previewOverlay = document.getElementById("previewOverlay");
+  const previewIcon = document.getElementById("previewIcon");
+  const srStatus = document.getElementById("srStatus");
+
+  // --------- Random ----------
   function hashString(str) {
     let h = 2166136261 >>> 0;
     for (let i = 0; i < str.length; i++) {
@@ -22,14 +38,16 @@
     };
   }
 
-  // ---------------------------
-  // Config
-  // ---------------------------
-  const COLS = 8;
-  const ROWS = 3;
-  const CELL_COUNT = COLS * ROWS;
+  const rng = mulberry32(hashString(`${Date.now()}|${Math.random()}|luck`));
 
-  function rc(i) { return { r: Math.floor(i / COLS), c: i % COLS }; }
+  // --------- Grid sizing ----------
+  const CELL_COUNT = ICONS.length;
+  const COLS = (CELL_COUNT === 21) ? 7 : 8;
+  const ROWS = Math.ceil(CELL_COUNT / COLS);
+
+  gridEl.style.gridTemplateColumns = `repeat(${COLS}, minmax(0, 1fr))`;
+
+  function rc(idx) { return { r: Math.floor(idx / COLS), c: idx % COLS }; }
   function idxOf(r, c) { return r * COLS + c; }
   function inBounds(r, c) { return r >= 0 && r < ROWS && c >= 0 && c < COLS; }
 
@@ -40,148 +58,161 @@
 
   function ortho(i) {
     const C = rc(i);
-    return [
-      [C.r-1,C.c],[C.r+1,C.c],[C.r,C.c-1],[C.r,C.c+1]
-    ].filter(([r,c]) => inBounds(r,c)).map(([r,c]) => idxOf(r,c));
+    const coords = [[C.r - 1, C.c], [C.r + 1, C.c], [C.r, C.c - 1], [C.r, C.c + 1]];
+    return coords
+      .filter(([r, c]) => inBounds(r, c))
+      .map(([r, c]) => idxOf(r, c))
+      .filter(x => x >= 0 && x < CELL_COUNT);
   }
 
   function diag(i) {
     const C = rc(i);
-    return [
-      [C.r-1,C.c-1],[C.r-1,C.c+1],[C.r+1,C.c-1],[C.r+1,C.c+1]
-    ].filter(([r,c]) => inBounds(r,c)).map(([r,c]) => idxOf(r,c));
+    const coords = [[C.r - 1, C.c - 1], [C.r - 1, C.c + 1], [C.r + 1, C.c - 1], [C.r + 1, C.c + 1]];
+    return coords
+      .filter(([r, c]) => inBounds(r, c))
+      .map(([r, c]) => idxOf(r, c))
+      .filter(x => x >= 0 && x < CELL_COUNT);
   }
 
-  // ---------------------------
-  // Icons (same set)
-  // ---------------------------
-  const ICONS = window.ICONS || [];
-  // ICONS is already defined globally by your existing file.
-  // If not, keep your current ICON array here unchanged.
+  // --------- Shuffle icon placement ----------
+  const iconOrder = Array.from({ length: CELL_COUNT }, (_, i) => i);
+  for (let i = iconOrder.length - 1; i > 0; i--) {
+    const j = Math.floor(rng() * (i + 1));
+    [iconOrder[i], iconOrder[j]] = [iconOrder[j], iconOrder[i]];
+  }
 
-  // ---------------------------
-  // DOM
-  // ---------------------------
-  const gridEl = document.getElementById("grid");
-  const statusPill = document.getElementById("statusPill");
-  const resetBtn = document.getElementById("resetBtn");
+  // --------- Choose lucky/unlucky ----------
+  const luckyCell = Math.floor(rng() * CELL_COUNT);
 
-  const resultTitle = document.getElementById("resultTitle");
-  const resultText = document.getElementById("resultText");
-  const badgeRow = document.getElementById("badgeRow");
+  const dists = Array.from({ length: CELL_COUNT }, (_, i) => ({ i, d: manhattan(i, luckyCell) }));
+  const maxD = Math.max(...dists.map(x => x.d));
+  const farthest = dists.filter(x => x.d === maxD).map(x => x.i);
+  const unluckyCell = farthest[Math.floor(rng() * farthest.length)];
 
-  const previewTile = document.getElementById("previewTile");
-  const previewOverlay = document.getElementById("previewOverlay");
-  const previewIcon = document.getElementById("previewIcon");
-  const srStatus = document.getElementById("srStatus");
+  // --------- Scores & overlays ----------
+  const score = new Array(CELL_COUNT).fill(5);
+  const overlay = new Array(CELL_COUNT).fill("");
+  const prio = new Array(CELL_COUNT).fill(0);
 
-  let locked = false;
+  function setCell(i, s, o, p) {
+    if (i < 0 || i >= CELL_COUNT) return;
+    if (p >= prio[i]) {
+      prio[i] = p;
+      score[i] = s;
+      overlay[i] = o;
+    }
+  }
 
-  // ---------------------------
-  // Copy
-  // ---------------------------
+  // Unlucky first (lower priority)
+  setCell(unluckyCell, 0, "o-r0", 2);
+  ortho(unluckyCell).forEach(i => setCell(i, 3, "o-r3", 1));
+  diag(unluckyCell).forEach(i => setCell(i, 4, "o-r4", 1));
+
+  // Lucky overrides (higher priority)
+  setCell(luckyCell, 10, "o-g10", 4);
+  ortho(luckyCell).forEach(i => setCell(i, 8, "o-g8", 3));
+  diag(luckyCell).forEach(i => setCell(i, 6, "o-g6", 3));
+
   function labelForScore(s) {
-    if (s === 10) return "SUPER LUCKY DAY";
-    if (s === 8) return "VERY LUCKY DAY";
+    if (s === 10) return "SUPER LUCKY";
+    if (s === 8) return "VERY LUCKY";
     if (s === 6) return "SLIGHTLY LUCKY";
     if (s === 5) return "MEH";
     if (s === 4) return "A BIT OFF";
     if (s === 3) return "UNLUCKY-ISH";
-    if (s === 0) return "BAD LUCK DAY";
+    if (s === 0) return "BAD LUCK";
     return "MEH";
   }
 
   function messageForScore(s) {
-    if (s === 10) return "If you were waiting for a sign, this is technically one.";
-    if (s === 8) return "Things might line up. Or not. But probably.";
-    if (s === 6) return "A slight tailwind. Don’t overthink it.";
-    if (s === 5) return "A day. One of them.";
-    if (s === 4) return "Mild resistance detected.";
-    if (s === 3) return "Proceed with curiosity.";
-    if (s === 0) return "Today is for caution and snacks.";
-    return "Meh.";
+    if (s === 10) return "Clean hit. Take the win.";
+    if (s === 8) return "Pretty good odds for a nonsense machine.";
+    if (s === 6) return "A small tailwind. Nothing dramatic.";
+    if (s === 5) return "Neutral. You are floating normally.";
+    if (s === 4) return "A little friction. Nothing personal.";
+    if (s === 3) return "Today may require patience and snacks.";
+    if (s === 0) return "Proceed carefully. Keep beverages away from keyboards.";
+    return "Neutral.";
   }
 
-  // ---------------------------
-  // Core roll
-  // ---------------------------
-  function rollLuck() {
-    const seed = hashString(Date.now().toString() + Math.random());
-    const rng = mulberry32(seed);
+  // --------- UI ----------
+  let locked = false;
 
-    const iconOrder = Array.from({ length: CELL_COUNT }, (_, i) => i);
-    for (let i = iconOrder.length - 1; i > 0; i--) {
-      const j = Math.floor(rng() * (i + 1));
-      [iconOrder[i], iconOrder[j]] = [iconOrder[j], iconOrder[i]];
-    }
+  function setLockedUI(isLocked) {
+    locked = isLocked;
+    statusPill.textContent = isLocked ? "Status: revealed" : "Status: ready";
+    lockNote.textContent = isLocked ? "Refresh to try again." : "Pick one icon.";
 
-    const lucky = Math.floor(rng() * CELL_COUNT);
-    const dists = Array.from({ length: CELL_COUNT }, (_, i) => ({ i, d: manhattan(i, lucky) }));
-    const maxD = Math.max(...dists.map(x => x.d));
-    const unlucky = dists.filter(x => x.d === maxD)[Math.floor(rng() * dists.length)].i;
-
-    const scores = new Array(CELL_COUNT).fill(5);
-    const overlays = new Array(CELL_COUNT).fill("");
-
-    scores[lucky] = 10;
-    ortho(lucky).forEach(i => scores[i] = 8);
-    diag(lucky).forEach(i => scores[i] = 6);
-
-    scores[unlucky] = 0;
-    ortho(unlucky).forEach(i => scores[i] = Math.min(scores[i], 3));
-    diag(unlucky).forEach(i => scores[i] = Math.min(scores[i], 4));
-
-    return { iconOrder, scores, overlays };
+    gridEl.querySelectorAll(".tile").forEach(t => {
+      if (isLocked) t.setAttribute("disabled", "true");
+      else t.removeAttribute("disabled");
+    });
   }
 
-  let state = rollLuck();
+  function applyPreview(iconSvg, overlayClass) {
+    previewIcon.innerHTML = iconSvg;
+    previewOverlay.className = `previewOverlay ${overlayClass || ""}`;
+    previewTile.classList.add("selectedRing");
+  }
 
-  // ---------------------------
-  // Render
-  // ---------------------------
-  function render() {
+  function revealAll(chosenCell) {
+    const tiles = gridEl.querySelectorAll(".tile");
+    tiles.forEach((tile, i) => {
+      tile.classList.add("revealed");
+
+      const o = tile.querySelector(".overlay");
+      if (o) o.className = `overlay ${overlay[i] || ""}`;
+
+      tile.classList.remove("selectedRing");
+      if (i === chosenCell) tile.classList.add("selectedRing");
+    });
+  }
+
+  function renderGrid() {
     gridEl.innerHTML = "";
-    locked = false;
-    statusPill.textContent = "Status: ready";
 
-    for (let i = 0; i < CELL_COUNT; i++) {
-      const icon = ICONS[state.iconOrder[i]];
-      const btn = document.createElement("button");
-      btn.className = "tile";
-      btn.type = "button";
-      btn.innerHTML = `${icon.svg}<div class="overlay"></div>`;
+    for (let cell = 0; cell < CELL_COUNT; cell++) {
+      const icon = ICONS[iconOrder[cell]];
 
-      btn.onclick = () => {
+      const tile = document.createElement("button");
+      tile.type = "button";
+      tile.className = "tile";
+      tile.setAttribute("aria-label", `Pick ${icon.name}`);
+      tile.innerHTML = `${icon.svg}<div class="overlay"></div>`;
+
+      tile.addEventListener("click", () => {
         if (locked) return;
-        locked = true;
 
-        const score = state.scores[i];
-        resultTitle.textContent = `${score}/10: ${labelForScore(score)}`;
-        resultText.textContent = messageForScore(score);
+        const s = score[cell];
+        const label = labelForScore(s);
+
+        resultTitle.textContent = `${s}/10: ${label}`;
+        resultText.textContent = messageForScore(s);
 
         badgeRow.style.display = "flex";
-        badgeRow.innerHTML = `<span class="badge">${icon.name}</span>`;
+        badgeRow.innerHTML = `
+          <span class="badge">You picked: <strong>${icon.name}</strong></span>
+          <span class="badge">Luck score: <strong>${s}/10</strong></span>
+        `;
 
-        previewIcon.innerHTML = icon.svg;
-        previewTile.classList.add("selectedRing");
+        srStatus.textContent = `Luck score ${s} out of 10. ${label}.`;
 
-        srStatus.textContent = `Luck score ${score} out of ten.`;
-        statusPill.textContent = "Status: result revealed";
-      };
+        revealAll(cell);
+        applyPreview(icon.svg, overlay[cell]);
+        setLockedUI(true);
+      });
 
-      gridEl.appendChild(btn);
+      tile.addEventListener("keydown", (e) => {
+        if (e.key === "Enter" || e.key === " ") {
+          e.preventDefault();
+          tile.click();
+        }
+      });
+
+      gridEl.appendChild(tile);
     }
   }
 
-  resetBtn.onclick = () => {
-    state = rollLuck();
-    resultTitle.textContent = "Pick one.";
-    resultText.textContent = "Then we see what the universe does with it.";
-    badgeRow.style.display = "none";
-    previewIcon.innerHTML = "";
-    previewTile.classList.remove("selectedRing");
-    render();
-  };
-
-  render();
+  renderGrid();
+  setLockedUI(false);
 })();
