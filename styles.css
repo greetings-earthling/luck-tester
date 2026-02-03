@@ -9,7 +9,7 @@
   --g6:  rgba(10,122,47,0.22);
   --g4:  rgba(10,122,47,0.14);
 
-  --bullRing: #0a7a2f;
+  --bullRing:#0a7a2f;
 }
 
 html,body{
@@ -21,7 +21,7 @@ html,body{
 }
 
 .wrap{
-  max-width: 980px;
+  max-width: 960px;
   margin: 0 auto;
   padding: 12px 12px 20px;
 }
@@ -43,9 +43,9 @@ h1{
   color:var(--muted);
 }
 
-/* HARD CONSTRAINT: board never exceeds this */
+/* Board container: THIS controls overall size */
 .gridWrap{
-  max-width: 720px;
+  max-width: 640px;
   margin: 0 auto;
   padding: 8px;
   border: 1px solid var(--border);
@@ -55,8 +55,8 @@ h1{
 
 .grid{
   display:grid;
-  grid-template-columns: repeat(10, 1fr);
-  gap: 7px;
+  grid-template-columns: repeat(8, 1fr);
+  gap: 8px;
 }
 
 /* Square tiles */
@@ -79,15 +79,11 @@ h1{
 .symbol{
   position:relative;
   z-index:2;
-  font-size: 20px;
+  font-size: clamp(20px, 3vw, 28px);
   line-height:1;
 }
 
-@media (max-width: 640px){
-  .symbol{ font-size: 22px; }
-}
-
-/* Overlay sits BEHIND symbol */
+/* Overlay behind symbol */
 .overlay{
   position:absolute;
   inset:0;
@@ -102,7 +98,7 @@ h1{
 .o-g6 { background:var(--g6); }
 .o-g4 { background:var(--g4); }
 
-/* Selection ring */
+/* Selected ring */
 .selectedRing::after{
   content:"";
   position:absolute;
