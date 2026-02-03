@@ -4,20 +4,18 @@
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width,initial-scale=1" />
   <title>Luck Test</title>
-  <meta name="description" content="Pick one symbol. One click per day. Your luck, measured lightly." />
-
+  <meta name="description" content="Pick one symbol. Your luck, measured lightly." />
   <link rel="stylesheet" href="styles.css" />
 </head>
 
 <body>
   <div class="wrap">
     <header>
-      <h1>Choose an icon below to find out your luck score for the day!</h1>
-      <div class="sub">One click per day. No do-overs. Not science.</div>
+      <h1>Choose an icon to test your luck</h1>
+      <div class="sub">Not science. Just vibes.</div>
 
       <div class="row">
-        <div class="pill" id="todayPill">Today:</div>
-        <div class="pill" id="lockPill">Status:</div>
+        <div class="pill" id="statusPill">Status: ready</div>
       </div>
     </header>
 
@@ -26,28 +24,23 @@
     <div class="panel" aria-live="polite">
       <div class="result">
         <div class="resultRow">
-          <div class="previewTile" id="previewTile" aria-label="Your selected tile preview">
+          <div class="previewTile" id="previewTile">
             <div class="previewOverlay" id="previewOverlay"></div>
             <div id="previewIcon"></div>
           </div>
 
           <div>
             <h2 id="resultTitle">Pick one.</h2>
-            <p id="resultText">Then we see what the universe thinks of you today.</p>
+            <p id="resultText">Then we see what the universe does with it.</p>
             <div class="badgeRow" id="badgeRow" style="display:none;"></div>
-
-            <!-- Screen reader status, hidden visually -->
-            <div class="srOnly" id="srStatus" role="status" aria-live="polite"></div>
+            <div class="srOnly" id="srStatus" role="status"></div>
           </div>
         </div>
       </div>
 
       <div class="btnRow">
-        <div class="tiny" id="lockNote"></div>
-
-        <!-- Hidden by default. Enable with ?dev=1 -->
-        <button class="reset" id="resetBtn" type="button" title="Clears today's lock on this device.">
-          Dev reset
+        <button class="reset" id="resetBtn" type="button">
+          Try again
         </button>
       </div>
     </div>
