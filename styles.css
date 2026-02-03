@@ -65,6 +65,21 @@ h1 {
   background: #fff;
 }
 
+.tileText .symbol {
+  font-weight: 800;
+  font-size: 22px;
+  line-height: 1;
+  letter-spacing: 0.02em;
+  font-family: ui-sans-serif, system-ui, -apple-system, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+}
+
+#previewIcon {
+  font-weight: 800;
+  font-size: 20px;
+  line-height: 1;
+  letter-spacing: 0.02em;
+}
+
 /* Grid: 8 columns desktop, 3 columns mobile */
 .grid {
   display: grid;
