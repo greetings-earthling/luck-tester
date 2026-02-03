@@ -8,15 +8,14 @@
   const previewIcon = document.getElementById("previewIcon");
   const previewOverlay = document.getElementById("previewOverlay");
 
-  const symbols = Array.isArray(window.SYMBOLS) ? window.SYMBOLS.slice(0,100) : [];
+  const symbols = Array.isArray(window.SYMBOLS)
+    ? window.SYMBOLS.slice(0,64)
+    : [];
+
   if (!symbols.length) return;
 
-  const COLS = 10;
+  const COLS = 8;
   const CELL_COUNT = symbols.length;
-
-  function rand(){
-    return Math.random();
-  }
 
   function rc(i){
     return { r: Math.floor(i / COLS), c: i % COLS };
@@ -27,7 +26,7 @@
     return Math.max(Math.abs(A.r-B.r), Math.abs(A.c-B.c));
   }
 
-  const lucky = Math.floor(rand() * CELL_COUNT);
+  const lucky = Math.floor(Math.random() * CELL_COUNT);
 
   const score = new Array(CELL_COUNT).fill(5);
   const overlay = new Array(CELL_COUNT).fill("");
