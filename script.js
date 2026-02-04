@@ -114,7 +114,7 @@
     previewOverlay.className = "previewOverlay on " + (overlayClass || "");
   }
 
- function revealBoard() {
+function revealBoard() {
   gridEl.classList.add("locked");
 
   const all = gridEl.querySelectorAll(".tile");
@@ -122,17 +122,10 @@
     tile.classList.add("revealed");
     tile.setAttribute("disabled", "true");
 
-    if (i === chosenIndex) {
-      tile.classList.add("chosen");
-      return;
-    }
+    tile.classList.remove("chosen", "bullseye", "pop");
 
-    if (i === luckyIndex) {
-      tile.classList.add("bullseye");
-      return;
-    }
-
-    tile.classList.add("faded");
+    if (i === chosenIndex) tile.classList.add("chosen");
+    if (i === luckyIndex) tile.classList.add("bullseye");
   });
 
   setTimeout(() => {
