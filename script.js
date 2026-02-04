@@ -1,102 +1,225 @@
 (function () {
   "use strict";
 
-  const grid = document.getElementById("grid");
+  const gridEl = document.getElementById("grid");
   const resultTitle = document.getElementById("resultTitle");
   const resultText = document.getElementById("resultText");
   const badgeRow = document.getElementById("badgeRow");
   const previewIcon = document.getElementById("previewIcon");
   const previewOverlay = document.getElementById("previewOverlay");
+  const shareBtn = document.getElementById("shareBtn");
+  const shareHint = document.getElementById("shareHint");
 
-  if (!grid) return;
+  if (!gridEl) return;
 
-  const symbols = Array.isArray(window.SYMBOLS) ? window.SYMBOLS.slice(0, 64) : [];
-  if (!symbols.length) return;
+  const base = Array.isArray(window.MOODS) ? window.MOODS : [];
+  if (!base.length) return;
+
+  // Build 64 tiles: 16 moods repeated 4x
+  const tiles = [];
+  for (let r = 0; r < 4; r++) tiles.push(...base);
+
+  // Shuffle tile order each load for freshness
+  for (let i = tiles.length - 1; i > 0; i--) {
+    const j = Math.floor(Math.random() * (i + 1));
+    [tiles[i], tiles[j]] = [tiles[j], tiles[i]];
+  }
 
   const COLS = 8;
-  const CELL_COUNT = symbols.length;
+  const COUNT = tiles.length;
 
   function rc(i) {
     return { r: Math.floor(i / COLS), c: i % COLS };
   }
 
-  function dist(a, b) {
+  function distChebyshev(a, b) {
     const A = rc(a), B = rc(b);
     return Math.max(Math.abs(A.r - B.r), Math.abs(A.c - B.c));
   }
 
-  // Fresh roll on each page load
-  const lucky = Math.floor(Math.random() * CELL_COUNT);
-
-  const score = new Array(CELL_COUNT).fill(5);
-  const overlay = new Array(CELL_COUNT).fill("");
-
-  for (let i = 0; i < CELL_COUNT; i++) {
-    const d = dist(i, lucky);
-    if (d === 0) { score[i] = 10; overlay[i] = "o-p10"; }
-    else if (d === 1) { score[i] = 8; overlay[i] = "o-p8"; }
-    else if (d === 2) { score[i] = 6; overlay[i] = "o-p6"; }
-    else if (d === 3) { score[i] = 4; overlay[i] = "o-p4"; }
+  // Luck tiers by distance from bullseye
+  function tierByDistance(d) {
+    if (d === 0) return { key: "mega",  title: "MEGA LUCKY DAY!" };
+    if (d === 1) return { key: "very",  title: "VERY LUCKY DAY!" };
+    if (d === 2) return { key: "side",  title: "LUCK IS ON YOUR SIDE TODAY!" };
+    if (d === 3) return { key: "fric",  title: "LOW FRICTION DAY" };
+    return         { key: "diy",   title: "MAKE YOUR OWN LUCK KINDA DAY" };
   }
 
-  function label(s) {
-    if (s === 10) return "BULLSEYE";
-    if (s === 8) return "SO CLOSE";
-    if (s === 6) return "GOOD VIBES";
-    if (s === 4) return "A LITTLE LUCK";
-    return "NOT IN THE CARDS";
+  function overlayClassByDistance(d) {
+    if (d === 0) return "o-p10";
+    if (d === 1) return "o-p8";
+    if (d === 2) return "o-p6";
+    if (d === 3) return "o-p4";
+    return "";
   }
 
-  function message(s) {
-    if (s === 10) return "Luck is on your side today.";
-    if (s === 8) return "Right on the edge. Something might click.";
-    if (s === 6) return "A decent tailwind. Take one small swing.";
-    if (s === 4) return "Not nothing. Stay open to timing.";
-    return "It’s not in the cards today. But you never know.";
+  // Mood phrasing used inside the result message
+  const moodPhrases = {
+    happy:      "that happy mood",
+    meh:        "that meh mood",
+    rage:       "that rage mood",
+    frustrated: "that frustrated mood",
+    anxious:    "that anxious mood",
+    tired:      "that tired mood",
+    hopeful:    "that hopeful mood",
+    confident:  "that confident mood",
+    overwhelm:  "that overwhelmed mood",
+    nervous:    "that nervous mood",
+    excited:    "that excited mood",
+    nauseous:   "that nauseous mood",
+    cat:        "that playful mood",
+    unsure:     "that unsure mood",
+    goofy:      "that goofy mood",
+    devilish:   "that devilish mood"
+  };
+
+  // Tier-based hopeful messaging (always good vibes)
+  function messageFor(tierKey, moodKey) {
+    const m = moodPhrases[moodKey] || "that mood";
+
+    if (tierKey === "mega") {
+      return `Well this is interesting. Looks like you will have a bit of good luck today to go with ${m}. Use it while it is here.`;
+    }
+    if (tierKey === "very") {
+      return `Nice. Things may line up more easily today to go with ${m}. Keep it light and take the win.`;
+    }
+    if (tierKey === "side") {
+      return `Luck is showing up in small ways today to go with ${m}. Stay open.`;
+    }
+    if (tierKey === "fric") {
+      return `This feels like a low friction day to go with ${m}. Nothing dramatic. Just a smoother ride.`;
+    }
+    return `Today is one of those make your own luck kinda days to go with ${m}. I would avoid anything that requires good luck. Try again tomorrow.`;
+  }
+
+  // Pick bullseye (fresh each load)
+  const luckyIndex = Math.floor(Math.random() * COUNT);
+
+  // Precompute overlays per cell
+  const overlays = new Array(COUNT).fill("");
+  const tiers = new Array(COUNT).fill(null);
+
+  for (let i = 0; i < COUNT; i++) {
+    const d = distChebyshev(i, luckyIndex);
+    overlays[i] = overlayClassByDistance(d);
+    tiers[i] = tierByDistance(d);
   }
 
   let locked = false;
+  let chosenIndex = -1;
 
-  function reveal(chosen) {
-    document.querySelectorAll(".tile").forEach((t, i) => {
-      t.classList.add("revealed");
-      const o = t.querySelector(".overlay");
-      if (o) o.className = `overlay ${overlay[i]}`;
-
-      t.classList.toggle("selectedRing", i === chosen);
-      t.classList.toggle("bullseye", i === lucky);
-      t.setAttribute("disabled", "true");
-    });
+  function setPreview(symbol, overlayClass) {
+    previewIcon.textContent = symbol;
+    previewOverlay.className = "previewOverlay on " + (overlayClass || "");
   }
 
-  symbols.forEach((item, i) => {
+  function revealBoard() {
+    gridEl.classList.add("locked");
+
+    const all = gridEl.querySelectorAll(".tile");
+    all.forEach((tile, i) => {
+      tile.classList.add("revealed");
+      tile.setAttribute("disabled", "true");
+
+      if (i !== chosenIndex && i !== luckyIndex) {
+        tile.classList.add("faded");
+      }
+
+      if (i === chosenIndex) tile.classList.add("chosen");
+      if (i === luckyIndex) tile.classList.add("bullseye");
+    });
+
+    // Subtle bullseye pop after a tiny beat
+    setTimeout(() => {
+      const bull = all[luckyIndex];
+      if (bull) bull.classList.add("pop");
+    }, 220);
+  }
+
+  function buildShareText() {
+    const mood = tiles[chosenIndex];
+    const tier = tiers[chosenIndex];
+    const url = window.location.href;
+
+    return [
+      `The Official Luck Meter says I am having a ${tier.title} ${mood.symbol}`,
+      `Feeling a little more hopeful already.`,
+      `Wanna check your luck? ${url}`
+    ].join("\n");
+  }
+
+  async function copyToClipboard(text) {
+    if (navigator.clipboard && navigator.clipboard.writeText) {
+      await navigator.clipboard.writeText(text);
+      return true;
+    }
+
+    // Fallback
+    const ta = document.createElement("textarea");
+    ta.value = text;
+    ta.setAttribute("readonly", "");
+    ta.style.position = "fixed";
+    ta.style.left = "-9999px";
+    document.body.appendChild(ta);
+    ta.select();
+    const ok = document.execCommand("copy");
+    document.body.removeChild(ta);
+    return ok;
+  }
+
+  shareBtn.addEventListener("click", async () => {
+    if (!locked || chosenIndex < 0) return;
+
+    const text = buildShareText();
+    try {
+      const ok = await copyToClipboard(text);
+      if (ok) {
+        shareHint.textContent = "Your luck is copied! Paste it into any post and spread the luck ✨";
+      } else {
+        shareHint.textContent = "Could not auto-copy. Copy your result text manually.";
+      }
+    } catch {
+      shareHint.textContent = "Could not auto-copy. Copy your result text manually.";
+    }
+  });
+
+  // Render grid
+  gridEl.innerHTML = "";
+  tiles.forEach((mood, i) => {
     const tile = document.createElement("button");
     tile.type = "button";
     tile.className = "tile";
-    tile.setAttribute("aria-label", `Pick ${item.name || "symbol"}`);
-
+    tile.setAttribute("aria-label", `Choose ${mood.name}`);
     tile.innerHTML = `
-      <span class="symbol" aria-hidden="true">${item.symbol}</span>
-      <div class="overlay"></div>
+      <span class="symbol" aria-hidden="true">${mood.symbol}</span>
+      <div class="overlay ${overlays[i]}"></div>
     `;
 
     tile.addEventListener("click", () => {
       if (locked) return;
       locked = true;
+      chosenIndex = i;
 
-      const s = score[i];
-      resultTitle.textContent = `${s}/10: ${label(s)}`;
-      resultText.textContent = message(s);
+      const tier = tiers[i];
+
+      resultTitle.textContent = tier.title;
+      resultText.textContent = messageFor(tier.key, mood.key);
 
       badgeRow.style.display = "flex";
-      badgeRow.innerHTML = `<span class="badge">You picked ${item.symbol}</span>`;
+      badgeRow.innerHTML = `
+        <span class="badge">Mood: <strong>${mood.name}</strong> ${mood.symbol}</span>
+        <span class="badge">Reading: <strong>${tier.title}</strong></span>
+      `;
 
-      previewIcon.textContent = item.symbol;
-      previewOverlay.className = `previewOverlay ${overlay[i]}`;
+      setPreview(mood.symbol, overlays[i]);
 
-      reveal(i);
+      shareBtn.disabled = false;
+      shareHint.textContent = "";
+
+      revealBoard();
     });
 
-    grid.appendChild(tile);
+    gridEl.appendChild(tile);
   });
 })();
