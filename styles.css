@@ -149,23 +149,20 @@ h1{
 .o-p6 { background: var(--p6); }
 .o-p4 { background: var(--p4); }
 
-/* Post-pick behavior
-   IMPORTANT: Do NOT fade the whole tile. Only fade emoji and overlay.
-*/
+/* Post-pick behavior: fade everything by default, then restore chosen + bullseye */
 .grid.locked .tile{
   cursor: default;
 }
 
-/* Fade most tiles */
-.grid.locked .tile.faded .symbol{
+.grid.locked .tile .symbol{
   opacity: var(--fade-emoji);
 }
 
-.grid.locked .tile.faded .overlay{
+.grid.locked .tile .overlay{
   opacity: var(--fade-overlay);
 }
 
-/* Keep chosen and bullseye fully readable */
+/* Chosen + bullseye are fully readable */
 .grid.locked .tile.chosen .symbol,
 .grid.locked .tile.bullseye .symbol{
   opacity: 1;
@@ -176,6 +173,16 @@ h1{
   opacity: 1;
 }
 
+/* Chosen tile gets a thicker purple outline */
+.grid.locked .tile.chosen{
+  border: 3px solid var(--accent);
+}
+
+/* Optional: give bullseye a subtle outline too (helps when adjacent) */
+.grid.locked .tile.bullseye{
+  border: 3px solid rgba(135,93,166,0.95);
+}
+
 /* Bullseye pop animation */
 @keyframes bullPop{
   0%{ transform: scale(0.98); }
@@ -184,7 +191,7 @@ h1{
 }
 
 .tile.bullseye.pop{
-  animation: bullPop 260ms ease-out;
+  animation: bullPop 400ms ease-out;
 }
 
 /* Result panel */
