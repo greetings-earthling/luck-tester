@@ -6,14 +6,14 @@
 
   --accent: #875da6;
   --border: rgba(17,17,17,0.12);
-.o-p10{ background: rgba(135,93,166,0.52); }
-.o-p8 { background: rgba(135,93,166,0.32); }
-.o-p6 { background: rgba(135,93,166,0.20); }
-.o-p4 { background: rgba(135,93,166,0.12); }
-  --g10: rgba(10,122,47,0.58);
-  --g8:  rgba(10,122,47,0.34);
-  --g6:  rgba(10,122,47,0.22);
-  --g4:  rgba(10,122,47,0.14);
+
+  /* Purple ripple overlays */
+  --p10: rgba(135,93,166,0.56);
+  --p8:  rgba(135,93,166,0.34);
+  --p6:  rgba(135,93,166,0.22);
+  --p4:  rgba(135,93,166,0.14);
+
+  --shadow: 0 10px 26px rgba(0,0,0,0.06);
 }
 
 *{ box-sizing: border-box; }
@@ -39,7 +39,7 @@ html,body{
   background: var(--card);
   border: 1px solid var(--border);
   border-radius: 18px;
-  box-shadow: 0 10px 26px rgba(0,0,0,0.06);
+  box-shadow: var(--shadow);
 }
 
 /* Header */
@@ -70,7 +70,7 @@ h1{
 .sponsor a{
   color: var(--accent);
   text-decoration: none;
-  font-weight: 600;
+  font-weight: 700;
 }
 
 .sponsor a:hover{
@@ -89,11 +89,11 @@ h1{
   gap: 8px;
 }
 
-/* Square tiles */
+/* Square tiles, no borders/rings */
 .tile{
   aspect-ratio: 1 / 1;
   border-radius: 14px;
-  border: 1px solid rgba(17,17,17,0.12);
+  border: 1px solid rgba(17,17,17,0.10);
   background: #fff;
   display: grid;
   place-items: center;
@@ -101,13 +101,12 @@ h1{
   cursor: pointer;
   overflow: hidden;
   padding: 0;
-  transition: transform 120ms ease, box-shadow 120ms ease, border-color 120ms ease;
+  transition: transform 120ms ease, box-shadow 120ms ease, opacity 180ms ease;
 }
 
 .tile:hover{
   transform: translateY(-1px);
   box-shadow: 0 8px 18px rgba(0,0,0,0.08);
-  border-color: rgba(135,93,166,0.45);
 }
 
 .tile:active{
@@ -119,18 +118,11 @@ h1{
   outline-offset: 2px;
 }
 
-.tile[disabled]{
-  cursor: default;
-  opacity: 0.98;
-  transform: none;
-  box-shadow: none;
-}
-
 /* Emoji */
 .symbol{
   position: relative;
   z-index: 2;
-  font-size: clamp(20px, 3.2vw, 28px);
+  font-size: clamp(20px, 3.2vw, 30px);
   line-height: 1;
   transform: translateY(1px);
 }
@@ -141,43 +133,40 @@ h1{
   inset: 0;
   z-index: 1;
   opacity: 0;
+  transition: opacity 160ms ease;
 }
 
 .revealed .overlay{ opacity: 1; }
 
-.o-g10{ background: var(--g10); }
-.o-g8 { background: var(--g8); }
-.o-g6 { background: var(--g6); }
-.o-g4 { background: var(--g4); }
+/* Overlay classes */
+.o-p10{ background: var(--p10); }
+.o-p8 { background: var(--p8); }
+.o-p6 { background: var(--p6); }
+.o-p4 { background: var(--p4); }
 
-/* Selected ring */
-.selectedRing::after{
-  content:"";
-  position:absolute;
-  inset: 6px;
-  border: 3px solid #111;
-  border-radius: 10px;
-  z-index: 3;
-  pointer-events: none;
+/* Post-pick fading rules */
+.grid.locked .tile{
+  cursor: default;
 }
 
-/* Bullseye ring (accent color, obvious) */
-.bullseye::before{
-  content:"";
-  position:absolute;
-  inset: 6px;
-  border: 3px solid var(--accent);
-  border-radius: 10px;
-  z-index: 3;
-  pointer-events: none;
+.grid.locked .tile.faded{
+  opacity: 0.30;
 }
 
-/* If chosen tile is also bullseye, show both */
-.bullseye.selectedRing::before{
-  inset: 10px;
+.grid.locked .tile.chosen,
+.grid.locked .tile.bullseye{
+  opacity: 1;
 }
-.bullseye.selectedRing::after{
-  inset: 6px;
+
+/* Bullseye pop animation */
+@keyframes bullPop{
+  0%{ transform: scale(0.98); }
+  60%{ transform: scale(1.02); }
+  100%{ transform: scale(1.00); }
+}
+
+.tile.bullseye.pop{
+  animation: bullPop 260ms ease-out;
 }
 
 /* Result panel */
@@ -187,7 +176,7 @@ h1{
 
 .result{
   background: rgba(0,0,0,0.02);
-  border: 1px solid rgba(17,17,17,0.10);
+  border: 1px solid rgba(17,17,17,0.08);
   border-radius: 14px;
   padding: 10px;
 }
@@ -223,7 +212,11 @@ h1{
   position: absolute;
   inset: 0;
   z-index: 1;
+  opacity: 0;
+  transition: opacity 160ms ease;
 }
+
+.previewOverlay.on{ opacity: 1; }
 
 .previewSymbol{
   position: relative;
@@ -232,20 +225,22 @@ h1{
   line-height: 1;
 }
 
-.result h2{
+.resultCopy h2{
   margin: 0;
   font-size: 14px;
+  letter-spacing: 0.02em;
+  text-transform: uppercase;
 }
 
-.result p{
-  margin: 4px 0 0;
+.resultCopy p{
+  margin: 6px 0 0;
   font-size: 13px;
   color: var(--muted);
   line-height: 1.45;
 }
 
 .badgeRow{
-  margin-top: 8px;
+  margin-top: 10px;
   display: flex;
   gap: 8px;
   flex-wrap: wrap;
@@ -259,8 +254,49 @@ h1{
   font-size: 12px;
 }
 
+/* Share */
+.shareRow{
+  margin-top: 10px;
+  display: grid;
+  gap: 8px;
+}
+
+.btn{
+  appearance: none;
+  border: 1px solid rgba(135,93,166,0.55);
+  background: var(--accent);
+  color: #fff;
+  border-radius: 999px;
+  padding: 10px 12px;
+  font-size: 13px;
+  font-weight: 700;
+  cursor: pointer;
+  transition: transform 120ms ease, opacity 160ms ease;
+}
+
+.btn:hover{
+  transform: translateY(-1px);
+}
+
+.btn:active{
+  transform: translateY(0px) scale(0.99);
+}
+
+.btn:disabled{
+  opacity: 0.45;
+  cursor: not-allowed;
+  transform: none;
+}
+
+.shareHint{
+  font-size: 12px;
+  color: var(--muted);
+  min-height: 16px;
+}
+
 /* Reduced motion */
 @media (prefers-reduced-motion: reduce){
-  .tile{ transition: none; }
-  .tile:hover{ transform:none; }
+  .tile, .overlay, .previewOverlay, .btn{ transition: none; }
+  .tile:hover, .btn:hover{ transform:none; }
+  .tile.bullseye.pop{ animation: none; }
 }
