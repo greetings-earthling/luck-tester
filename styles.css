@@ -7,16 +7,16 @@
   --accent: #875da6;
   --border: rgba(17,17,17,0.12);
 
-  /* Much stronger separation */
+  /* Strong separation */
   --p10: rgba(135,93,166,1.00); /* bullseye */
-  --p8:  rgba(135,93,166,0.70); /* ring 1 */
-  --p6:  rgba(135,93,166,0.48); /* ring 2 */
-  --p4:  rgba(135,93,166,0.30); /* ring 3 */
+  --p8:  rgba(135,93,166,0.72); /* ring 1 */
+  --p6:  rgba(135,93,166,0.50); /* ring 2 */
+  --p4:  rgba(135,93,166,0.32); /* ring 3 */
 
   --shadow: 0 10px 26px rgba(0,0,0,0.06);
 
-  /* How much non-selected emojis fade after pick */
-  --fade-emoji: 0.20;
+  /* How much non-selected symbols fade after pick */
+  --fade-symbol: 0.35;
 }
 
 *{ box-sizing: border-box; }
@@ -142,12 +142,12 @@ h1{
   pointer-events: none;
 }
 
-/* Fade only emojis by default */
+/* Fade only symbols by default */
 .grid.locked .tile .symbol{
-  opacity: var(--fade-emoji);
+  opacity: var(--fade-symbol);
 }
 
-/* Chosen + bullseye emojis are full opacity */
+/* Chosen + bullseye symbols are full opacity */
 .grid.locked .tile.chosen .symbol,
 .grid.locked .tile.bullseye .symbol{
   opacity: 1;
@@ -158,7 +158,7 @@ h1{
   border: 3px solid var(--accent);
 }
 
-/* Bullseye gets a subtle edge so it’s obvious when adjacent */
+/* Bullseye is easy to spot */
 .grid.locked .tile.bullseye{
   border: 2px solid rgba(135,93,166,0.85);
   box-shadow: 0 10px 22px rgba(135,93,166,0.18);
@@ -167,12 +167,14 @@ h1{
 /* Wave animation helpers */
 .overlay.fill{ opacity: 1; }
 
-@keyframes bullPop{
-  0%{ transform: scale(0.98); }
-  60%{ transform: scale(1.04); }
+@keyframes ringPulse{
+  0%{ transform: scale(1.00); }
+  45%{ transform: scale(1.06); }
   100%{ transform: scale(1.00); }
 }
-.tile.bullseye.pop{ animation: bullPop 320ms ease-out; }
+.tile.pulse{
+  animation: ringPulse 260ms ease-out;
+}
 
 /* Result panel */
 .panelCard{ padding: 10px; }
@@ -296,5 +298,5 @@ h1{
 @media (prefers-reduced-motion: reduce){
   .tile, .overlay, .symbol, .previewOverlay, .btn{ transition: none; }
   .tile:hover, .btn:hover{ transform:none; }
-  .tile.bullseye.pop{ animation: none; }
+  .tile.pulse{ animation: none; }
 }
