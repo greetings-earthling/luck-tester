@@ -7,17 +7,16 @@
   --accent: #875da6;
   --border: rgba(17,17,17,0.12);
 
-  /* Purple ripple overlays (stronger) */
-  --p10: rgba(135,93,166,0.92); /* bullseye */
-  --p8:  rgba(135,93,166,0.58); /* ring 1 */
-  --p6:  rgba(135,93,166,0.40); /* ring 2 */
-  --p4:  rgba(135,93,166,0.26); /* ring 3 */
+  /* Much stronger separation */
+  --p10: rgba(135,93,166,1.00); /* bullseye */
+  --p8:  rgba(135,93,166,0.70); /* ring 1 */
+  --p6:  rgba(135,93,166,0.48); /* ring 2 */
+  --p4:  rgba(135,93,166,0.30); /* ring 3 */
 
   --shadow: 0 10px 26px rgba(0,0,0,0.06);
 
-  /* Fade tuning */
-  --fade-emoji: 0.18;
-  --fade-overlay: 0.14;
+  /* How much non-selected emojis fade after pick */
+  --fade-emoji: 0.20;
 }
 
 *{ box-sizing: border-box; }
@@ -38,7 +37,6 @@ html,body{
   gap: 12px;
 }
 
-/* Shared card style */
 .card{
   background: var(--card);
   border: 1px solid var(--border);
@@ -47,9 +45,7 @@ html,body{
 }
 
 /* Header */
-.headerCard{
-  padding: 14px 14px 12px;
-}
+.headerCard{ padding: 14px 14px 12px; }
 
 h1{
   margin: 0;
@@ -77,23 +73,18 @@ h1{
   font-weight: 700;
 }
 
-.sponsor a:hover{
-  text-decoration: underline;
-}
+.sponsor a:hover{ text-decoration: underline; }
 
-/* Grid card */
-.gridCard{
-  padding: 10px;
-}
+/* Grid */
+.gridCard{ padding: 10px; }
 
-/* 8x8 always */
+/* 8 x 5 */
 .grid{
   display: grid;
   grid-template-columns: repeat(8, minmax(0, 1fr));
   gap: 8px;
 }
 
-/* Square tiles, no borders/rings */
 .tile{
   aspect-ratio: 1 / 1;
   border-radius: 14px;
@@ -105,7 +96,7 @@ h1{
   cursor: pointer;
   overflow: hidden;
   padding: 0;
-  transition: transform 120ms ease, box-shadow 120ms ease;
+  transition: transform 120ms ease, box-shadow 120ms ease, border-color 160ms ease;
 }
 
 .tile:hover{
@@ -113,43 +104,37 @@ h1{
   box-shadow: 0 8px 18px rgba(0,0,0,0.08);
 }
 
-.tile:active{
-  transform: translateY(0px) scale(0.99);
-}
+.tile:active{ transform: translateY(0px) scale(0.99); }
 
 .tile:focus-visible{
   outline: 3px solid var(--accent);
   outline-offset: 2px;
 }
 
-/* Emoji */
 .symbol{
   position: relative;
   z-index: 2;
-  font-size: clamp(20px, 3.2vw, 30px);
+  font-size: clamp(22px, 3.4vw, 34px);
   line-height: 1;
   transform: translateY(1px);
   transition: opacity 180ms ease;
 }
 
-/* Overlay behind symbol */
 .overlay{
   position: absolute;
   inset: 0;
   z-index: 1;
   opacity: 0;
-  transition: opacity 180ms ease;
+  transition: opacity 240ms ease;
 }
 
-.revealed .overlay{ opacity: 1; }
-
-/* Overlay classes */
+/* overlay colour classes */
 .o-p10{ background: var(--p10); }
 .o-p8 { background: var(--p8); }
 .o-p6 { background: var(--p6); }
 .o-p4 { background: var(--p4); }
 
-/* Post-pick behavior: fade everything by default, then restore chosen + bullseye */
+/* Locked state: fade only emojis by default, not the whole tile */
 .grid.locked .tile{
   cursor: default;
 }
@@ -158,46 +143,35 @@ h1{
   opacity: var(--fade-emoji);
 }
 
-.grid.locked .tile .overlay{
-  opacity: var(--fade-overlay);
-}
-
-/* Chosen + bullseye are fully readable */
+/* Chosen + bullseye emojis are full opacity */
 .grid.locked .tile.chosen .symbol,
 .grid.locked .tile.bullseye .symbol{
   opacity: 1;
 }
 
-.grid.locked .tile.chosen .overlay,
-.grid.locked .tile.bullseye .overlay{
-  opacity: 1;
-}
-
-/* Chosen tile gets a thicker purple outline */
+/* Chosen outline */
 .grid.locked .tile.chosen{
   border: 3px solid var(--accent);
 }
 
-/* Optional: give bullseye a subtle outline too (helps when adjacent) */
+/* Bullseye gets a subtle edge so it’s obvious when adjacent */
 .grid.locked .tile.bullseye{
-  border: 3px solid rgba(135,93,166,0.95);
+  border: 2px solid rgba(135,93,166,0.85);
+  box-shadow: 0 10px 22px rgba(135,93,166,0.18);
 }
 
-/* Bullseye pop animation */
+/* Wave animation helpers */
+.overlay.fill{ opacity: 1; }
+
 @keyframes bullPop{
   0%{ transform: scale(0.98); }
-  60%{ transform: scale(1.02); }
+  60%{ transform: scale(1.04); }
   100%{ transform: scale(1.00); }
 }
-
-.tile.bullseye.pop{
-  animation: bullPop 400ms ease-out;
-}
+.tile.bullseye.pop{ animation: bullPop 320ms ease-out; }
 
 /* Result panel */
-.panelCard{
-  padding: 10px;
-}
+.panelCard{ padding: 10px; }
 
 .result{
   background: rgba(0,0,0,0.02);
@@ -238,7 +212,7 @@ h1{
   inset: 0;
   z-index: 1;
   opacity: 0;
-  transition: opacity 180ms ease;
+  transition: opacity 240ms ease;
 }
 
 .previewOverlay.on{ opacity: 1; }
@@ -246,7 +220,7 @@ h1{
 .previewSymbol{
   position: relative;
   z-index: 2;
-  font-size: 34px;
+  font-size: 36px;
   line-height: 1;
 }
 
@@ -299,13 +273,8 @@ h1{
   transition: transform 120ms ease, opacity 160ms ease;
 }
 
-.btn:hover{
-  transform: translateY(-1px);
-}
-
-.btn:active{
-  transform: translateY(0px) scale(0.99);
-}
+.btn:hover{ transform: translateY(-1px); }
+.btn:active{ transform: translateY(0px) scale(0.99); }
 
 .btn:disabled{
   opacity: 0.45;
