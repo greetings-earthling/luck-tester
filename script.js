@@ -114,28 +114,32 @@
     previewOverlay.className = "previewOverlay on " + (overlayClass || "");
   }
 
-  function revealBoard() {
-    gridEl.classList.add("locked");
+ function revealBoard() {
+  gridEl.classList.add("locked");
 
-    const all = gridEl.querySelectorAll(".tile");
-    all.forEach((tile, i) => {
-      tile.classList.add("revealed");
-      tile.setAttribute("disabled", "true");
+  const all = gridEl.querySelectorAll(".tile");
+  all.forEach((tile, i) => {
+    tile.classList.add("revealed");
+    tile.setAttribute("disabled", "true");
 
-      if (i !== chosenIndex && i !== luckyIndex) {
-        tile.classList.add("faded");
-      }
+    if (i === chosenIndex) {
+      tile.classList.add("chosen");
+      return;
+    }
 
-      if (i === chosenIndex) tile.classList.add("chosen");
-      if (i === luckyIndex) tile.classList.add("bullseye");
-    });
+    if (i === luckyIndex) {
+      tile.classList.add("bullseye");
+      return;
+    }
 
-    // Subtle bullseye pop after a tiny beat
-    setTimeout(() => {
-      const bull = all[luckyIndex];
-      if (bull) bull.classList.add("pop");
-    }, 220);
-  }
+    tile.classList.add("faded");
+  });
+
+  setTimeout(() => {
+    const bull = all[luckyIndex];
+    if (bull) bull.classList.add("pop");
+  }, 220);
+}
 
   function buildShareText() {
     const mood = tiles[chosenIndex];
