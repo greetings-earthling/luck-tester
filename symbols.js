@@ -1,4 +1,4 @@
-// Luck Meter moods (16). script.js repeats these 4x to make 64 tiles.
+// 20 moods. script.js repeats them 2x to make 40 tiles.
 window.MOODS = [
   { key: "happy",      name: "Happy",      symbol: "😊" },
   { key: "meh",        name: "Meh",        symbol: "😐" },
@@ -15,5 +15,9 @@ window.MOODS = [
   { key: "cat",        name: "Playful",    symbol: "🐱" },
   { key: "unsure",     name: "Unsure",     symbol: "🤔" },
   { key: "goofy",      name: "Goofy",      symbol: "🤪" },
-  { key: "devilish",   name: "Devilish",   symbol: "😈" }
+  { key: "devilish",   name: "Devilish",   symbol: "😈" },
+  { key: "melting",    name: "Melting",    symbol: "🫠" },
+  { key: "hearteyes",  name: "Heart Eyes", symbol: "😍" },
+  { key: "frazzled",   name: "Frazzled",   symbol: "😵‍💫" },
+  { key: "shrug",      name: "Shrug",      symbol: "🤷" }
 ];
