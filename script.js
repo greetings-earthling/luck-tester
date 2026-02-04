@@ -18,7 +18,7 @@
   // 40 tiles = 20 moods x 2
   const tiles = [...base, ...base];
 
-  // Shuffle on load (duplicates spread out naturally)
+  // Shuffle on load
   for (let i = tiles.length - 1; i > 0; i--) {
     const j = Math.floor(Math.random() * (i + 1));
     [tiles[i], tiles[j]] = [tiles[j], tiles[i]];
@@ -36,7 +36,6 @@
     return Math.max(Math.abs(A.r - B.r), Math.abs(A.c - B.c));
   }
 
-  // Pick bullseye
   const luckyIndex = Math.floor(Math.random() * COUNT);
 
   function tierByDistance(d) {
@@ -96,7 +95,6 @@
     return `Today is one of those make your own luck kinda days to go with ${m}. I would avoid anything that requires good luck. Try again tomorrow.`;
   }
 
-  // Precompute distances for all cells (used for wave)
   const dists = new Array(COUNT).fill(0).map((_, i) => dist(i, luckyIndex));
 
   let locked = false;
@@ -109,23 +107,21 @@
 
   function clearOverlays() {
     gridEl.querySelectorAll(".overlay").forEach(o => {
-      o.className = "overlay";   // remove colour classes
-      o.classList.remove("fill"); // keep hidden
+      o.className = "overlay";
+      o.classList.remove("fill");
     });
   }
 
   function applyWave() {
-    const tilesEls = gridEl.querySelectorAll(".tile");
+    const tileEls = gridEl.querySelectorAll(".tile");
 
-    // Bullseye pop + fill
-    const bull = tilesEls[luckyIndex];
+    const bull = tileEls[luckyIndex];
     if (bull) bull.classList.add("pop");
 
-    // Ring-by-ring fill
-    const waveDelay = 170; // time between rings
+    const waveDelay = 170;
     for (let ring = 0; ring <= 3; ring++) {
       setTimeout(() => {
-        tilesEls.forEach((tile, i) => {
+        tileEls.forEach((tile, i) => {
           if (dists[i] !== ring) return;
           const overlay = tile.querySelector(".overlay");
           if (!overlay) return;
@@ -145,8 +141,9 @@
     const all = gridEl.querySelectorAll(".tile");
 
     all.forEach((tile, i) => {
-      tile.setAttribute("disabled", "true");
       tile.classList.remove("chosen", "bullseye", "pop");
+      tile.setAttribute("aria-disabled", "true");
+      tile.tabIndex = -1;
 
       if (i === chosenIndex) tile.classList.add("chosen");
       if (i === luckyIndex) tile.classList.add("bullseye");
@@ -208,7 +205,6 @@
     tile.className = "tile";
     tile.setAttribute("aria-label", `Choose ${mood.name}`);
 
-    // Overlay starts blank and hidden. Wave assigns colour + fill later.
     tile.innerHTML = `
       <span class="symbol" aria-hidden="true">${mood.symbol}</span>
       <div class="overlay"></div>
@@ -230,19 +226,14 @@
         <span class="badge">Reading: <strong>${tier.title}</strong></span>
       `;
 
-      // Preview uses the overlay class for your tile’s distance (instant)
       setPreview(mood.symbol, overlayClassByDistance(dists[i]));
 
       shareBtn.disabled = false;
       shareHint.textContent = "";
 
-      // Lock board first (no wave yet)
       lockBoard();
-
-      // Ensure overlays start from zero before the wave
       clearOverlays();
 
-      // Delay before animation so it feels intentional
       setTimeout(() => {
         applyWave();
       }, 380);
