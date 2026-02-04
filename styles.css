@@ -7,13 +7,17 @@
   --accent: #875da6;
   --border: rgba(17,17,17,0.12);
 
-  /* Purple ripple overlays */
-  --p10: rgba(135,93,166,0.56);
-  --p8:  rgba(135,93,166,0.34);
-  --p6:  rgba(135,93,166,0.22);
-  --p4:  rgba(135,93,166,0.14);
+  /* Purple ripple overlays (stronger) */
+  --p10: rgba(135,93,166,0.92); /* bullseye */
+  --p8:  rgba(135,93,166,0.58); /* ring 1 */
+  --p6:  rgba(135,93,166,0.40); /* ring 2 */
+  --p4:  rgba(135,93,166,0.26); /* ring 3 */
 
   --shadow: 0 10px 26px rgba(0,0,0,0.06);
+
+  /* Fade tuning */
+  --fade-emoji: 0.18;
+  --fade-overlay: 0.14;
 }
 
 *{ box-sizing: border-box; }
@@ -101,7 +105,7 @@ h1{
   cursor: pointer;
   overflow: hidden;
   padding: 0;
-  transition: transform 120ms ease, box-shadow 120ms ease, opacity 180ms ease;
+  transition: transform 120ms ease, box-shadow 120ms ease;
 }
 
 .tile:hover{
@@ -125,6 +129,7 @@ h1{
   font-size: clamp(20px, 3.2vw, 30px);
   line-height: 1;
   transform: translateY(1px);
+  transition: opacity 180ms ease;
 }
 
 /* Overlay behind symbol */
@@ -133,7 +138,7 @@ h1{
   inset: 0;
   z-index: 1;
   opacity: 0;
-  transition: opacity 160ms ease;
+  transition: opacity 180ms ease;
 }
 
 .revealed .overlay{ opacity: 1; }
@@ -144,17 +149,30 @@ h1{
 .o-p6 { background: var(--p6); }
 .o-p4 { background: var(--p4); }
 
-/* Post-pick fading rules */
+/* Post-pick behavior
+   IMPORTANT: Do NOT fade the whole tile. Only fade emoji and overlay.
+*/
 .grid.locked .tile{
   cursor: default;
 }
 
-.grid.locked .tile.faded{
-  opacity: 0.30;
+/* Fade most tiles */
+.grid.locked .tile.faded .symbol{
+  opacity: var(--fade-emoji);
 }
 
-.grid.locked .tile.chosen,
-.grid.locked .tile.bullseye{
+.grid.locked .tile.faded .overlay{
+  opacity: var(--fade-overlay);
+}
+
+/* Keep chosen and bullseye fully readable */
+.grid.locked .tile.chosen .symbol,
+.grid.locked .tile.bullseye .symbol{
+  opacity: 1;
+}
+
+.grid.locked .tile.chosen .overlay,
+.grid.locked .tile.bullseye .overlay{
   opacity: 1;
 }
 
@@ -213,7 +231,7 @@ h1{
   inset: 0;
   z-index: 1;
   opacity: 0;
-  transition: opacity 160ms ease;
+  transition: opacity 180ms ease;
 }
 
 .previewOverlay.on{ opacity: 1; }
@@ -296,7 +314,7 @@ h1{
 
 /* Reduced motion */
 @media (prefers-reduced-motion: reduce){
-  .tile, .overlay, .previewOverlay, .btn{ transition: none; }
+  .tile, .overlay, .symbol, .previewOverlay, .btn{ transition: none; }
   .tile:hover, .btn:hover{ transform:none; }
   .tile.bullseye.pop{ animation: none; }
 }
