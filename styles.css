@@ -97,6 +97,7 @@ h1{
   overflow: hidden;
   padding: 0;
   transition: transform 120ms ease, box-shadow 120ms ease, border-color 160ms ease;
+  color: var(--fg);
 }
 
 .tile:hover{
@@ -118,6 +119,7 @@ h1{
   line-height: 1;
   transform: translateY(1px);
   transition: opacity 180ms ease;
+  opacity: 1;
 }
 
 .overlay{
@@ -134,11 +136,13 @@ h1{
 .o-p6 { background: var(--p6); }
 .o-p4 { background: var(--p4); }
 
-/* Locked state: fade only emojis by default, not the whole tile */
+/* Locked state: block clicks without disabling buttons */
 .grid.locked .tile{
   cursor: default;
+  pointer-events: none;
 }
 
+/* Fade only emojis by default */
 .grid.locked .tile .symbol{
   opacity: var(--fade-emoji);
 }
