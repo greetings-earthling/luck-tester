@@ -12,23 +12,13 @@
 
   if (!gridEl) return;
 
-  const base = Array.isArray(window.SYMBOLS) ? window.SYMBOLS : [];
-  if (base.length !== 40) return;
-
-  // Shuffle on load
-  const tiles = base.slice();
-  for (let i = tiles.length - 1; i > 0; i--) {
-    const j = Math.floor(Math.random() * (i + 1));
-    [tiles[i], tiles[j]] = [tiles[j], tiles[i]];
-  }
-
   const COLS = 8;
   const ROWS = 5;
   const COUNT = COLS * ROWS;
 
   function rc(i) { return { r: Math.floor(i / COLS), c: i % COLS }; }
 
-  // Chebyshev distance makes square rings
+  // Square rings
   function dist(a, b) {
     const A = rc(a), B = rc(b);
     return Math.max(Math.abs(A.r - B.r), Math.abs(A.c - B.c));
@@ -36,14 +26,6 @@
 
   const luckyIndex = Math.floor(Math.random() * COUNT);
   const dists = new Array(COUNT).fill(0).map((_, i) => dist(i, luckyIndex));
-
-  function tierByDistance(d) {
-    if (d === 0) return { key: "mega", title: "MEGA LUCKY DAY!" };
-    if (d === 1) return { key: "very", title: "VERY LUCKY DAY!" };
-    if (d === 2) return { key: "side", title: "LUCK IS ON YOUR SIDE TODAY!" };
-    if (d === 3) return { key: "fric", title: "LOW FRICTION DAY" };
-    return { key: "diy", title: "MAKE YOUR OWN LUCK KINDA DAY" };
-  }
 
   function overlayClassByDistance(d) {
     if (d === 0) return "o-p10";
@@ -53,20 +35,28 @@
     return "";
   }
 
-  function messageForDistance(d) {
-    if (d === 0) return "Bullseye. Luck is on your side today.";
-    if (d === 1) return "Oooh so close, but good news, you're still in for a ton of good luck today!";
+  function tierTitle(d) {
+    if (d === 0) return "MEGA LUCKY DAY!";
+    if (d === 1) return "VERY LUCKY DAY!";
+    if (d === 2) return "LUCK IS ON YOUR SIDE TODAY!";
+    if (d === 3) return "LOW FRICTION DAY";
+    return "MAKE YOUR OWN LUCK KINDA DAY";
+  }
+
+  function messageFor(d) {
+    if (d === 0) return "Bullseye. You found the luck zone.";
+    if (d === 1) return "Oooh so close. Still a ton of good luck in the air for you today.";
     if (d === 2) return "Pretty close. You should still catch some good luck today.";
     if (d === 3) return "Not far off. Keep your eyes open for small wins.";
-    return "Today is one of those make your own luck kinda days. Still, you never know.";
+    return "Not in the zone today. Still, you never know. Luck is a funny thing.";
   }
 
   let locked = false;
   let chosenIndex = -1;
 
-  function setPreview(symbol, overlayClass) {
-    previewIcon.textContent = symbol;
-    previewOverlay.className = "previewOverlay on " + (overlayClass || "");
+  function setPreview(d, isBull) {
+    previewIcon.textContent = isBull ? "🍀" : "";
+    previewOverlay.className = "previewOverlay on " + (overlayClassByDistance(d) || "");
   }
 
   function clearOverlays() {
@@ -74,6 +64,7 @@
       o.className = "overlay";
       o.classList.remove("fill");
     });
+    gridEl.querySelectorAll(".tile").forEach(t => t.classList.remove("pulse"));
   }
 
   function lockBoard() {
@@ -81,7 +72,8 @@
     const all = gridEl.querySelectorAll(".tile");
 
     all.forEach((tile, i) => {
-      tile.classList.remove("chosen", "bullseye", "pulse");
+      tile.classList.remove("chosen", "bullseye");
+
       tile.setAttribute("aria-disabled", "true");
       tile.tabIndex = -1;
 
@@ -91,14 +83,12 @@
   }
 
   function applyWave() {
-    const tileEls = gridEl.querySelectorAll(".tile");
-
-    const delayStart = 0;
+    const tiles = gridEl.querySelectorAll(".tile");
     const waveDelay = 170;
 
     for (let ring = 0; ring <= 3; ring++) {
       setTimeout(() => {
-        tileEls.forEach((tile, i) => {
+        tiles.forEach((tile, i) => {
           if (dists[i] !== ring) return;
 
           const overlay = tile.querySelector(".overlay");
@@ -111,22 +101,26 @@
           overlay.classList.add("fill");
 
           tile.classList.remove("pulse");
-          // retrigger animation
           void tile.offsetWidth;
           tile.classList.add("pulse");
+
+          // Clover appears only in bullseye once ring 0 fills
+          if (ring === 0 && i === luckyIndex) {
+            const content = tile.querySelector(".content");
+            if (content) content.textContent = "🍀";
+          }
         });
-      }, delayStart + ring * waveDelay);
+      }, ring * waveDelay);
     }
   }
 
-  function buildShareText() {
-    const chosen = tiles[chosenIndex];
-    const tier = tierByDistance(dists[chosenIndex]);
+  function buildShareText(d) {
+    const title = tierTitle(d);
     const url = window.location.href;
-
     return [
-      `The Official Luck Meter says I am having a ${tier.title} ${chosen.symbol}`,
-      `Wanna check your luck? ${url}`
+      `The Official Luck Meter says: ${title}`,
+      `I was ${d === 0 ? "right in" : "near"} the luck zone today.`,
+      `Try yours: ${url}`
     ].join("\n");
   }
 
@@ -150,31 +144,30 @@
   shareBtn.addEventListener("click", async () => {
     if (!locked || chosenIndex < 0) return;
 
-    const text = buildShareText();
+    const d = dists[chosenIndex];
+    const text = buildShareText(d);
     shareHint.textContent = "";
 
     try {
       const ok = await copyToClipboard(text);
       shareHint.textContent = ok
-        ? "Your luck is copied! Paste it into any post and spread the luck ✨"
+        ? "Copied. Paste it anywhere."
         : "Could not auto-copy. Copy your result text manually.";
     } catch {
       shareHint.textContent = "Could not auto-copy. Copy your result text manually.";
     }
   });
 
-  // Render grid
+  // Render 40 blank tiles
   gridEl.innerHTML = "";
   for (let i = 0; i < COUNT; i++) {
-    const item = tiles[i];
-
     const tile = document.createElement("button");
     tile.type = "button";
     tile.className = "tile";
-    tile.setAttribute("aria-label", `Choose ${item.name}`);
+    tile.setAttribute("aria-label", "Pick this spot");
 
     tile.innerHTML = `
-      <span class="symbol" aria-hidden="true">${item.symbol}</span>
+      <span class="content" aria-hidden="true"></span>
       <div class="overlay"></div>
     `;
 
@@ -184,17 +177,14 @@
       chosenIndex = i;
 
       const d = dists[i];
-      const tier = tierByDistance(d);
 
-      resultTitle.textContent = tier.title;
-      resultText.textContent = messageForDistance(d);
+      resultTitle.textContent = tierTitle(d);
+      resultText.textContent = messageFor(d);
 
       badgeRow.style.display = "flex";
-      badgeRow.innerHTML = `
-        <span class="badge">You picked: <strong>${item.name}</strong> ${item.symbol}</span>
-      `;
+      badgeRow.innerHTML = `<span class="badge">You were <strong>${d === 0 ? "in" : `${d} step${d===1?"":"s"} away from`}</strong> the luck zone.</span>`;
 
-      setPreview(item.symbol, overlayClassByDistance(d));
+      setPreview(d, d === 0);
 
       shareBtn.disabled = false;
       shareHint.textContent = "";
@@ -202,7 +192,6 @@
       lockBoard();
       clearOverlays();
 
-      // Delay before the wave so it feels intentional
       setTimeout(() => {
         applyWave();
       }, 380);
