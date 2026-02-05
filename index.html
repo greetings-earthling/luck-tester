@@ -1,49 +1,273 @@
-<!doctype html>
-<html lang="en-CA">
-<head>
-  <meta charset="utf-8" />
-  <meta name="viewport" content="width=device-width,initial-scale=1" />
-  <title>Luck Meter</title>
-  <meta name="description" content="Find the luck zone. The closer you get, the luckier you are for the day." />
-  <link rel="stylesheet" href="styles.css?v=90" />
-</head>
+:root{
+  --bg: #e6dfeb;
+  --card: #ffffff;
+  --fg: #111111;
+  --muted: #5f5f5f;
 
-<body>
-  <main class="wrap">
-    <header class="card headerCard">
-      <h1>Welcome to the Luck Meter!</h1>
-      <p class="sub">Find the luck zone. The closer you get, the luckier you are for the day.</p>
-      <p class="sponsor">
-        Sponsored by <a href="https://www.greetingsearthling.ca" target="_blank" rel="noopener noreferrer">Greetings, Earthling</a>
-      </p>
-    </header>
+  --accent: #875da6;
+  --border: rgba(17,17,17,0.12);
 
-    <section class="card gridCard" aria-label="Luck Meter board">
-      <div class="grid" id="grid" aria-label="Luck grid"></div>
-    </section>
+  /* Luck greens */
+  --g10: #55be0a;              /* clover */
+  --g8:  rgba(85,190,10,0.68); /* ring 1 */
+  --g6:  rgba(85,190,10,0.45); /* ring 2 */
+  --g4:  rgba(85,190,10,0.28); /* ring 3 */
 
-    <section class="card bottomCard" aria-live="polite">
-      <div class="bottom">
-        <div class="result">
-          <h2 id="resultTitle">Pick a spot.</h2>
-          <p id="resultText">Then the Luck Meter will reveal how close you were to the luck zone.</p>
+  --shadow: 0 10px 26px rgba(0,0,0,0.06);
+}
 
-          <div class="badgeRow" id="badgeRow" style="display:none;"></div>
+*{ box-sizing: border-box; }
 
-          <div class="shareRow">
-            <button class="btn" id="shareBtn" type="button" disabled>Share your luck</button>
-            <div class="shareHint" id="shareHint" aria-live="polite"></div>
-          </div>
-        </div>
+html,body{
+  margin:0;
+  padding:0;
+  background: var(--bg);
+  color: var(--fg);
+  font-family: -apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Helvetica,Arial,sans-serif;
+}
 
-        <aside class="extras" aria-label="Lucky extras">
-          <h3>Lucky ______ of the day</h3>
-          <ul id="extrasList" class="extrasList"></ul>
-        </aside>
-      </div>
-    </section>
-  </main>
+.wrap{
+  max-width: 860px;
+  margin: 0 auto;
+  padding: 14px 12px 24px;
+  display: grid;
+  gap: 12px;
+}
 
-  <script src="script.js?v=90" defer></script>
-</body>
-</html>
+.card{
+  background: var(--card);
+  border: 1px solid var(--border);
+  border-radius: 18px;
+  box-shadow: var(--shadow);
+}
+
+/* Header */
+.headerCard{ padding: 14px 14px 12px; }
+
+h1{
+  margin: 0;
+  font-size: clamp(20px, 2.2vw, 28px);
+  line-height: 1.15;
+  letter-spacing: -0.02em;
+}
+
+.sub{
+  margin: 8px 0 0;
+  color: var(--muted);
+  font-size: clamp(14px, 1.6vw, 16px);
+  line-height: 1.4;
+}
+
+.sponsor{
+  margin: 8px 0 0;
+  font-size: 13px;
+  color: var(--muted);
+}
+
+.sponsor a{
+  color: var(--accent);
+  text-decoration: none;
+  font-weight: 700;
+}
+.sponsor a:hover{ text-decoration: underline; }
+
+/* Grid */
+.gridCard{ padding: 10px; }
+
+/* 10 x 6 */
+.grid{
+  display: grid;
+  grid-template-columns: repeat(10, minmax(0, 1fr));
+  gap: 7px;
+}
+
+.tile{
+  aspect-ratio: 1 / 1;
+  border-radius: 12px;
+  border: 1px solid rgba(17,17,17,0.10);
+  background: #fff;
+  display: grid;
+  place-items: center;
+  position: relative;
+  cursor: pointer;
+  overflow: hidden;
+  padding: 0;
+  transition: transform 120ms ease, box-shadow 120ms ease, border-color 160ms ease;
+}
+
+.tile:hover{
+  transform: translateY(-1px);
+  box-shadow: 0 8px 18px rgba(0,0,0,0.08);
+}
+
+.tile:active{ transform: translateY(0px) scale(0.99); }
+
+.tile:focus-visible{
+  outline: 3px solid var(--accent);
+  outline-offset: 2px;
+}
+
+.content{
+  position: relative;
+  z-index: 2;
+  font-size: 22px;
+  line-height: 1;
+  transform: translateY(1px);
+}
+
+@media (max-width: 640px){
+  .wrap{ max-width: 720px; }
+  .grid{ gap: 6px; }
+  .content{ font-size: 20px; }
+}
+
+/* Overlay */
+.overlay{
+  position: absolute;
+  inset: 0;
+  z-index: 1;
+  opacity: 0;
+  transition: opacity 220ms ease;
+}
+
+.o-g10{ background: var(--g10); }
+.o-g8 { background: var(--g8); }
+.o-g6 { background: var(--g6); }
+.o-g4 { background: var(--g4); }
+
+.overlay.fill{ opacity: 1; }
+
+/* Locked: stop clicks */
+.grid.locked .tile{
+  cursor: default;
+  pointer-events: none;
+}
+
+/* Chosen outline */
+.grid.locked .tile.chosen{
+  border: 3px solid var(--accent);
+}
+
+/* Wave motion */
+@keyframes ringPulse{
+  0%{ transform: scale(1.00); }
+  45%{ transform: scale(1.06); }
+  100%{ transform: scale(1.00); }
+}
+.tile.pulse{
+  animation: ringPulse 260ms ease-out;
+}
+
+/* Bottom area */
+.bottomCard{ padding: 12px; }
+
+.bottom{
+  display: grid;
+  grid-template-columns: 1.2fr 0.8fr;
+  gap: 12px;
+  align-items: start;
+}
+
+@media (max-width: 720px){
+  .bottom{ grid-template-columns: 1fr; }
+}
+
+.result{
+  background: rgba(0,0,0,0.02);
+  border: 1px solid rgba(17,17,17,0.08);
+  border-radius: 14px;
+  padding: 12px;
+}
+
+.result h2{
+  margin: 0;
+  font-size: 14px;
+  letter-spacing: 0.02em;
+  text-transform: uppercase;
+}
+
+.result p{
+  margin: 6px 0 0;
+  font-size: 13px;
+  color: var(--muted);
+  line-height: 1.45;
+}
+
+.badgeRow{
+  margin-top: 10px;
+  display: flex;
+  gap: 8px;
+  flex-wrap: wrap;
+}
+
+.badge{
+  padding: 6px 10px;
+  border-radius: 999px;
+  border: 1px solid rgba(17,17,17,0.12);
+  background: #fff;
+  font-size: 12px;
+}
+
+.extras{
+  background: rgba(0,0,0,0.02);
+  border: 1px solid rgba(17,17,17,0.08);
+  border-radius: 14px;
+  padding: 12px;
+}
+
+.extras h3{
+  margin: 0;
+  font-size: 13px;
+  letter-spacing: 0.02em;
+  text-transform: uppercase;
+  color: var(--fg);
+}
+
+.extrasList{
+  margin: 10px 0 0;
+  padding: 0 0 0 18px;
+  color: var(--muted);
+  font-size: 13px;
+  line-height: 1.5;
+}
+
+.shareRow{
+  margin-top: 10px;
+  display: grid;
+  gap: 8px;
+}
+
+.btn{
+  appearance: none;
+  border: 1px solid rgba(135,93,166,0.55);
+  background: var(--accent);
+  color: #fff;
+  border-radius: 999px;
+  padding: 10px 12px;
+  font-size: 13px;
+  font-weight: 700;
+  cursor: pointer;
+  transition: transform 120ms ease, opacity 160ms ease;
+}
+
+.btn:hover{ transform: translateY(-1px); }
+.btn:active{ transform: translateY(0px) scale(0.99); }
+
+.btn:disabled{
+  opacity: 0.45;
+  cursor: not-allowed;
+  transform: none;
+}
+
+.shareHint{
+  font-size: 12px;
+  color: var(--muted);
+  min-height: 16px;
+}
+
+/* Reduced motion */
+@media (prefers-reduced-motion: reduce){
+  .tile, .overlay, .btn{ transition: none; }
+  .tile:hover, .btn:hover{ transform:none; }
+  .tile.pulse{ animation: none; }
+}
