@@ -4,26 +4,37 @@
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width,initial-scale=1" />
   <title>Luck Meter</title>
-  <meta name="description" content="Find your luck score for today." />
-  <link rel="stylesheet" href="styles.css?v=100" />
+  <meta name="description" content="Choose a spot to get your luck score out of 5 for the day." />
+  <link rel="stylesheet" href="styles.css?v=110" />
 </head>
 
 <body>
   <main class="page">
     <header class="card headerCard">
       <h1>Welcome to the Luck Meter!</h1>
-      <p class="sub">Choose a spot to find out your luck score out of 5 for the day.</p>
+      <p class="sub">Choose a spot to get your luck score out of 5 for the day.</p>
       <p class="sponsor">
         Sponsored by <a href="https://www.greetingsearthling.ca" target="_blank" rel="noopener noreferrer">Greetings, Earthling</a>
       </p>
     </header>
+
+    <!-- Top Sponsor -->
+    <section class="card adCard" aria-label="Sponsor">
+      <div class="adSlot adTop" data-size="728x90" data-brand="" data-img="">
+        <img class="adImg" alt="" />
+        <div class="adFallback">
+          <div class="adBrand"></div>
+          <div class="adTag">Sponsored</div>
+        </div>
+      </div>
+    </section>
 
     <section class="mainGrid">
       <!-- LEFT: Luck meter -->
       <section class="card leftCard" aria-label="Luck Meter">
         <div class="leftTop">
           <h2 class="sectionTitle">Luck Meter</h2>
-          <div class="hint">Find the green zone. Closer is luckier.</div>
+          <div class="hint">Choose a spot to get your luck score out of 5 for the day.</div>
         </div>
 
         <div class="boardWrap" aria-label="Luck board">
@@ -32,7 +43,7 @@
 
         <div class="leftBottom" aria-live="polite">
           <div class="resultTitle" id="resultTitle">Pick a spot.</div>
-          <div class="resultText" id="resultText">Then we reveal your luck score for today.</div>
+          <div class="resultText" id="resultText">Then the meter reveals how lucky you are today.</div>
 
           <div class="shareRow">
             <button class="btn" id="shareBtn" type="button" disabled>Share your result</button>
@@ -46,25 +57,45 @@
         <section class="card miniCard">
           <h3 class="miniTitle">Lucky number of the day</h3>
           <div class="bigValue" id="luckyNumber">7</div>
-          <div class="miniNote">Use it irresponsibly.</div>
+
+          <div class="adSlot adRight" data-size="300x100" data-brand="" data-img="">
+            <img class="adImg" alt="" />
+            <div class="adFallback">
+              <div class="adBrand"></div>
+              <div class="adTag">Sponsored</div>
+            </div>
+          </div>
         </section>
 
         <section class="card miniCard">
-          <h3 class="miniTitle">Lucky colours of the day</h3>
+          <h3 class="miniTitle">Lucky letter of the day</h3>
+          <div class="bigValue" id="luckyLetter">M</div>
+
+          <div class="adSlot adRight" data-size="300x100" data-brand="" data-img="">
+            <img class="adImg" alt="" />
+            <div class="adFallback">
+              <div class="adBrand"></div>
+              <div class="adTag">Sponsored</div>
+            </div>
+          </div>
+        </section>
+
+        <section class="card miniCard">
+          <h3 class="miniTitle">Lucky colour of the day</h3>
 
           <div class="colorRow">
-            <div class="colorSwatch" id="colorTopSwatch"></div>
+            <div class="colorSwatch" id="colorSwatch"></div>
             <div class="colorInfo">
-              <div class="colorLabel">Luckiest</div>
-              <div class="colorHex" id="colorTopHex">#55be0a</div>
+              <div class="colorLabel" id="colorName">Lucky Green</div>
+              <div class="colorHex" id="colorHex">#55be0a</div>
             </div>
           </div>
 
-          <div class="colorRow">
-            <div class="colorSwatch" id="colorBottomSwatch"></div>
-            <div class="colorInfo">
-              <div class="colorLabel">Also lucky</div>
-              <div class="colorHex" id="colorBottomHex">#875da6</div>
+          <div class="adSlot adRight" data-size="300x100" data-brand="" data-img="">
+            <img class="adImg" alt="" />
+            <div class="adFallback">
+              <div class="adBrand"></div>
+              <div class="adTag">Sponsored</div>
             </div>
           </div>
         </section>
@@ -72,7 +103,14 @@
         <section class="card miniCard">
           <h3 class="miniTitle">Left or Right?</h3>
           <div class="bigValue" id="leftRight">LEFT</div>
-          <div class="miniNote">Do not argue with the meter.</div>
+
+          <div class="adSlot adRight" data-size="300x100" data-brand="" data-img="">
+            <img class="adImg" alt="" />
+            <div class="adFallback">
+              <div class="adBrand"></div>
+              <div class="adTag">Sponsored</div>
+            </div>
+          </div>
         </section>
       </aside>
     </section>
@@ -82,29 +120,57 @@
       <section class="card extraCard">
         <h3 class="miniTitle">Dinner suggestion</h3>
         <div class="extraValue" id="dinnerSuggestion">Tacos</div>
-        <div class="miniNote sponsorSlot">Sponsor slot</div>
+
+        <div class="adSlot adBottom" data-size="300x60" data-brand="" data-img="">
+          <img class="adImg" alt="" />
+          <div class="adFallback">
+            <div class="adBrand"></div>
+            <div class="adTag">Sponsored</div>
+          </div>
+        </div>
       </section>
 
       <section class="card extraCard">
         <h3 class="miniTitle">Lucky micro-move</h3>
         <div class="extraValue" id="microMove">Clean one small thing</div>
-        <div class="miniNote sponsorSlot">Sponsor slot</div>
+
+        <div class="adSlot adBottom" data-size="300x60" data-brand="" data-img="">
+          <img class="adImg" alt="" />
+          <div class="adFallback">
+            <div class="adBrand"></div>
+            <div class="adTag">Sponsored</div>
+          </div>
+        </div>
       </section>
 
       <section class="card extraCard">
         <h3 class="miniTitle">Lucky vibe</h3>
         <div class="extraValue" id="luckyVibe">Calm</div>
-        <div class="miniNote sponsorSlot">Sponsor slot</div>
+
+        <div class="adSlot adBottom" data-size="300x60" data-brand="" data-img="">
+          <img class="adImg" alt="" />
+          <div class="adFallback">
+            <div class="adBrand"></div>
+            <div class="adTag">Sponsored</div>
+          </div>
+        </div>
       </section>
 
       <section class="card extraCard">
         <h3 class="miniTitle">Lucky place</h3>
         <div class="extraValue" id="luckyPlace">Near a window</div>
-        <div class="miniNote sponsorSlot">Sponsor slot</div>
+
+        <div class="adSlot adBottom" data-size="300x60" data-brand="" data-img="">
+          <img class="adImg" alt="" />
+          <div class="adFallback">
+            <div class="adBrand"></div>
+            <div class="adTag">Sponsored</div>
+          </div>
+        </div>
       </section>
     </section>
   </main>
 
-  <script src="script.js?v=100" defer></script>
+  <script src="script.js?v=110" defer></script>
 </body>
 </html>
