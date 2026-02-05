@@ -2,8 +2,8 @@
   "use strict";
 
   // Board config
-  const COLS = 10;
-  const ROWS = 10;
+  const COLS = 12;
+  const ROWS = 12;
   const COUNT = COLS * ROWS;
 
   const boardEl = document.getElementById("board");
@@ -79,7 +79,6 @@
   const luckyIndex = Math.floor(Math.random() * COUNT);
   const dists = new Array(COUNT).fill(0).map((_, i) => dist(i, luckyIndex));
 
-  // Score mapping per your spec
   // center: 5!, ring1: 4!, ring2: 3!, ring3: 1, rest: 0
   function scoreForDistance(d){
     if (d === 0) return 5;
@@ -139,7 +138,7 @@
 
   function revealWave() {
     const tiles = boardEl.querySelectorAll(".tile");
-    const waveDelay = 140;
+    const waveDelay = 120;
 
     for (let ring = 0; ring <= 3; ring++) {
       setTimeout(() => {
@@ -160,13 +159,13 @@
           }
 
           tile.classList.remove("pulse");
-          void tile.offsetWidth; // retrigger
+          void tile.offsetWidth;
           tile.classList.add("pulse");
         });
       }, ring * waveDelay);
     }
 
-    // Fill the rest (0s) after wave so board feels complete
+    // Fill the rest as 0 after wave
     setTimeout(() => {
       tiles.forEach((tile, i) => {
         const label = tile.querySelector(".label");
