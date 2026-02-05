@@ -35,7 +35,6 @@ html,body{
   gap: 12px;
 }
 
-/* Cards */
 .card{
   background: var(--card);
   border: 1px solid var(--border);
@@ -43,9 +42,7 @@ html,body{
   box-shadow: var(--shadow);
 }
 
-.headerCard{
-  padding: 14px 14px 12px;
-}
+.headerCard{ padding: 14px 14px 12px; }
 
 h1{
   margin:0;
@@ -72,6 +69,9 @@ h1{
   font-weight: 700;
 }
 .sponsor a:hover{ text-decoration: underline; }
+
+/* Top ad card */
+.adCard{ padding: 10px; }
 
 /* Main 2-col layout */
 .mainGrid{
@@ -127,7 +127,7 @@ h1{
   width: 100%;
   height: 100%;
   display: grid;
-  grid-template-columns: repeat(12, minmax(0, 1fr)); /* 12x12 */
+  grid-template-columns: repeat(12, minmax(0, 1fr));
   gap: 6px;
 }
 
@@ -160,14 +160,18 @@ h1{
   outline-offset: 2px;
 }
 
-/* Number text */
+/* Cell numbers */
 .label{
   position: relative;
   z-index: 2;
   font-weight: 900;
-  font-size: clamp(9px, 1.05vw, 12px);
-  color: rgba(0,0,0,0.78);
+  font-size: clamp(11px, 1.2vw, 15px);
+  color: rgba(0,0,0,0.84);
   user-select: none;
+}
+
+.label.zero{
+  opacity: 0.70;
 }
 
 /* Overlay */
@@ -236,6 +240,8 @@ h1{
 
 .miniCard{
   padding: 12px;
+  display: grid;
+  gap: 10px;
 }
 
 .miniTitle{
@@ -246,16 +252,10 @@ h1{
 }
 
 .bigValue{
-  margin-top: 8px;
   font-size: 34px;
   font-weight: 900;
   letter-spacing: -0.02em;
-}
-
-.miniNote{
-  margin-top: 6px;
-  font-size: 12px;
-  color: var(--muted);
+  line-height: 1;
 }
 
 .colorRow{
@@ -263,7 +263,6 @@ h1{
   grid-template-columns: 38px 1fr;
   gap: 10px;
   align-items: center;
-  margin-top: 10px;
 }
 
 .colorSwatch{
@@ -284,7 +283,7 @@ h1{
   letter-spacing: 0.01em;
 }
 
-/* Bottom extras row (4 wide) */
+/* Bottom extras row */
 .extrasGrid{
   display: grid;
   grid-template-columns: repeat(4, minmax(0, 1fr));
@@ -300,16 +299,14 @@ h1{
 
 .extraCard{
   padding: 12px;
+  display: grid;
+  gap: 10px;
 }
 
 .extraValue{
-  margin-top: 8px;
   font-size: 18px;
   font-weight: 900;
-}
-
-.sponsorSlot{
-  opacity: 0.8;
+  line-height: 1.2;
 }
 
 /* Buttons */
@@ -345,6 +342,68 @@ h1{
   font-size: 12px;
   color: var(--muted);
   min-height: 16px;
+}
+
+/* Ad slots */
+.adSlot{
+  width: 100%;
+  border-radius: 14px;
+  border: 1px solid rgba(17,17,17,0.10);
+  background: #fff;
+  overflow: hidden;
+  position: relative;
+}
+
+.adSlot .adImg{
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  display: none; /* shown only when image loads */
+}
+
+.adSlot.hasImg .adImg{
+  display: block;
+}
+
+.adFallback{
+  width: 100%;
+  height: 100%;
+  display: grid;
+  align-content: center;
+  justify-items: center;
+  gap: 6px;
+  padding: 10px;
+  background: linear-gradient(135deg, rgba(135,93,166,0.16), rgba(85,190,10,0.10));
+}
+
+.adBrand{
+  font-weight: 900;
+  letter-spacing: -0.02em;
+  font-size: 18px;
+}
+
+.adTag{
+  font-size: 12px;
+  color: rgba(0,0,0,0.55);
+  border: 1px solid rgba(0,0,0,0.10);
+  padding: 4px 8px;
+  border-radius: 999px;
+  background: rgba(255,255,255,0.75);
+}
+
+/* Standard ad sizes within slots */
+.adTop{
+  max-width: 728px;
+  aspect-ratio: 728 / 90;
+  margin: 0 auto;
+}
+
+.adRight{
+  aspect-ratio: 300 / 100;
+}
+
+.adBottom{
+  aspect-ratio: 300 / 60;
 }
 
 /* Reduced motion */
