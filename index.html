@@ -4,17 +4,15 @@
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width,initial-scale=1" />
   <title>Luck Meter</title>
-  <meta name="description" content="Find the luck zone. The closer you get, the luckier your day is likely to be." />
-  <link rel="stylesheet" href="styles.css?v=80" />
+  <meta name="description" content="Find the luck zone. The closer you get, the luckier you are for the day." />
+  <link rel="stylesheet" href="styles.css?v=90" />
 </head>
 
 <body>
   <main class="wrap">
     <header class="card headerCard">
       <h1>Welcome to the Luck Meter!</h1>
-      <p class="sub">
-        Find the luck zone. The closer you get, the luckier you are for the day.
-      </p>
+      <p class="sub">Find the luck zone. The closer you get, the luckier you are for the day.</p>
       <p class="sponsor">
         Sponsored by <a href="https://www.greetingsearthling.ca" target="_blank" rel="noopener noreferrer">Greetings, Earthling</a>
       </p>
@@ -24,30 +22,28 @@
       <div class="grid" id="grid" aria-label="Luck grid"></div>
     </section>
 
-    <section class="card panelCard" aria-live="polite">
-      <div class="result">
-        <div class="resultRow">
-          <div class="previewTile" aria-label="Your selected tile preview">
-            <div class="previewOverlay" id="previewOverlay"></div>
-            <div id="previewIcon" class="previewSymbol"></div>
-          </div>
+    <section class="card bottomCard" aria-live="polite">
+      <div class="bottom">
+        <div class="result">
+          <h2 id="resultTitle">Pick a spot.</h2>
+          <p id="resultText">Then the Luck Meter will reveal how close you were to the luck zone.</p>
 
-          <div class="resultCopy">
-            <h2 id="resultTitle">Pick a spot.</h2>
-            <p id="resultText">Then the Luck Meter will reveal how close you were to the luck zone.</p>
+          <div class="badgeRow" id="badgeRow" style="display:none;"></div>
 
-            <div class="badgeRow" id="badgeRow" style="display:none;"></div>
-
-            <div class="shareRow">
-              <button class="btn" id="shareBtn" type="button" disabled>Share your luck</button>
-              <div class="shareHint" id="shareHint" aria-live="polite"></div>
-            </div>
+          <div class="shareRow">
+            <button class="btn" id="shareBtn" type="button" disabled>Share your luck</button>
+            <div class="shareHint" id="shareHint" aria-live="polite"></div>
           </div>
         </div>
+
+        <aside class="extras" aria-label="Lucky extras">
+          <h3>Lucky ______ of the day</h3>
+          <ul id="extrasList" class="extrasList"></ul>
+        </aside>
       </div>
     </section>
   </main>
 
-  <script src="script.js?v=80" defer></script>
+  <script src="script.js?v=90" defer></script>
 </body>
 </html>
