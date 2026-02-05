@@ -13,10 +13,10 @@
   const shareHint = document.getElementById("shareHint");
 
   const luckyNumberEl = document.getElementById("luckyNumber");
-  const colorTopSwatch = document.getElementById("colorTopSwatch");
-  const colorBottomSwatch = document.getElementById("colorBottomSwatch");
-  const colorTopHex = document.getElementById("colorTopHex");
-  const colorBottomHex = document.getElementById("colorBottomHex");
+  const luckyLetterEl = document.getElementById("luckyLetter");
+  const colorSwatch = document.getElementById("colorSwatch");
+  const colorName = document.getElementById("colorName");
+  const colorHex = document.getElementById("colorHex");
   const leftRightEl = document.getElementById("leftRight");
 
   const dinnerSuggestionEl = document.getElementById("dinnerSuggestion");
@@ -26,6 +26,7 @@
 
   if (!boardEl) return;
 
+  // ---------- Helpers ----------
   function rc(i){ return { r: Math.floor(i / COLS), c: i % COLS }; }
 
   // Chebyshev distance gives clean square rings
@@ -36,7 +37,16 @@
 
   function pick(arr){ return arr[Math.floor(Math.random() * arr.length)]; }
 
-  // Lucky extras
+  function randInt(min, maxInclusive){
+    return Math.floor(Math.random() * (maxInclusive - min + 1)) + min;
+  }
+
+  function randLetter(){
+    const code = 65 + randInt(0, 25);
+    return String.fromCharCode(code);
+  }
+
+  // ---------- Right-side “lucky of the day” ----------
   const colorPool = [
     { name: "Lucky Green", hex: "#55be0a" },
     { name: "Lilac", hex: "#875da6" },
@@ -50,36 +60,83 @@
     { name: "Brick", hex: "#c2410c" }
   ];
 
+  luckyNumberEl.textContent = String(randInt(0, 9));
+  luckyLetterEl.textContent = randLetter();
+
+  const c = pick(colorPool);
+  colorSwatch.style.background = c.hex;
+  colorName.textContent = c.name;
+  colorHex.textContent = c.hex;
+
+  leftRightEl.textContent = Math.random() < 0.5 ? "LEFT" : "RIGHT";
+
+  // ---------- Bottom extras ----------
   const dinners = ["Tacos", "Burgers", "Pasta", "Sushi", "Stir fry", "Pizza", "Breakfast for dinner", "Chili"];
   const microMoves = ["Clean one small thing", "Send one message you have delayed", "Take a 10 minute walk", "Drink water first", "Do the annoying task first", "Write one sentence"];
   const vibes = ["Calm", "Curious", "Bold", "Playful", "Patient", "Focused", "Gentle", "Decisive"];
   const places = ["Near a window", "Outside for 5 minutes", "Somewhere quiet", "A new spot", "A familiar spot", "Near water"];
-
-  // Render extras immediately
-  luckyNumberEl.textContent = String(Math.floor(Math.random() * 10));
-
-  // Pick two different colors
-  const top = pick(colorPool);
-  let bottom = pick(colorPool);
-  while (bottom.hex === top.hex) bottom = pick(colorPool);
-
-  colorTopSwatch.style.background = top.hex;
-  colorBottomSwatch.style.background = bottom.hex;
-  colorTopHex.textContent = top.hex;
-  colorBottomHex.textContent = bottom.hex;
-
-  leftRightEl.textContent = Math.random() < 0.5 ? "LEFT" : "RIGHT";
 
   dinnerSuggestionEl.textContent = pick(dinners);
   microMoveEl.textContent = pick(microMoves);
   luckyVibeEl.textContent = pick(vibes);
   luckyPlaceEl.textContent = pick(places);
 
+  // ---------- Ads (mock, with optional JPGs) ----------
+  // If you add images later, put them in /ads and use these filenames.
+  const adCatalog = [
+    { brand: "Nike", img: "ads/nike_728x90.jpg" },
+    { brand: "Apple", img: "ads/apple_728x90.jpg" },
+    { brand: "Spotify", img: "ads/spotify_728x90.jpg" },
+    { brand: "Google", img: "ads/google_300x100.jpg" },
+    { brand: "Pantone", img: "ads/pantone_300x100.jpg" },
+    { brand: "Mastercard", img: "ads/mastercard_300x100.jpg" },
+    { brand: "Google Maps", img: "ads/googlemaps_300x100.jpg" },
+    { brand: "Uber Eats", img: "ads/ubereats_300x60.jpg" },
+    { brand: "Headspace", img: "ads/headspace_300x60.jpg" },
+    { brand: "IKEA", img: "ads/ikea_300x60.jpg" },
+    { brand: "Airbnb", img: "ads/airbnb_300x60.jpg" }
+  ];
+
+  function pickAdForSize(size){
+    // Prefer ads with matching size in filename, otherwise any brand.
+    const sized = adCatalog.filter(a => (a.img || "").includes(size));
+    return sized.length ? pick(sized) : pick(adCatalog);
+  }
+
+  function applyAd(slotEl){
+    const size = slotEl.getAttribute("data-size") || "";
+    const ad = pickAdForSize(size);
+
+    const imgEl = slotEl.querySelector(".adImg");
+    const brandEl = slotEl.querySelector(".adBrand");
+
+    slotEl.setAttribute("data-brand", ad.brand);
+    slotEl.setAttribute("data-img", ad.img || "");
+
+    brandEl.textContent = ad.brand;
+
+    // Try load image, fallback stays if missing
+    if (imgEl && ad.img) {
+      imgEl.onload = () => {
+        slotEl.classList.add("hasImg");
+        imgEl.style.display = "block";
+      };
+      imgEl.onerror = () => {
+        slotEl.classList.remove("hasImg");
+        imgEl.style.display = "none";
+      };
+      imgEl.src = ad.img;
+    }
+  }
+
+  document.querySelectorAll(".adSlot").forEach(applyAd);
+
+  // ---------- Luck board ----------
   // Pick bullseye
   const luckyIndex = Math.floor(Math.random() * COUNT);
   const dists = new Array(COUNT).fill(0).map((_, i) => dist(i, luckyIndex));
 
-  // center: 5!, ring1: 4!, ring2: 3!, ring3: 1, rest: 0
+  // center: 5!, ring1: 4, ring2: 3, ring3: 1, rest: 0
   function scoreForDistance(d){
     if (d === 0) return 5;
     if (d === 1) return 4;
@@ -97,11 +154,11 @@
   }
 
   function messageForScore(s){
-    if (s === 5) return "You found the luck zone. Use it while it is here.";
-    if (s === 4) return "Oooh so close. Still a ton of good luck in the air for you today.";
-    if (s === 3) return "Pretty close. Expect a few small wins today.";
-    if (s === 1) return "Not far off. Stay open to timing and tiny advantages.";
-    return "Not in the zone today. Keep it simple, be kind to yourself, and manufacture the win.";
+    if (s === 5) return "Huge day. Do the thing you have been putting off.";
+    if (s === 4) return "Oooh so close. Expect some nice timing today.";
+    if (s === 3) return "Solid day. A few small wins should show up.";
+    if (s === 1) return "Not far off. Keep it simple and take the easy wins.";
+    return "Not in the zone today. Keep it light. Luck is a funny thing.";
   }
 
   function overlayClassByDistance(d){
@@ -123,7 +180,10 @@
     boardEl.querySelectorAll(".tile").forEach(t => {
       t.classList.remove("pulse", "chosen");
       const lab = t.querySelector(".label");
-      if (lab) lab.textContent = "";
+      if (lab) {
+        lab.textContent = "";
+        lab.classList.remove("zero");
+      }
     });
   }
 
@@ -150,7 +210,8 @@
           if (!overlay || !label) return;
 
           const s = scoreForDistance(dists[i]);
-          label.textContent = (s === 5 || s === 4 || s === 3) ? `${s}!` : String(s);
+          label.textContent = (s === 5) ? "5!" : String(s); // only 5 has !
+          if (s === 0) label.classList.add("zero");
 
           const cls = overlayClassByDistance(dists[i]);
           if (cls) {
@@ -170,7 +231,10 @@
       tiles.forEach((tile, i) => {
         const label = tile.querySelector(".label");
         if (!label) return;
-        if (dists[i] > 3) label.textContent = "0";
+        if (dists[i] > 3) {
+          label.textContent = "0";
+          label.classList.add("zero");
+        }
       });
     }, 3 * waveDelay + 120);
   }
