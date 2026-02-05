@@ -26,7 +26,7 @@
 
   if (!boardEl) return;
 
-  // ---------- Helpers ----------
+  // Helpers
   function rc(i){ return { r: Math.floor(i / COLS), c: i % COLS }; }
 
   // Chebyshev distance gives clean square rings
@@ -46,7 +46,7 @@
     return String.fromCharCode(code);
   }
 
-  // ---------- Right-side “lucky of the day” ----------
+  // Right-side “lucky of the day”
   const colorPool = [
     { name: "Lucky Green", hex: "#55be0a" },
     { name: "Lilac", hex: "#875da6" },
@@ -70,7 +70,7 @@
 
   leftRightEl.textContent = Math.random() < 0.5 ? "LEFT" : "RIGHT";
 
-  // ---------- Bottom extras ----------
+  // Bottom extras
   const dinners = ["Tacos", "Burgers", "Pasta", "Sushi", "Stir fry", "Pizza", "Breakfast for dinner", "Chili"];
   const microMoves = ["Clean one small thing", "Send one message you have delayed", "Take a 10 minute walk", "Drink water first", "Do the annoying task first", "Write one sentence"];
   const vibes = ["Calm", "Curious", "Bold", "Playful", "Patient", "Focused", "Gentle", "Decisive"];
@@ -81,62 +81,10 @@
   luckyVibeEl.textContent = pick(vibes);
   luckyPlaceEl.textContent = pick(places);
 
-  // ---------- Ads (mock, with optional JPGs) ----------
-  // If you add images later, put them in /ads and use these filenames.
-  const adCatalog = [
-    { brand: "Nike", img: "ads/nike_728x90.jpg" },
-    { brand: "Apple", img: "ads/apple_728x90.jpg" },
-    { brand: "Spotify", img: "ads/spotify_728x90.jpg" },
-    { brand: "Google", img: "ads/google_300x100.jpg" },
-    { brand: "Pantone", img: "ads/pantone_300x100.jpg" },
-    { brand: "Mastercard", img: "ads/mastercard_300x100.jpg" },
-    { brand: "Google Maps", img: "ads/googlemaps_300x100.jpg" },
-    { brand: "Uber Eats", img: "ads/ubereats_300x60.jpg" },
-    { brand: "Headspace", img: "ads/headspace_300x60.jpg" },
-    { brand: "IKEA", img: "ads/ikea_300x60.jpg" },
-    { brand: "Airbnb", img: "ads/airbnb_300x60.jpg" }
-  ];
-
-  function pickAdForSize(size){
-    // Prefer ads with matching size in filename, otherwise any brand.
-    const sized = adCatalog.filter(a => (a.img || "").includes(size));
-    return sized.length ? pick(sized) : pick(adCatalog);
-  }
-
-  function applyAd(slotEl){
-    const size = slotEl.getAttribute("data-size") || "";
-    const ad = pickAdForSize(size);
-
-    const imgEl = slotEl.querySelector(".adImg");
-    const brandEl = slotEl.querySelector(".adBrand");
-
-    slotEl.setAttribute("data-brand", ad.brand);
-    slotEl.setAttribute("data-img", ad.img || "");
-
-    brandEl.textContent = ad.brand;
-
-    // Try load image, fallback stays if missing
-    if (imgEl && ad.img) {
-      imgEl.onload = () => {
-        slotEl.classList.add("hasImg");
-        imgEl.style.display = "block";
-      };
-      imgEl.onerror = () => {
-        slotEl.classList.remove("hasImg");
-        imgEl.style.display = "none";
-      };
-      imgEl.src = ad.img;
-    }
-  }
-
-  document.querySelectorAll(".adSlot").forEach(applyAd);
-
-  // ---------- Luck board ----------
-  // Pick bullseye
+  // Luck board
   const luckyIndex = Math.floor(Math.random() * COUNT);
   const dists = new Array(COUNT).fill(0).map((_, i) => dist(i, luckyIndex));
 
-  // center: 5!, ring1: 4, ring2: 3, ring3: 1, rest: 0
   function scoreForDistance(d){
     if (d === 0) return 5;
     if (d === 1) return 4;
@@ -210,7 +158,7 @@
           if (!overlay || !label) return;
 
           const s = scoreForDistance(dists[i]);
-          label.textContent = (s === 5) ? "5!" : String(s); // only 5 has !
+          label.textContent = (s === 5) ? "5!" : String(s);
           if (s === 0) label.classList.add("zero");
 
           const cls = overlayClassByDistance(dists[i]);
@@ -226,7 +174,6 @@
       }, ring * waveDelay);
     }
 
-    // Fill the rest as 0 after wave
     setTimeout(() => {
       tiles.forEach((tile, i) => {
         const label = tile.querySelector(".label");
