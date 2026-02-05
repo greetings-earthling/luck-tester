@@ -1,104 +1,144 @@
 (function () {
   "use strict";
 
-  const gridEl = document.getElementById("grid");
-  const resultTitle = document.getElementById("resultTitle");
-  const resultText = document.getElementById("resultText");
-  const badgeRow = document.getElementById("badgeRow");
-  const shareBtn = document.getElementById("shareBtn");
-  const shareHint = document.getElementById("shareHint");
-  const extrasList = document.getElementById("extrasList");
-
-  if (!gridEl) return;
-
+  // Board config
   const COLS = 10;
-  const ROWS = 6;
+  const ROWS = 10;
   const COUNT = COLS * ROWS;
 
-  function rc(i) { return { r: Math.floor(i / COLS), c: i % COLS }; }
+  const boardEl = document.getElementById("board");
+  const resultTitleEl = document.getElementById("resultTitle");
+  const resultTextEl = document.getElementById("resultText");
+  const shareBtn = document.getElementById("shareBtn");
+  const shareHint = document.getElementById("shareHint");
 
-  // Square rings (Chebyshev distance)
+  const luckyNumberEl = document.getElementById("luckyNumber");
+  const colorTopSwatch = document.getElementById("colorTopSwatch");
+  const colorBottomSwatch = document.getElementById("colorBottomSwatch");
+  const colorTopHex = document.getElementById("colorTopHex");
+  const colorBottomHex = document.getElementById("colorBottomHex");
+  const leftRightEl = document.getElementById("leftRight");
+
+  const dinnerSuggestionEl = document.getElementById("dinnerSuggestion");
+  const microMoveEl = document.getElementById("microMove");
+  const luckyVibeEl = document.getElementById("luckyVibe");
+  const luckyPlaceEl = document.getElementById("luckyPlace");
+
+  if (!boardEl) return;
+
+  function rc(i){ return { r: Math.floor(i / COLS), c: i % COLS }; }
+
+  // Chebyshev distance gives clean square rings
   function dist(a, b) {
     const A = rc(a), B = rc(b);
     return Math.max(Math.abs(A.r - B.r), Math.abs(A.c - B.c));
   }
 
+  function pick(arr){ return arr[Math.floor(Math.random() * arr.length)]; }
+
+  // Lucky extras
+  const colorPool = [
+    { name: "Lucky Green", hex: "#55be0a" },
+    { name: "Lilac", hex: "#875da6" },
+    { name: "Sky", hex: "#5aa9e6" },
+    { name: "Sun", hex: "#ffcc33" },
+    { name: "Rose", hex: "#ff5d8f" },
+    { name: "Midnight", hex: "#111827" },
+    { name: "Cream", hex: "#f6f0ff" },
+    { name: "Tangerine", hex: "#ff7a00" },
+    { name: "Teal", hex: "#14b8a6" },
+    { name: "Brick", hex: "#c2410c" }
+  ];
+
+  const dinners = ["Tacos", "Burgers", "Pasta", "Sushi", "Stir fry", "Pizza", "Breakfast for dinner", "Chili"];
+  const microMoves = ["Clean one small thing", "Send one message you have delayed", "Take a 10 minute walk", "Drink water first", "Do the annoying task first", "Write one sentence"];
+  const vibes = ["Calm", "Curious", "Bold", "Playful", "Patient", "Focused", "Gentle", "Decisive"];
+  const places = ["Near a window", "Outside for 5 minutes", "Somewhere quiet", "A new spot", "A familiar spot", "Near water"];
+
+  // Render extras immediately
+  luckyNumberEl.textContent = String(Math.floor(Math.random() * 10));
+
+  // Pick two different colors
+  const top = pick(colorPool);
+  let bottom = pick(colorPool);
+  while (bottom.hex === top.hex) bottom = pick(colorPool);
+
+  colorTopSwatch.style.background = top.hex;
+  colorBottomSwatch.style.background = bottom.hex;
+  colorTopHex.textContent = top.hex;
+  colorBottomHex.textContent = bottom.hex;
+
+  leftRightEl.textContent = Math.random() < 0.5 ? "LEFT" : "RIGHT";
+
+  dinnerSuggestionEl.textContent = pick(dinners);
+  microMoveEl.textContent = pick(microMoves);
+  luckyVibeEl.textContent = pick(vibes);
+  luckyPlaceEl.textContent = pick(places);
+
+  // Pick bullseye
   const luckyIndex = Math.floor(Math.random() * COUNT);
   const dists = new Array(COUNT).fill(0).map((_, i) => dist(i, luckyIndex));
 
-  function overlayClassByDistance(d) {
-    if (d === 0) return "o-g10";
-    if (d === 1) return "o-g8";
-    if (d === 2) return "o-g6";
-    if (d === 3) return "o-g4";
+  // Score mapping per your spec
+  // center: 5!, ring1: 4!, ring2: 3!, ring3: 1, rest: 0
+  function scoreForDistance(d){
+    if (d === 0) return 5;
+    if (d === 1) return 4;
+    if (d === 2) return 3;
+    if (d === 3) return 1;
+    return 0;
+  }
+
+  function labelForScore(s){
+    if (s === 5) return "5/5: Bullseye";
+    if (s === 4) return "4/5: Very close";
+    if (s === 3) return "3/5: Close enough";
+    if (s === 1) return "1/5: Not far off";
+    return "0/5: Make your own luck day";
+  }
+
+  function messageForScore(s){
+    if (s === 5) return "You found the luck zone. Use it while it is here.";
+    if (s === 4) return "Oooh so close. Still a ton of good luck in the air for you today.";
+    if (s === 3) return "Pretty close. Expect a few small wins today.";
+    if (s === 1) return "Not far off. Stay open to timing and tiny advantages.";
+    return "Not in the zone today. Keep it simple, be kind to yourself, and manufacture the win.";
+  }
+
+  function overlayClassByDistance(d){
+    if (d === 0) return "o-g5";
+    if (d === 1) return "o-g4";
+    if (d === 2) return "o-g3";
+    if (d === 3) return "o-g1";
     return "";
   }
-
-  function tierTitle(d) {
-    if (d === 0) return "MEGA LUCKY DAY!";
-    if (d === 1) return "VERY LUCKY DAY!";
-    if (d === 2) return "LUCK IS ON YOUR SIDE TODAY!";
-    if (d === 3) return "LOW FRICTION DAY";
-    return "MAKE YOUR OWN LUCK KINDA DAY";
-  }
-
-  function messageFor(d) {
-    if (d === 0) return "Bullseye. You found the luck zone.";
-    if (d === 1) return "Oooh so close. Still a ton of good luck in the air for you today.";
-    if (d === 2) return "Pretty close. You should still catch some good luck today.";
-    if (d === 3) return "Not far off. Keep your eyes open for small wins.";
-    return "Not in the zone today. Still, you never know. Luck is a funny thing.";
-  }
-
-  // Lucky extras (random on page load)
-  const luckyColors = ["Green", "Purple", "Gold", "Blue", "Red", "Teal", "Orange", "Pink", "Black", "White"];
-  const luckyNumbers = ["3", "7", "11", "13", "17", "21", "23", "27", "33", "42"];
-  const luckyDirections = ["North", "East", "South", "West", "North-East", "South-West"];
-  const luckyActions = [
-    "Text someone you miss",
-    "Clean one small thing",
-    "Take a short walk",
-    "Buy a coffee, slowly",
-    "Say yes to the easier option",
-    "Do the annoying task first"
-  ];
-  const luckyVibes = ["Bold", "Calm", "Curious", "Playful", "Patient", "Decisive", "Gentle", "Focused"];
-
-  function pick(arr) { return arr[Math.floor(Math.random() * arr.length)]; }
-
-  const extras = [
-    `Lucky colour: ${pick(luckyColors)}`,
-    `Lucky number: ${pick(luckyNumbers)}`,
-    `Lucky direction: ${pick(luckyDirections)}`,
-    `Lucky vibe: ${pick(luckyVibes)}`,
-    `Lucky move: ${pick(luckyActions)}`
-  ];
-
-  extrasList.innerHTML = extras.map(x => `<li>${x}</li>`).join("");
 
   let locked = false;
   let chosenIndex = -1;
 
-  function clearOverlays() {
-    gridEl.querySelectorAll(".overlay").forEach(o => {
+  function clearBoardVisuals() {
+    boardEl.querySelectorAll(".overlay").forEach(o => {
       o.className = "overlay";
       o.classList.remove("fill");
     });
-    gridEl.querySelectorAll(".tile").forEach(t => t.classList.remove("pulse"));
-  }
-
-  function lockBoard() {
-    gridEl.classList.add("locked");
-    gridEl.querySelectorAll(".tile").forEach((tile, i) => {
-      tile.classList.remove("chosen");
-      tile.setAttribute("aria-disabled", "true");
-      tile.tabIndex = -1;
-      if (i === chosenIndex) tile.classList.add("chosen");
+    boardEl.querySelectorAll(".tile").forEach(t => {
+      t.classList.remove("pulse", "chosen");
+      const lab = t.querySelector(".label");
+      if (lab) lab.textContent = "";
     });
   }
 
-  function applyWave() {
-    const tiles = gridEl.querySelectorAll(".tile");
+  function lockBoard() {
+    boardEl.classList.add("locked");
+    boardEl.querySelectorAll(".tile").forEach((tile, i) => {
+      tile.classList.toggle("chosen", i === chosenIndex);
+      tile.setAttribute("aria-disabled", "true");
+      tile.tabIndex = -1;
+    });
+  }
+
+  function revealWave() {
+    const tiles = boardEl.querySelectorAll(".tile");
     const waveDelay = 140;
 
     for (let ring = 0; ring <= 3; ring++) {
@@ -107,33 +147,40 @@
           if (dists[i] !== ring) return;
 
           const overlay = tile.querySelector(".overlay");
-          if (!overlay) return;
+          const label = tile.querySelector(".label");
+          if (!overlay || !label) return;
 
-          const cls = overlayClassByDistance(ring);
-          if (!cls) return;
+          const s = scoreForDistance(dists[i]);
+          label.textContent = (s === 5 || s === 4 || s === 3) ? `${s}!` : String(s);
 
-          overlay.classList.add(cls);
-          overlay.classList.add("fill");
+          const cls = overlayClassByDistance(dists[i]);
+          if (cls) {
+            overlay.classList.add(cls);
+            overlay.classList.add("fill");
+          }
 
           tile.classList.remove("pulse");
-          void tile.offsetWidth;
+          void tile.offsetWidth; // retrigger
           tile.classList.add("pulse");
-
-          // Clover appears only at center when ring 0 fills
-          if (ring === 0 && i === luckyIndex) {
-            const content = tile.querySelector(".content");
-            if (content) content.textContent = "🍀";
-          }
         });
       }, ring * waveDelay);
     }
+
+    // Fill the rest (0s) after wave so board feels complete
+    setTimeout(() => {
+      tiles.forEach((tile, i) => {
+        const label = tile.querySelector(".label");
+        if (!label) return;
+        if (dists[i] > 3) label.textContent = "0";
+      });
+    }, 3 * waveDelay + 120);
   }
 
-  function buildShareText(d) {
+  function buildShareText(score) {
     const url = window.location.href;
     return [
-      `The Official Luck Meter says: ${tierTitle(d)}`,
-      `I was ${d === 0 ? "in" : `${d} step${d===1?"":"s"} away from`} the luck zone today.`,
+      `The Official Luck Meter says: ${labelForScore(score)}`,
+      `${messageForScore(score)}`,
       `Try yours: ${url}`
     ].join("\n");
   }
@@ -158,8 +205,8 @@
   shareBtn.addEventListener("click", async () => {
     if (!locked || chosenIndex < 0) return;
 
-    const d = dists[chosenIndex];
-    const text = buildShareText(d);
+    const s = scoreForDistance(dists[chosenIndex]);
+    const text = buildShareText(s);
     shareHint.textContent = "";
 
     try {
@@ -170,8 +217,8 @@
     }
   });
 
-  // Render tiles (blank)
-  gridEl.innerHTML = "";
+  // Build board
+  boardEl.innerHTML = "";
   for (let i = 0; i < COUNT; i++) {
     const tile = document.createElement("button");
     tile.type = "button";
@@ -179,7 +226,7 @@
     tile.setAttribute("aria-label", "Pick this spot");
 
     tile.innerHTML = `
-      <span class="content" aria-hidden="true"></span>
+      <span class="label" aria-hidden="true"></span>
       <div class="overlay"></div>
     `;
 
@@ -188,25 +235,21 @@
       locked = true;
       chosenIndex = i;
 
-      const d = dists[i];
-
-      resultTitle.textContent = tierTitle(d);
-      resultText.textContent = messageFor(d);
-
-      badgeRow.style.display = "flex";
-      badgeRow.innerHTML = `<span class="badge">You were <strong>${d === 0 ? "in" : `${d} step${d===1?"":"s"} away from`}</strong> the luck zone.</span>`;
+      const score = scoreForDistance(dists[i]);
+      resultTitleEl.textContent = labelForScore(score);
+      resultTextEl.textContent = messageForScore(score);
 
       shareBtn.disabled = false;
       shareHint.textContent = "";
 
       lockBoard();
-      clearOverlays();
+      clearBoardVisuals();
 
       setTimeout(() => {
-        applyWave();
+        revealWave();
       }, 320);
     });
 
-    gridEl.appendChild(tile);
+    boardEl.appendChild(tile);
   }
 })();
