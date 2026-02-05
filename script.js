@@ -5,20 +5,19 @@
   const resultTitle = document.getElementById("resultTitle");
   const resultText = document.getElementById("resultText");
   const badgeRow = document.getElementById("badgeRow");
-  const previewIcon = document.getElementById("previewIcon");
-  const previewOverlay = document.getElementById("previewOverlay");
   const shareBtn = document.getElementById("shareBtn");
   const shareHint = document.getElementById("shareHint");
+  const extrasList = document.getElementById("extrasList");
 
   if (!gridEl) return;
 
-  const COLS = 8;
-  const ROWS = 5;
+  const COLS = 10;
+  const ROWS = 6;
   const COUNT = COLS * ROWS;
 
   function rc(i) { return { r: Math.floor(i / COLS), c: i % COLS }; }
 
-  // Square rings
+  // Square rings (Chebyshev distance)
   function dist(a, b) {
     const A = rc(a), B = rc(b);
     return Math.max(Math.abs(A.r - B.r), Math.abs(A.c - B.c));
@@ -28,10 +27,10 @@
   const dists = new Array(COUNT).fill(0).map((_, i) => dist(i, luckyIndex));
 
   function overlayClassByDistance(d) {
-    if (d === 0) return "o-p10";
-    if (d === 1) return "o-p8";
-    if (d === 2) return "o-p6";
-    if (d === 3) return "o-p4";
+    if (d === 0) return "o-g10";
+    if (d === 1) return "o-g8";
+    if (d === 2) return "o-g6";
+    if (d === 3) return "o-g4";
     return "";
   }
 
@@ -51,13 +50,34 @@
     return "Not in the zone today. Still, you never know. Luck is a funny thing.";
   }
 
+  // Lucky extras (random on page load)
+  const luckyColors = ["Green", "Purple", "Gold", "Blue", "Red", "Teal", "Orange", "Pink", "Black", "White"];
+  const luckyNumbers = ["3", "7", "11", "13", "17", "21", "23", "27", "33", "42"];
+  const luckyDirections = ["North", "East", "South", "West", "North-East", "South-West"];
+  const luckyActions = [
+    "Text someone you miss",
+    "Clean one small thing",
+    "Take a short walk",
+    "Buy a coffee, slowly",
+    "Say yes to the easier option",
+    "Do the annoying task first"
+  ];
+  const luckyVibes = ["Bold", "Calm", "Curious", "Playful", "Patient", "Decisive", "Gentle", "Focused"];
+
+  function pick(arr) { return arr[Math.floor(Math.random() * arr.length)]; }
+
+  const extras = [
+    `Lucky colour: ${pick(luckyColors)}`,
+    `Lucky number: ${pick(luckyNumbers)}`,
+    `Lucky direction: ${pick(luckyDirections)}`,
+    `Lucky vibe: ${pick(luckyVibes)}`,
+    `Lucky move: ${pick(luckyActions)}`
+  ];
+
+  extrasList.innerHTML = extras.map(x => `<li>${x}</li>`).join("");
+
   let locked = false;
   let chosenIndex = -1;
-
-  function setPreview(d, isBull) {
-    previewIcon.textContent = isBull ? "🍀" : "";
-    previewOverlay.className = "previewOverlay on " + (overlayClassByDistance(d) || "");
-  }
 
   function clearOverlays() {
     gridEl.querySelectorAll(".overlay").forEach(o => {
@@ -69,22 +89,17 @@
 
   function lockBoard() {
     gridEl.classList.add("locked");
-    const all = gridEl.querySelectorAll(".tile");
-
-    all.forEach((tile, i) => {
-      tile.classList.remove("chosen", "bullseye");
-
+    gridEl.querySelectorAll(".tile").forEach((tile, i) => {
+      tile.classList.remove("chosen");
       tile.setAttribute("aria-disabled", "true");
       tile.tabIndex = -1;
-
       if (i === chosenIndex) tile.classList.add("chosen");
-      if (i === luckyIndex) tile.classList.add("bullseye");
     });
   }
 
   function applyWave() {
     const tiles = gridEl.querySelectorAll(".tile");
-    const waveDelay = 170;
+    const waveDelay = 140;
 
     for (let ring = 0; ring <= 3; ring++) {
       setTimeout(() => {
@@ -104,7 +119,7 @@
           void tile.offsetWidth;
           tile.classList.add("pulse");
 
-          // Clover appears only in bullseye once ring 0 fills
+          // Clover appears only at center when ring 0 fills
           if (ring === 0 && i === luckyIndex) {
             const content = tile.querySelector(".content");
             if (content) content.textContent = "🍀";
@@ -115,11 +130,10 @@
   }
 
   function buildShareText(d) {
-    const title = tierTitle(d);
     const url = window.location.href;
     return [
-      `The Official Luck Meter says: ${title}`,
-      `I was ${d === 0 ? "right in" : "near"} the luck zone today.`,
+      `The Official Luck Meter says: ${tierTitle(d)}`,
+      `I was ${d === 0 ? "in" : `${d} step${d===1?"":"s"} away from`} the luck zone today.`,
       `Try yours: ${url}`
     ].join("\n");
   }
@@ -150,15 +164,13 @@
 
     try {
       const ok = await copyToClipboard(text);
-      shareHint.textContent = ok
-        ? "Copied. Paste it anywhere."
-        : "Could not auto-copy. Copy your result text manually.";
+      shareHint.textContent = ok ? "Copied. Paste it anywhere." : "Could not auto-copy.";
     } catch {
-      shareHint.textContent = "Could not auto-copy. Copy your result text manually.";
+      shareHint.textContent = "Could not auto-copy.";
     }
   });
 
-  // Render 40 blank tiles
+  // Render tiles (blank)
   gridEl.innerHTML = "";
   for (let i = 0; i < COUNT; i++) {
     const tile = document.createElement("button");
@@ -184,8 +196,6 @@
       badgeRow.style.display = "flex";
       badgeRow.innerHTML = `<span class="badge">You were <strong>${d === 0 ? "in" : `${d} step${d===1?"":"s"} away from`}</strong> the luck zone.</span>`;
 
-      setPreview(d, d === 0);
-
       shareBtn.disabled = false;
       shareHint.textContent = "";
 
@@ -194,7 +204,7 @@
 
       setTimeout(() => {
         applyWave();
-      }, 380);
+      }, 320);
     });
 
     gridEl.appendChild(tile);
