@@ -7,16 +7,15 @@
   --accent: #875da6;
   --border: rgba(17,17,17,0.12);
 
-  /* Strong separation */
-  --p10: rgba(135,93,166,1.00); /* bullseye */
-  --p8:  rgba(135,93,166,0.72); /* ring 1 */
-  --p6:  rgba(135,93,166,0.50); /* ring 2 */
-  --p4:  rgba(135,93,166,0.32); /* ring 3 */
+  --p10: rgba(135,93,166,1.00);
+  --p8:  rgba(135,93,166,0.72);
+  --p6:  rgba(135,93,166,0.50);
+  --p4:  rgba(135,93,166,0.32);
 
   --shadow: 0 10px 26px rgba(0,0,0,0.06);
 
-  /* How much non-selected symbols fade after pick */
-  --fade-symbol: 0.35;
+  /* Fade non-chosen tiles’ “content” after pick (we have almost none now) */
+  --fade-content: 0.35;
 }
 
 *{ box-sizing: border-box; }
@@ -44,7 +43,6 @@ html,body{
   box-shadow: var(--shadow);
 }
 
-/* Header */
 .headerCard{ padding: 14px 14px 12px; }
 
 h1{
@@ -72,13 +70,11 @@ h1{
   text-decoration: none;
   font-weight: 700;
 }
-
 .sponsor a:hover{ text-decoration: underline; }
 
 /* Grid */
 .gridCard{ padding: 10px; }
 
-/* 8 x 5 */
 .grid{
   display: grid;
   grid-template-columns: repeat(8, minmax(0, 1fr));
@@ -112,16 +108,17 @@ h1{
   outline-offset: 2px;
 }
 
-.symbol{
+.content{
   position: relative;
   z-index: 2;
-  font-size: clamp(22px, 3.4vw, 34px);
+  font-size: 28px;
   line-height: 1;
   transform: translateY(1px);
-  transition: opacity 180ms ease;
   opacity: 1;
+  transition: opacity 180ms ease;
 }
 
+/* Overlay */
 .overlay{
   position: absolute;
   inset: 0;
@@ -130,26 +127,24 @@ h1{
   transition: opacity 240ms ease;
 }
 
-/* overlay colour classes */
 .o-p10{ background: var(--p10); }
 .o-p8 { background: var(--p8); }
 .o-p6 { background: var(--p6); }
 .o-p4 { background: var(--p4); }
 
-/* Locked state: block clicks without disabling buttons */
+/* Locked: stop clicks */
 .grid.locked .tile{
   cursor: default;
   pointer-events: none;
 }
 
-/* Fade only symbols by default */
-.grid.locked .tile .symbol{
-  opacity: var(--fade-symbol);
+/* Fade any content after pick (only clover really) */
+.grid.locked .tile .content{
+  opacity: var(--fade-content);
 }
 
-/* Chosen + bullseye symbols are full opacity */
-.grid.locked .tile.chosen .symbol,
-.grid.locked .tile.bullseye .symbol{
+.grid.locked .tile.chosen .content,
+.grid.locked .tile.bullseye .content{
   opacity: 1;
 }
 
@@ -158,15 +153,13 @@ h1{
   border: 3px solid var(--accent);
 }
 
-/* Bullseye is easy to spot */
+/* Bullseye outline */
 .grid.locked .tile.bullseye{
   border: 2px solid rgba(135,93,166,0.85);
   box-shadow: 0 10px 22px rgba(135,93,166,0.18);
 }
 
-/* Wave animation helpers */
-.overlay.fill{ opacity: 1; }
-
+/* Wave animation: per-ring tile pulse */
 @keyframes ringPulse{
   0%{ transform: scale(1.00); }
   45%{ transform: scale(1.06); }
@@ -176,7 +169,9 @@ h1{
   animation: ringPulse 260ms ease-out;
 }
 
-/* Result panel */
+.overlay.fill{ opacity: 1; }
+
+/* Panel */
 .panelCard{ padding: 10px; }
 
 .result{
@@ -220,13 +215,12 @@ h1{
   opacity: 0;
   transition: opacity 240ms ease;
 }
-
 .previewOverlay.on{ opacity: 1; }
 
 .previewSymbol{
   position: relative;
   z-index: 2;
-  font-size: 36px;
+  font-size: 34px;
   line-height: 1;
 }
 
@@ -296,7 +290,7 @@ h1{
 
 /* Reduced motion */
 @media (prefers-reduced-motion: reduce){
-  .tile, .overlay, .symbol, .previewOverlay, .btn{ transition: none; }
+  .tile, .overlay, .content, .previewOverlay, .btn{ transition: none; }
   .tile:hover, .btn:hover{ transform:none; }
   .tile.pulse{ animation: none; }
 }
