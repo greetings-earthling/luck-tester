@@ -406,6 +406,32 @@ h1{
   aspect-ratio: 300 / 60;
 }
 
+.ad {
+  margin-top: 12px;
+  text-align: center;
+}
+
+.ad img {
+  max-width: 100%;
+  height: auto;
+  border-radius: 8px;
+  display: block;
+  margin: 0 auto;
+}
+
+.ad-top {
+  margin: 20px auto;
+}
+
+.ad-card {
+  margin-top: 16px;
+}
+
+.ad-small {
+  margin-top: 10px;
+  opacity: 0.95;
+}
+
 /* Reduced motion */
 @media (prefers-reduced-motion: reduce){
   .tile, .overlay, .btn{ transition: none; }
