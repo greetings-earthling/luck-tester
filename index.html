@@ -4,8 +4,8 @@
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width,initial-scale=1" />
   <title>Luck Meter</title>
-  <meta name="description" content="Welcome to the Luck Meter. Choose a symbol and see how lucky your day is likely to be." />
-  <link rel="stylesheet" href="styles.css?v=71" />
+  <meta name="description" content="Find the luck zone. The closer you get, the luckier your day is likely to be." />
+  <link rel="stylesheet" href="styles.css?v=80" />
 </head>
 
 <body>
@@ -13,7 +13,7 @@
     <header class="card headerCard">
       <h1>Welcome to the Luck Meter!</h1>
       <p class="sub">
-        Choose a symbol that matches how you feel today. The closer you are to the purple spot, the luckier your day is likely to be.
+        Find the luck zone. The closer you get, the luckier you are for the day.
       </p>
       <p class="sponsor">
         Sponsored by <a href="https://www.greetingsearthling.ca" target="_blank" rel="noopener noreferrer">Greetings, Earthling</a>
@@ -21,20 +21,20 @@
     </header>
 
     <section class="card gridCard" aria-label="Luck Meter board">
-      <div class="grid" id="grid" aria-label="Symbol grid"></div>
+      <div class="grid" id="grid" aria-label="Luck grid"></div>
     </section>
 
     <section class="card panelCard" aria-live="polite">
       <div class="result">
         <div class="resultRow">
-          <div class="previewTile" aria-label="Your selected symbol preview">
+          <div class="previewTile" aria-label="Your selected tile preview">
             <div class="previewOverlay" id="previewOverlay"></div>
             <div id="previewIcon" class="previewSymbol"></div>
           </div>
 
           <div class="resultCopy">
-            <h2 id="resultTitle">Pick one.</h2>
-            <p id="resultText">Then the Luck Meter will show you where you landed.</p>
+            <h2 id="resultTitle">Pick a spot.</h2>
+            <p id="resultText">Then the Luck Meter will reveal how close you were to the luck zone.</p>
 
             <div class="badgeRow" id="badgeRow" style="display:none;"></div>
 
@@ -48,7 +48,6 @@
     </section>
   </main>
 
-  <script src="symbols.js?v=71"></script>
-  <script src="script.js?v=71" defer></script>
+  <script src="script.js?v=80" defer></script>
 </body>
 </html>
