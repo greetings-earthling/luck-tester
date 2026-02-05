@@ -1,124 +1,141 @@
-<!DOCTYPE html>
-<html lang="en">
+<!doctype html>
+<html lang="en-CA">
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
   <title>Luck Meter</title>
-  <link rel="stylesheet" href="styles.css" />
+  <meta name="description" content="Choose a spot to get your luck score out of 5 for the day." />
+  <link rel="stylesheet" href="styles.css?v=120" />
 </head>
+
 <body>
-
-  <div class="page">
-
-    <!-- HEADER -->
-    <header class="card header-card">
-      <h1>Welcome to the Luck Meter</h1>
-      <p class="sub">
-        Choose a spot to get your luck score out of 5 for the day.
-      </p>
+  <main class="page">
+    <header class="card headerCard">
+      <h1>Welcome to the Luck Meter!</h1>
+      <p class="sub">Choose a spot to get your luck score out of 5 for the day.</p>
       <p class="sponsor">
-        Sponsored by <a href="https://www.greetingsearthling.ca" target="_blank">Greetings, Earthling</a>
+        Sponsored by
+        <a href="https://www.greetingsearthling.ca" target="_blank" rel="noopener noreferrer">Greetings, Earthling</a>
       </p>
     </header>
 
-    <!-- TOP AD -->
-    <div class="ad ad-top">
-      <img src="ads/ad_728x90.jpg" alt="Sponsored ad">
-    </div>
+    <!-- Top Sponsor -->
+    <section class="card adCard" aria-label="Sponsor">
+      <div class="adSlot adTop hasImg">
+        <img class="adImg" src="ads/ad_728x90.jpg" alt="Sponsored ad" />
+      </div>
+    </section>
 
-    <!-- MAIN CONTENT -->
-    <main class="two-col">
+    <section class="mainGrid">
+      <!-- LEFT: Luck meter -->
+      <section class="card leftCard" aria-label="Luck Meter">
+        <div class="leftTop">
+          <h2 class="sectionTitle">Luck Meter</h2>
+          <div class="hint">Choose a spot to get your luck score out of 5 for the day.</div>
+        </div>
 
-      <!-- LEFT: LUCK GRID -->
-      <section class="card grid-card">
-        <h2>Find the green zone</h2>
-        <p class="helper">
-          The closer you are, the luckier your day is.
-        </p>
+        <div class="boardWrap" aria-label="Luck board">
+          <div class="board" id="board" aria-label="Luck grid"></div>
+        </div>
 
-        <!-- GRID -->
-        <div id="grid" class="luck-grid">
-          <!-- JS injects grid cells here -->
+        <div class="leftBottom" aria-live="polite">
+          <div class="resultTitle" id="resultTitle">Pick a spot.</div>
+          <div class="resultText" id="resultText">Then the meter reveals how lucky you are today.</div>
+
+          <div class="shareRow">
+            <button class="btn" id="shareBtn" type="button" disabled>Share your result</button>
+            <div class="shareHint" id="shareHint" aria-live="polite"></div>
+          </div>
         </div>
       </section>
 
-      <!-- RIGHT: LUCK FACTS -->
-      <aside class="right-col">
+      <!-- RIGHT: daily extras -->
+      <aside class="rightCol" aria-label="Daily luck extras">
+        <section class="card miniCard">
+          <h3 class="miniTitle">Lucky number of the day</h3>
+          <div class="bigValue" id="luckyNumber">7</div>
 
-        <div class="card">
-          <h3>Lucky Number</h3>
-          <div id="luckyNumber" class="big-value">7</div>
-
-          <div class="ad ad-card">
-            <img src="ads/ad_300x100_1.jpg" alt="Sponsored ad">
+          <div class="adSlot adRight hasImg">
+            <img class="adImg" src="ads/ad_300x100_1.jpg" alt="Sponsored ad" />
           </div>
-        </div>
+        </section>
 
-        <div class="card">
-          <h3>Lucky Letter</h3>
-          <div id="luckyLetter" class="big-value">M</div>
+        <section class="card miniCard">
+          <h3 class="miniTitle">Lucky letter of the day</h3>
+          <div class="bigValue" id="luckyLetter">M</div>
 
-          <div class="ad ad-card">
-            <img src="ads/ad_300x100_2.jpg" alt="Sponsored ad">
+          <div class="adSlot adRight hasImg">
+            <img class="adImg" src="ads/ad_300x100_2.jpg" alt="Sponsored ad" />
           </div>
-        </div>
+        </section>
 
-        <div class="card">
-          <h3>Lucky Direction</h3>
-          <div id="luckyDirection" class="big-value">LEFT</div>
+        <section class="card miniCard">
+          <h3 class="miniTitle">Lucky colour of the day</h3>
 
-          <div class="ad ad-card">
-            <img src="ads/ad_300x100_3.jpg" alt="Sponsored ad">
+          <div class="colorRow">
+            <div class="colorSwatch" id="colorSwatch"></div>
+            <div class="colorInfo">
+              <div class="colorLabel" id="colorName">Lucky Green</div>
+              <div class="colorHex" id="colorHex">#55be0a</div>
+            </div>
           </div>
-        </div>
 
+          <div class="adSlot adRight hasImg">
+            <img class="adImg" src="ads/ad_300x100_3.jpg" alt="Sponsored ad" />
+          </div>
+        </section>
+
+        <section class="card miniCard">
+          <h3 class="miniTitle">Left or Right?</h3>
+          <div class="bigValue" id="leftRight">LEFT</div>
+
+          <div class="adSlot adRight hasImg">
+            <img class="adImg" src="ads/ad_300x100_4.jpg" alt="Sponsored ad" />
+          </div>
+        </section>
       </aside>
-
-    </main>
-
-    <!-- BOTTOM EXTRAS -->
-    <section class="bottom-row">
-
-      <div class="card">
-        <h3>Dinner Suggestion</h3>
-        <p>Something warm and comforting.</p>
-
-        <div class="ad ad-small">
-          <img src="ads/ad_300x60_1.jpg" alt="Sponsored ad">
-        </div>
-      </div>
-
-      <div class="card">
-        <h3>Lucky Time</h3>
-        <p>4:44 PM</p>
-
-        <div class="ad ad-small">
-          <img src="ads/ad_300x60_2.jpg" alt="Sponsored ad">
-        </div>
-      </div>
-
-      <div class="card">
-        <h3>Lucky Color</h3>
-        <p>#55BE0A</p>
-
-        <div class="ad ad-small">
-          <img src="ads/ad_300x60_3.jpg" alt="Sponsored ad">
-        </div>
-      </div>
-
-      <div class="card">
-        <h3>Lucky Word</h3>
-        <p>Momentum</p>
-
-        <div class="ad ad-small">
-          <img src="ads/ad_300x60_4.jpg" alt="Sponsored ad">
-        </div>
-      </div>
-
     </section>
 
-  </div>
+    <!-- Bottom extras -->
+    <section class="extrasGrid" aria-label="Extra suggestions">
+      <section class="card extraCard">
+        <h3 class="miniTitle">Dinner suggestion</h3>
+        <div class="extraValue" id="dinnerSuggestion">Tacos</div>
 
-  <script src="script.js"></script>
+        <div class="adSlot adBottom hasImg">
+          <img class="adImg" src="ads/ad_300x60_1.jpg" alt="Sponsored ad" />
+        </div>
+      </section>
+
+      <section class="card extraCard">
+        <h3 class="miniTitle">Lucky micro-move</h3>
+        <div class="extraValue" id="microMove">Clean one small thing</div>
+
+        <div class="adSlot adBottom hasImg">
+          <img class="adImg" src="ads/ad_300x60_2.jpg" alt="Sponsored ad" />
+        </div>
+      </section>
+
+      <section class="card extraCard">
+        <h3 class="miniTitle">Lucky vibe</h3>
+        <div class="extraValue" id="luckyVibe">Calm</div>
+
+        <div class="adSlot adBottom hasImg">
+          <img class="adImg" src="ads/ad_300x60_3.jpg" alt="Sponsored ad" />
+        </div>
+      </section>
+
+      <section class="card extraCard">
+        <h3 class="miniTitle">Lucky place</h3>
+        <div class="extraValue" id="luckyPlace">Near a window</div>
+
+        <div class="adSlot adBottom hasImg">
+          <img class="adImg" src="ads/ad_300x60_4.jpg" alt="Sponsored ad" />
+        </div>
+      </section>
+    </section>
+  </main>
+
+  <script src="script.js?v=120" defer></script>
 </body>
 </html>
