@@ -6,10 +6,10 @@
   --border: rgba(3,7,18,0.12);
   --accent: #885DA7;
 
-  --mega: rgba(85,190,10,0.95);
-  --super: rgba(85,190,10,0.70);
-  --bit: rgba(85,190,10,0.40);
-  --none: rgba(0,0,0,0.06);
+  --panel: #f9fafb;
+  --ink: #030712;
+
+  --shadow: 0 10px 25px rgba(15,23,42,0.12);
 }
 
 *{ box-sizing: border-box; }
@@ -37,25 +37,22 @@ html, body{
   padding: 14px;
 }
 
-.headerCard h1{
+.topBar h1{
   margin: 0;
   font-size: clamp(22px, 3vw, 34px);
   font-weight: 600;
   letter-spacing: -0.02em;
 }
-
 .sub{
   margin: 8px 0 0;
   color: var(--muted);
   line-height: 1.55;
 }
-
 .sponsor{
   margin: 8px 0 0;
   color: var(--muted);
   font-size: 13px;
 }
-
 .sponsor a{
   color: var(--accent);
   text-decoration: none;
@@ -63,62 +60,101 @@ html, body{
 }
 .sponsor a:hover{ text-decoration: underline; }
 
-.mainTwoCol{
+/* Machine wrapper */
+.machine{
+  padding: 14px;
   display: grid;
-  grid-template-columns: 1.2fr 0.8fr;
   gap: 14px;
-  align-items: start;
 }
 
-@media (max-width: 900px){
-  .mainTwoCol{ grid-template-columns: 1fr; }
+/* Modules */
+.module{
+  display: grid;
+  gap: 10px;
 }
 
-.sectionTitle{
-  margin: 0;
-  font-size: 18px;
+.moduleHead{
+  display:flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 10px;
+}
+
+.moduleTitle{
+  font-size: 14px;
   font-weight: 600;
 }
-
-.hint{
-  margin-top: 6px;
+.moduleHint{
+  margin-top: 2px;
+  font-size: 12px;
   color: var(--muted);
-  font-size: 13px;
-  line-height: 1.5;
 }
 
-/* Slot window */
-.slot-wrapper{
-  display:flex;
-  justify-content:center;
-  margin-top: 12px;
-  margin-bottom: 8px;
+.moduleFoot{
+  font-size: 12px;
+  color: #6b7280;
+  min-height: 1.2em;
 }
 
+/* Buttons */
+.btn{
+  appearance:none;
+  border: 1px solid var(--border);
+  background: #fff;
+  color: #111;
+  border-radius: 999px;
+  padding: 8px 12px;
+  font-size: 0.9rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: 0.15s;
+  white-space: nowrap;
+}
+.btn.primary{
+  background: var(--accent);
+  border-color: var(--accent);
+  color: #fff;
+}
+.btn:hover:not(:disabled){
+  transform: translateY(-1px);
+}
+.btn:disabled{
+  opacity: 0.65;
+  cursor: default;
+  transform: none;
+}
+
+/* Slot windows */
 .slot-window{
-  background: #f9fafb;
+  background: var(--panel);
   border-radius: 16px;
-  border: 2px solid #030712;
+  border: 2px solid var(--ink);
   padding: 0.9rem 1.1rem;
   width: 100%;
-  max-width: 520px;
-  min-height: 150px;
-  display:flex;
-  align-items:center;
-  justify-content:center;
-  overflow:hidden;
-  box-shadow: 0 10px 25px rgba(15,23,42,0.12);
-  text-align:left;
+  box-sizing: border-box;
+  overflow: hidden;
+  box-shadow: var(--shadow);
+  text-align: left;
 }
 
+.slot-window.big{ min-height: 170px; }
+.slot-window.mini{ min-height: 118px; }
+.slot-window.wide{ min-height: 130px; }
+.slot-window.stripWin{ min-height: 90px; }
+
 .slot-content{ width: 100%; }
+.slot-content.center{
+  display:grid;
+  place-items:center;
+  text-align:center;
+}
 
 .slot-label{
   font-size: 0.8rem;
   letter-spacing: 0.08em;
   text-transform: uppercase;
   color: #6b7280;
-  margin-bottom: 0.15rem;
+  margin-bottom: 0.25rem;
 }
 
 .slot-row{
@@ -128,24 +164,40 @@ html, body{
 }
 
 .slot-icon{
-  width: 42px;
-  height: 42px;
+  width: 46px;
+  height: 46px;
   display:grid;
   place-items:center;
   border-radius: 12px;
   border: 1px solid rgba(3,7,18,0.12);
   background: #fff;
-  font-size: 24px;
+  font-size: 26px;
+}
+.bigIcon—all: initial;
+.bigIcon{
+  width: 58px;
+  height: 58px;
+  display:grid;
+  place-items:center;
+  border-radius: 14px;
+  border: 1px solid rgba(3,7,18,0.12);
+  background: #fff;
+  font-size: 34px;
+  font-family: inherit;
 }
 
 .slot-name{
   font-size: 1.25rem;
   font-weight: 600;
   color: #030712;
-  margin: 0.1rem 0 0.15rem;
+  margin: 0.1rem 0 0.1rem;
   white-space: nowrap;
   overflow:hidden;
   text-overflow: ellipsis;
+}
+.slot-name.small{
+  font-size: 1rem;
+  margin: 0;
 }
 
 .slot-mantra{
@@ -163,150 +215,42 @@ html, body{
   line-height: 1.55;
   min-height: 1.2em;
 }
-
-.slot-status{
-  font-size: 0.85rem;
-  color: #6b7280;
-  margin-top: 0.35rem;
-  min-height: 1.2em;
-}
-
-/* Buttons */
-.controls{
-  margin-top: 10px;
-  display:flex;
-  gap: 10px;
-  align-items: center;
-  flex-wrap: wrap;
-}
-
-.btn{
-  appearance:none;
-  border: 1px solid var(--border);
-  background: #fff;
-  color: #111;
-  border-radius: 999px;
-  padding: 10px 14px;
-  font-size: 0.95rem;
-  font-weight: 600;
-  cursor: pointer;
-  transition: 0.15s;
-}
-
-.btn.primary{
-  background: var(--accent);
-  border-color: var(--accent);
-  color: #fff;
-}
-
-.btn:hover:not(:disabled){
-  transform: translateY(-1px);
-}
-
-.btn:disabled{
-  opacity: 0.65;
-  cursor: default;
-  transform: none;
-}
-
-.shareHint{
+.slot-text-detail.muted{
   color: var(--muted);
-  font-size: 13px;
+  margin-top: 6px;
 }
 
-/* Right tiles */
-.tilesCol{
-  display:grid;
-  gap: 10px;
-}
-
-.tileGrid{
-  display:grid;
-  grid-template-columns: repeat(2, minmax(0, 1fr));
-  gap: 12px;
-}
-
-.miniCard{
-  padding: 14px;
-  display:grid;
-  gap: 10px;
-  align-content: start;
-  min-height: 112px;
-}
-
-.miniLabel{
-  color: var(--muted);
-  font-size: 12px;
-  font-weight: 600;
-  text-transform: uppercase;
-  letter-spacing: 0.05em;
-}
-
-.miniValue{
-  font-size: 30px;
+/* Big value */
+.slot-value{
+  font-size: 40px;
   font-weight: 600;
   letter-spacing: -0.02em;
 }
 
-.miniValue.small{
-  font-size: 18px;
-  font-weight: 600;
-  line-height: 1.2;
-}
-
+/* Colour row */
 .colorRow{
   display:flex;
   gap: 10px;
   align-items: center;
 }
-
 .swatch{
-  width: 42px;
-  height: 42px;
+  width: 44px;
+  height: 44px;
   border-radius: 12px;
   border: 1px solid var(--border);
   background: rgba(0,0,0,0.03);
 }
 
-.colorName{ font-weight: 600; }
-.colorHex{
+.slot-mono{
   color: var(--muted);
   font-size: 12px;
-  margin-top: 2px;
+  margin-top: 3px;
   font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", "Courier New", monospace;
 }
 
-.revealable{
-  opacity: 0.35;
-  filter: grayscale(0.35);
-  transition: opacity 220ms ease, filter 220ms ease, transform 220ms ease;
-}
-
-.revealable.revealed{
-  opacity: 1;
-  filter: none;
-}
-
-.rightHint{
-  color: var(--muted);
-  font-size: 13px;
-  padding: 0 4px;
-}
-
-/* Fortune */
-.fortuneCard{ padding: 16px; }
-
-.fortuneLabel{
-  color: var(--muted);
-  font-size: 12px;
-  font-weight: 600;
-  text-transform: uppercase;
-  letter-spacing: 0.05em;
-}
-
+/* Fortune strip */
 .fortuneStrip{
-  margin-top: 10px;
-  padding: 14px;
+  padding: 12px;
   border-radius: 14px;
   border: 1px dashed rgba(17,17,17,0.20);
   background: #fffaf0;
@@ -316,7 +260,43 @@ html, body{
   font-family: "Segoe Script", "Brush Script MT", "Comic Sans MS", Georgia, serif;
 }
 
+/* Layout grids */
+.gridTop{
+  display:grid;
+  grid-template-columns: 1.15fr 0.85fr;
+  gap: 14px;
+  align-items: start;
+}
+
+.miniGrid{
+  display:grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 14px;
+}
+
+.gridBottom{
+  display:grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 14px;
+}
+
+.stripRow{
+  display:grid;
+}
+
+.module.strip .slot-value{
+  font-size: 34px;
+}
+.stripValue{
+  letter-spacing: 0.08em;
+}
+
+@media (max-width: 900px){
+  .gridTop{ grid-template-columns: 1fr; }
+  .gridBottom{ grid-template-columns: 1fr; }
+}
+
 @media (max-width: 480px){
-  .slot-window{ min-height: 155px; }
-  .slot-name{ font-size: 1.15rem; }
+  .slot-window.big{ min-height: 180px; }
+  .slot-value{ font-size: 36px; }
 }
