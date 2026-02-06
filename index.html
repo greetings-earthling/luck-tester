@@ -1,11 +1,12 @@
+<!-- index.html -->
 <!doctype html>
 <html lang="en-CA">
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width,initial-scale=1" />
   <title>Luck Meter</title>
-  <meta name="description" content="Pick a spot. Reveal your luck score for today." />
-  <link rel="stylesheet" href="styles.css?v=130" />
+  <meta name="description" content="Spin the wheel to see how lucky you're gonna be today." />
+  <link rel="stylesheet" href="styles.css?v=200" />
 </head>
 
 <body>
@@ -13,9 +14,7 @@
     <header class="card headerCard">
       <h1>Welcome to the Luck Meter</h1>
       <p class="sub">
-        Pick any square. You will get a luck score out of 5 for today.
-        <br />
-        The closer you land to the green clover, the luckier your day is likely to be.
+        Spin the wheel to see how lucky you're gonna be today.
       </p>
       <p class="sponsor">
         Sponsored by
@@ -23,83 +22,88 @@
       </p>
     </header>
 
-    <!-- Top banner ad only -->
-    <section class="card adCard" aria-label="Sponsor">
-      <div class="adTop">
-        <img class="adImg" src="ads/ad_728x90.jpg" alt="Sponsored ad" />
-      </div>
-    </section>
-
-    <!-- Grid -->
-    <section class="card gridCard" aria-label="Luck grid">
-      <div class="gridTop">
-        <h2 class="sectionTitle">Pick a square</h2>
-        <div class="hint">
-          You are not trying to “win”.
-          You are checking what kind of luck day you are in for.
-        </div>
-      </div>
-
-      <div class="boardWrap">
-        <div class="board" id="board" aria-label="Luck board"></div>
-      </div>
-
-      <div class="resultArea" aria-live="polite">
-        <div class="resultTitle" id="resultTitle">Pick any square to reveal your luck.</div>
-        <div class="resultText" id="resultText">
-          After you pick, the board will reveal the clover and the luck rings.
-        </div>
-
-        <div class="shareRow">
-          <button class="btn" id="shareBtn" type="button" disabled>Copy share text</button>
-          <div class="shareHint" id="shareHint"></div>
-        </div>
-      </div>
-    </section>
-
-    <!-- Five cards -->
-    <section class="fiveCol" aria-label="Daily extras">
-      <div class="card miniCard">
-        <div class="miniLabel">Lucky number</div>
-        <div class="miniValue" id="luckyNumber">7</div>
-      </div>
-
-      <div class="card miniCard">
-        <div class="miniLabel">Lucky letter</div>
-        <div class="miniValue" id="luckyLetter">M</div>
-      </div>
-
-      <div class="card miniCard">
-        <div class="miniLabel">Lucky colour</div>
-        <div class="colorRow">
-          <div class="swatch" id="colorSwatch"></div>
-          <div class="colorText">
-            <div class="colorName" id="colorName">Lucky Green</div>
-            <div class="colorHex" id="colorHex">#55be0a</div>
+    <section class="mainTwoCol">
+      <!-- LEFT: WHEEL -->
+      <section class="card wheelCard" aria-label="Luck wheel">
+        <div class="wheelTop">
+          <h2 class="sectionTitle">Spin the wheel</h2>
+          <div class="hint">
+            One spin. One vibe. Not science.
           </div>
         </div>
-      </div>
 
-      <div class="card miniCard">
-        <div class="miniLabel">Dinner suggestion</div>
-        <div class="miniValue small" id="dinnerSuggestion">Tacos</div>
-      </div>
+        <div class="wheelWrap">
+          <div class="pointer" aria-hidden="true"></div>
+          <canvas id="wheel" width="520" height="520" aria-label="Luck wheel canvas"></canvas>
+        </div>
 
-      <div class="card miniCard">
-        <div class="miniLabel">Emoji of the day</div>
-        <div class="miniValue" id="emojiOfDay">✨</div>
-      </div>
+        <div class="wheelControls">
+          <button class="btn primary" id="spinBtn" type="button">Spin</button>
+          <button class="btn" id="shareBtn" type="button" disabled>Copy share text</button>
+          <div class="shareHint" id="shareHint" aria-live="polite"></div>
+        </div>
+
+        <div class="resultBox" aria-live="polite">
+          <div class="resultTitle" id="resultTitle">Spin to reveal your luck.</div>
+          <div class="resultText" id="resultText">Then we fill in your lucky extras for the day.</div>
+        </div>
+      </section>
+
+      <!-- RIGHT: 6 TILES -->
+      <aside class="tilesCol" aria-label="Daily luck tiles">
+        <div class="tileGrid">
+          <section class="card miniCard">
+            <div class="miniLabel">Lucky number</div>
+            <div class="miniValue" id="luckyNumber">–</div>
+          </section>
+
+          <section class="card miniCard">
+            <div class="miniLabel">Lucky letter</div>
+            <div class="miniValue" id="luckyLetter">–</div>
+          </section>
+
+          <section class="card miniCard">
+            <div class="miniLabel">Lucky colour</div>
+            <div class="colorRow">
+              <div class="swatch" id="colorSwatch"></div>
+              <div class="colorText">
+                <div class="colorName" id="colorName">–</div>
+                <div class="colorHex" id="colorHex">–</div>
+              </div>
+            </div>
+          </section>
+
+          <section class="card miniCard">
+            <div class="miniLabel">Emoji of the day</div>
+            <div class="miniValue" id="emojiOfDay">–</div>
+          </section>
+
+          <section class="card miniCard">
+            <div class="miniLabel">Dinner suggestion</div>
+            <div class="miniValue small" id="dinnerSuggestion">–</div>
+          </section>
+
+          <section class="card miniCard">
+            <div class="miniLabel">Left or Right?</div>
+            <div class="miniValue" id="leftRight">–</div>
+          </section>
+        </div>
+
+        <div class="rightHint">
+          These reveal after you spin.
+        </div>
+      </aside>
     </section>
 
-    <!-- Fortune -->
+    <!-- FORTUNE -->
     <section class="card fortuneCard" aria-label="Fortune cookie message">
       <div class="fortuneWrap">
         <div class="fortuneLabel">Fortune</div>
-        <div class="fortuneStrip" id="fortuneText">You will find luck in small places.</div>
+        <div class="fortuneStrip" id="fortuneText">Spin the wheel first.</div>
       </div>
     </section>
   </main>
 
-  <script src="script.js?v=130" defer></script>
+  <script src="script.js?v=200" defer></script>
 </body>
 </html>
