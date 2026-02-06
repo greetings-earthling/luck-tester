@@ -1,16 +1,57 @@
-// script.js
 (function () {
-  "use strict";
+  const luckOptions = [
+    {
+      tier: "MEGA",
+      name: "MEGA LUCKY DAY",
+      icon: "🍀",
+      colorClass: "mega",
+      mantra: "Green light. Go.",
+      text: "Luck is on your side today. If you’ve been waiting for a sign, this is it."
+    },
+    {
+      tier: "SUPER",
+      name: "SUPER LUCKY DAY",
+      icon: "✨",
+      colorClass: "super",
+      mantra: "Timing is your friend.",
+      text: "Expect at least one weirdly perfect moment. Say yes to the easy opening."
+    },
+    {
+      tier: "BIT",
+      name: "A BIT LUCKY",
+      icon: "🙂",
+      colorClass: "bit",
+      mantra: "Small wins count.",
+      text: "Not magic, but smoother than average. Keep things simple and you’ll notice it."
+    },
+    {
+      tier: "NONE",
+      name: "MAKE YOUR OWN LUCK DAY",
+      icon: "😐",
+      colorClass: "none",
+      mantra: "No tailwind today. That’s fine.",
+      text: "Keep stakes low, avoid relying on luck, and manufacture your own good breaks."
+    }
+  ];
 
-  const canvas = document.getElementById("wheel");
-  const ctx = canvas.getContext("2d");
+  // Weighted distribution to match your ask:
+  // 1 lucky, 3 super, 6 a bit, 6 none = 16 total
+  const weighted = [
+    "MEGA",
+    "SUPER","SUPER","SUPER",
+    "BIT","BIT","BIT","BIT","BIT","BIT",
+    "NONE","NONE","NONE","NONE","NONE","NONE"
+  ];
 
-  const spinBtn = document.getElementById("spinBtn");
+  const slotName = document.getElementById("slot-name");
+  const slotIcon = document.getElementById("slot-icon");
+  const slotMantra = document.getElementById("slot-mantra");
+  const slotDetail = document.getElementById("slot-text-detail");
+  const status = document.getElementById("slot-status");
+  const spinBtn = document.getElementById("spin-btn");
+
   const shareBtn = document.getElementById("shareBtn");
   const shareHint = document.getElementById("shareHint");
-
-  const resultTitle = document.getElementById("resultTitle");
-  const resultText = document.getElementById("resultText");
 
   const luckyNumberEl = document.getElementById("luckyNumber");
   const luckyLetterEl = document.getElementById("luckyLetter");
@@ -22,150 +63,19 @@
   const leftRightEl = document.getElementById("leftRight");
   const fortuneEl = document.getElementById("fortuneText");
 
-  // 16 slices total:
-  // 1 MEGA, 3 SUPER, 6 A BIT, 6 NOT MUCH
-  // Pointer is at 12 o'clock. We choose a target slice and rotate wheel so it lands there.
+  const revealables = Array.from(document.querySelectorAll(".revealable"));
 
-  const slices = shuffle([
-    { tier: "MEGA", label: "MEGA LUCKY", icon: "🍀", color: "rgba(85,190,10,0.95)" },
-
-    { tier: "SUPER", label: "SUPER LUCKY", icon: "✨", color: "rgba(85,190,10,0.75)" },
-    { tier: "SUPER", label: "SUPER LUCKY", icon: "🌟", color: "rgba(85,190,10,0.75)" },
-    { tier: "SUPER", label: "SUPER LUCKY", icon: "🎯", color: "rgba(85,190,10,0.75)" },
-
-    { tier: "BIT", label: "A BIT LUCKY", icon: "🙂", color: "rgba(85,190,10,0.45)" },
-    { tier: "BIT", label: "A BIT LUCKY", icon: "🧲", color: "rgba(85,190,10,0.45)" },
-    { tier: "BIT", label: "A BIT LUCKY", icon: "🪙", color: "rgba(85,190,10,0.45)" },
-    { tier: "BIT", label: "A BIT LUCKY", icon: "🧠", color: "rgba(85,190,10,0.45)" },
-    { tier: "BIT", label: "A BIT LUCKY", icon: "🪴", color: "rgba(85,190,10,0.45)" },
-    { tier: "BIT", label: "A BIT LUCKY", icon: "☀️", color: "rgba(85,190,10,0.45)" },
-
-    { tier: "NONE", label: "NOT MUCH LUCK", icon: "😐", color: "rgba(0,0,0,0.06)" },
-    { tier: "NONE", label: "NOT MUCH LUCK", icon: "🧊", color: "rgba(0,0,0,0.06)" },
-    { tier: "NONE", label: "NOT MUCH LUCK", icon: "🙃", color: "rgba(0,0,0,0.06)" },
-    { tier: "NONE", label: "NOT MUCH LUCK", icon: "😮‍💨", color: "rgba(0,0,0,0.06)" },
-    { tier: "NONE", label: "NOT MUCH LUCK", icon: "🫠", color: "rgba(0,0,0,0.06)" },
-    { tier: "NONE", label: "NOT MUCH LUCK", icon: "🤷", color: "rgba(0,0,0,0.06)" },
-  ]);
-
-  const sliceCount = slices.length;
-  const sliceAngle = (Math.PI * 2) / sliceCount;
-
-  // Wheel rotation state (radians)
-  let angle = 0;
   let spinning = false;
-  let landedIndex = null;
-
-  // Extras locked after spin
+  let finalChoice = null;
   let extras = null;
 
-  // Resize canvas for crispness
-  function fitCanvas() {
-    const cssSize = Math.min(520, canvas.parentElement.clientWidth);
-    const dpr = Math.max(1, Math.floor(window.devicePixelRatio || 1));
-    canvas.style.width = cssSize + "px";
-    canvas.style.height = cssSize + "px";
-    canvas.width = cssSize * dpr;
-    canvas.height = cssSize * dpr;
-    ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
-    drawWheel();
-  }
-
-  window.addEventListener("resize", fitCanvas);
-
-  function drawWheel() {
-    const w = canvas.width / (window.devicePixelRatio || 1);
-    const h = canvas.height / (window.devicePixelRatio || 1);
-    const cx = w / 2;
-    const cy = h / 2;
-    const r = Math.min(cx, cy) - 8;
-
-    ctx.clearRect(0, 0, w, h);
-
-    // Outer shadow ring
-    ctx.beginPath();
-    ctx.arc(cx, cy, r + 4, 0, Math.PI * 2);
-    ctx.fillStyle = "rgba(0,0,0,0.05)";
-    ctx.fill();
-
-    // Slices
-    for (let i = 0; i < sliceCount; i++) {
-      const start = angle + i * sliceAngle - Math.PI / 2;
-      const end = start + sliceAngle;
-
-      ctx.beginPath();
-      ctx.moveTo(cx, cy);
-      ctx.arc(cx, cy, r, start, end);
-      ctx.closePath();
-      ctx.fillStyle = slices[i].color;
-      ctx.fill();
-
-      // Slice divider
-      ctx.strokeStyle = "rgba(17,17,17,0.10)";
-      ctx.lineWidth = 1;
-      ctx.stroke();
-
-      // Icon + label
-      const mid = (start + end) / 2;
-      const iconRadius = r * 0.68;
-      const textRadius = r * 0.80;
-
-      ctx.save();
-      ctx.translate(cx, cy);
-      ctx.rotate(mid);
-
-      // Icon
-      ctx.font = "26px system-ui, -apple-system, Segoe UI, Roboto, Arial";
-      ctx.textAlign = "center";
-      ctx.textBaseline = "middle";
-      ctx.fillStyle = "rgba(17,17,17,0.92)";
-      ctx.fillText(slices[i].icon, iconRadius, 0);
-
-      // Short label
-      ctx.font = "800 12px system-ui, -apple-system, Segoe UI, Roboto, Arial";
-      ctx.fillStyle = "rgba(17,17,17,0.86)";
-      ctx.fillText(shortLabel(slices[i].tier), textRadius, 0);
-
-      ctx.restore();
-    }
-
-    // Center cap
-    ctx.beginPath();
-    ctx.arc(cx, cy, r * 0.18, 0, Math.PI * 2);
-    ctx.fillStyle = "#fff";
-    ctx.fill();
-    ctx.strokeStyle = "rgba(17,17,17,0.10)";
-    ctx.lineWidth = 2;
-    ctx.stroke();
-
-    ctx.font = "900 14px system-ui, -apple-system, Segoe UI, Roboto, Arial";
-    ctx.fillStyle = "rgba(17,17,17,0.90)";
-    ctx.textAlign = "center";
-    ctx.textBaseline = "middle";
-    ctx.fillText("SPIN", cx, cy);
-  }
-
-  function shortLabel(tier) {
-    if (tier === "MEGA") return "MEGA";
-    if (tier === "SUPER") return "SUPER";
-    if (tier === "BIT") return "A BIT";
-    return "NONE";
-  }
-
-  function shuffle(arr) {
-    const a = arr.slice();
-    for (let i = a.length - 1; i > 0; i--) {
-      const j = Math.floor(Math.random() * (i + 1));
-      [a[i], a[j]] = [a[j], a[i]];
-    }
-    return a;
+  function pick(arr) {
+    return arr[Math.floor(Math.random() * arr.length)];
   }
 
   function randInt(min, maxInclusive){
     return Math.floor(Math.random() * (maxInclusive - min + 1)) + min;
   }
-
-  function pick(arr){ return arr[Math.floor(Math.random() * arr.length)]; }
 
   function randLetter(){
     return String.fromCharCode(65 + randInt(0, 25));
@@ -174,7 +84,7 @@
   function buildExtras() {
     const colors = [
       { name: "Lucky Green", hex: "#55be0a" },
-      { name: "Grape", hex: "#875da6" },
+      { name: "Grape", hex: "#885DA7" },
       { name: "Sky", hex: "#5aa9e6" },
       { name: "Sun", hex: "#ffcc33" },
       { name: "Rose", hex: "#ff5d8f" },
@@ -182,6 +92,8 @@
       { name: "Tangerine", hex: "#ff7a00" },
       { name: "Midnight", hex: "#111827" }
     ];
+
+    const emojis = ["✨","🍀","🧠","🔥","🧊","🎯","🧲","🌊","🛠️","🎧","📚","🧃","🌞","🌙","🧭","🪴","🫠","🤝","🧘","🚀"];
 
     const dinners = [
       "Tacos",
@@ -191,24 +103,20 @@
       "Pizza",
       "Soup and grilled cheese",
       "Breakfast for dinner",
-      "Sushi"
+      "Sushi",
+      "Chicken bowls",
+      "Wraps and fries"
     ];
-
-    const emojis = ["✨","🍀","🧠","🔥","🧊","🎯","🧲","🌊","🛠️","🎧","📚","🧃","🌞","🌙","🧭","🪴"];
 
     const fortunes = [
       "Small wins count. Collect them.",
-      "A simple choice will lead to a better outcome.",
-      "Today rewards steady effort, not perfect effort.",
       "Your timing is better than you think.",
-      "A tiny risk brings a useful result.",
-      "An unexpected message improves your day.",
-      "Be curious. Curiosity is lucky.",
-      "Make space. Luck likes room to land.",
-      "You will notice something you usually miss.",
       "One good decision beats ten good intentions.",
-      "Your next step is smaller than you fear.",
-      "Your luck improves when you move first."
+      "Make space. Luck likes room to land.",
+      "A helpful person appears at the right time.",
+      "Say it plainly. Plain words are lucky.",
+      "Today rewards steady effort, not perfect effort.",
+      "Curiosity is a form of luck."
     ];
 
     return {
@@ -218,7 +126,7 @@
       emoji: pick(emojis),
       dinner: pick(dinners),
       leftRight: Math.random() < 0.5 ? "LEFT" : "RIGHT",
-      fortune: pick(fortunes),
+      fortune: pick(fortunes)
     };
   }
 
@@ -235,40 +143,26 @@
     leftRightEl.textContent = extras.leftRight;
 
     fortuneEl.textContent = extras.fortune;
+
+    revealables.forEach((el, i) => {
+      setTimeout(() => el.classList.add("revealed"), 80 + i * 60);
+    });
   }
 
-  function labelAndMessage(tier) {
-    if (tier === "MEGA") {
-      return {
-        title: "MEGA LUCKY DAY",
-        text: "Big tailwind energy. If you have a move to make, today is friendly."
-      };
-    }
-    if (tier === "SUPER") {
-      return {
-        title: "SUPER LUCKY DAY",
-        text: "Nice timing ahead. Expect at least one thing to go your way."
-      };
-    }
-    if (tier === "BIT") {
-      return {
-        title: "A BIT LUCKY",
-        text: "Small wins are on the menu. Keep it simple and take the openings."
-      };
-    }
-    return {
-      title: "NOT MUCH LUCK TODAY",
-      text: "Totally fine. Keep stakes low, stay loose, and make your own luck."
-    };
+  function optionByTier(tier) {
+    return luckOptions.find(x => x.tier === tier);
+  }
+
+  function consultFate() {
+    const tier = pick(weighted);
+    return optionByTier(tier);
   }
 
   function shareText() {
-    const s = slices[landedIndex];
-    const lm = labelAndMessage(s.tier);
     const url = window.location.href;
     return [
-      `The Official Luck Meter says: ${lm.title} ${s.icon}`,
-      lm.text,
+      `The Official Luck Meter says: ${finalChoice.name} ${finalChoice.icon}`,
+      finalChoice.text,
       `Try yours: ${url}`
     ].join("\n");
   }
@@ -290,77 +184,78 @@
     return ok;
   }
 
-  function spinToIndex(targetIndex) {
+  function clearContent() {
+    slotMantra.textContent = "";
+    slotDetail.textContent = "";
+    shareHint.textContent = "";
+  }
+
+  function showResult(choice) {
+    slotIcon.textContent = choice.icon;
+    slotName.textContent = choice.name;
+    slotMantra.textContent = choice.mantra;
+    slotDetail.textContent = choice.text;
+
+    status.textContent = "Transmission received.";
+    shareBtn.disabled = false;
+  }
+
+  spinBtn.addEventListener("click", function () {
+    if (spinning) return;
+
     spinning = true;
     spinBtn.disabled = true;
     shareBtn.disabled = true;
-    shareHint.textContent = "";
+    status.textContent = "Consulting the cosmos…";
+    clearContent();
 
-    // We want the target slice midpoint to land at pointer angle (12 o'clock).
-    // Pointer is at -90deg in our draw (we subtract PI/2). We can solve by rotating wheel.
-    const targetMid = (targetIndex + 0.5) * sliceAngle;
-    const pointerAngle = 0; // because our slice start is angle + i*sliceAngle - PI/2, and pointer is at top
-    // We want: angle + targetMid == pointerAngle + 2PI*k
-    // So: angle == -targetMid + 2PI*k
-    const current = angle % (Math.PI * 2);
+    // Pre-spin: cycle through tiers, like a slot machine
+    const steps = randInt(22, 34);
+    let delay = 35;
+    const delayIncrease = 7;
+    let step = 0;
 
-    // Add multiple full spins for drama
-    const spins = 6 + Math.floor(Math.random() * 4); // 6-9
-    const desired = -targetMid + spins * Math.PI * 2;
+    let tempIndex = randInt(0, luckOptions.length - 1);
 
-    const start = current;
-    const end = desired;
+    // Decide final result up front
+    finalChoice = consultFate();
 
-    const duration = 2400;
-    const startTime = performance.now();
+    function tick() {
+      tempIndex = (tempIndex + 1) % luckOptions.length;
+      const current = luckOptions[tempIndex];
 
-    function easeOutCubic(t) {
-      return 1 - Math.pow(1 - t, 3);
-    }
+      slotIcon.textContent = current.icon;
+      slotName.textContent = current.name;
 
-    function tick(now) {
-      const t = Math.min(1, (now - startTime) / duration);
-      const e = easeOutCubic(t);
-      angle = start + (end - start) * e;
-      drawWheel();
+      // tiny jitter
+      const jig = step % 2 === 0 ? "translateY(1px)" : "translateY(-1px)";
+      slotName.style.transform = jig;
 
-      if (t < 1) {
-        requestAnimationFrame(tick);
+      step++;
+      if (step < steps) {
+        delay += delayIncrease;
+        setTimeout(tick, delay);
       } else {
-        spinning = false;
-        angle = end;
-        drawWheel();
+        slotName.style.transform = "translateY(0)";
+        showResult(finalChoice);
 
-        landedIndex = targetIndex;
-        const s = slices[landedIndex];
-        const lm = labelAndMessage(s.tier);
-
-        resultTitle.textContent = `${lm.title} ${s.icon}`;
-        resultText.textContent = lm.text;
-
+        // Build + reveal extras and fortune after a beat
         extras = buildExtras();
-        applyExtras();
+        setTimeout(() => applyExtras(), 250);
 
-        shareBtn.disabled = false;
+        spinning = false;
         spinBtn.disabled = false;
+        spinBtn.textContent = "Spin again";
       }
     }
 
-    requestAnimationFrame(tick);
-  }
-
-  spinBtn.addEventListener("click", () => {
-    if (spinning) return;
-
-    // Weighted distribution already baked into slices array
-    const idx = Math.floor(Math.random() * sliceCount);
-    spinToIndex(idx);
+    tick();
   });
 
   shareBtn.addEventListener("click", async () => {
-    if (landedIndex === null) return;
-    shareHint.textContent = "";
+    if (!finalChoice) return;
 
+    shareHint.textContent = "";
     try {
       const ok = await copyToClipboard(shareText());
       shareHint.textContent = ok ? "Copied. Paste it anywhere." : "Could not auto-copy.";
@@ -369,6 +264,4 @@
     }
   });
 
-  // Init
-  fitCanvas();
 })();
