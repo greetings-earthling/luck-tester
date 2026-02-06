@@ -4,115 +4,203 @@
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width,initial-scale=1" />
   <title>Luck Meter</title>
-  <meta name="description" content="Spin the Luck Meter to see how lucky you're gonna be today." />
+  <meta name="description" content="Spin the Luck Meter to see what kind of day you're in for." />
 
   <!-- IBM Plex Sans -->
   <link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans:wght@300;400;600&display=swap" rel="stylesheet">
 
-  <link rel="stylesheet" href="styles.css?v=300" />
+  <link rel="stylesheet" href="styles.css?v=400" />
 </head>
 
 <body>
   <main class="page">
-    <header class="card headerCard">
-      <h1>Welcome to the Luck Meter</h1>
-      <p class="sub">
-        Hit the button. The meter spins. Then you get your luck rating for the day.
-      </p>
-      <p class="sponsor">
-        Sponsored by
-        <a href="https://www.greetingsearthling.ca" target="_blank" rel="noopener noreferrer">Greetings, Earthling</a>
-      </p>
+    <header class="topBar card">
+      <div>
+        <h1>Welcome to the Luck Meter</h1>
+        <p class="sub">
+          Spin each window to reveal your luck. Not science. Just vibes.
+        </p>
+        <p class="sponsor">
+          Sponsored by
+          <a href="https://www.greetingsearthling.ca" target="_blank" rel="noopener noreferrer">Greetings, Earthling</a>
+        </p>
+      </div>
     </header>
 
-    <section class="mainTwoCol">
-      <!-- LEFT: SLOT MACHINE -->
-      <section class="card slotCard" aria-label="Luck Meter slot machine">
-        <div class="slotTop">
-          <h2 class="sectionTitle">Let fate decide</h2>
-          <div class="hint">
-            Not science. Just vibes.
+    <section class="machine card">
+      <!-- Top: big luck meter + 4 minis -->
+      <div class="gridTop">
+        <section class="module moduleBig" aria-label="Luck meter">
+          <div class="moduleHead">
+            <div>
+              <div class="moduleTitle">Luck Meter</div>
+              <div class="moduleHint">How lucky will you be today?</div>
+            </div>
+            <button class="btn primary" type="button" data-spin="luck">Spin</button>
           </div>
-        </div>
 
-        <div class="slot-wrapper">
-          <div class="slot-window">
+          <div class="slot-window big">
             <div class="slot-content">
-              <div class="slot-label" id="slot-label">Today’s luck</div>
-
+              <div class="slot-label">Result</div>
               <div class="slot-row">
-                <div class="slot-icon" id="slot-icon">🍀</div>
-                <div class="slot-name" id="slot-name">Ready when you are</div>
+                <div class="slot-icon bigIcon" data-out="luckIcon">🍀</div>
+                <div>
+                  <div class="slot-name" data-out="luckName">Ready when you are</div>
+                  <div class="slot-mantra" data-out="luckMantra"></div>
+                </div>
               </div>
-
-              <div class="slot-mantra" id="slot-mantra"></div>
-              <div class="slot-text-detail" id="slot-text-detail"></div>
+              <div class="slot-text-detail" data-out="luckText"></div>
             </div>
           </div>
-        </div>
 
-        <div class="slot-status" id="slot-status">Hit the button to test your luck.</div>
+          <div class="moduleFoot" data-status="luckStatus">Hit Spin to test your luck.</div>
+        </section>
 
-        <div class="controls">
-          <button id="spin-btn" class="btn primary" type="button">Spin the meter</button>
-          <button id="shareBtn" class="btn" type="button" disabled>Copy share text</button>
-          <div class="shareHint" id="shareHint"></div>
-        </div>
-      </section>
+        <div class="miniGrid">
+          <section class="module" aria-label="Lucky number">
+            <div class="moduleHead">
+              <div>
+                <div class="moduleTitle">Lucky Number</div>
+                <div class="moduleHint">0 to 9</div>
+              </div>
+              <button class="btn" type="button" data-spin="number">Spin</button>
+            </div>
 
-      <!-- RIGHT: 6 TILES -->
-      <aside class="tilesCol" aria-label="Daily luck tiles">
-        <div class="tileGrid">
-          <section class="card miniCard revealable">
-            <div class="miniLabel">Lucky number</div>
-            <div class="miniValue" id="luckyNumber">–</div>
-          </section>
-
-          <section class="card miniCard revealable">
-            <div class="miniLabel">Lucky letter</div>
-            <div class="miniValue" id="luckyLetter">–</div>
-          </section>
-
-          <section class="card miniCard revealable">
-            <div class="miniLabel">Lucky colour</div>
-            <div class="colorRow">
-              <div class="swatch" id="colorSwatch"></div>
-              <div class="colorText">
-                <div class="colorName" id="colorName">–</div>
-                <div class="colorHex" id="colorHex">–</div>
+            <div class="slot-window mini">
+              <div class="slot-content center">
+                <div class="slot-value" data-out="numberValue">–</div>
               </div>
             </div>
+
+            <div class="moduleFoot" data-status="numberStatus">Spin to reveal.</div>
           </section>
 
-          <section class="card miniCard revealable">
-            <div class="miniLabel">Emoji of the day</div>
-            <div class="miniValue" id="emojiOfDay">–</div>
+          <section class="module" aria-label="Lucky letter">
+            <div class="moduleHead">
+              <div>
+                <div class="moduleTitle">Lucky Letter</div>
+                <div class="moduleHint">A to Z</div>
+              </div>
+              <button class="btn" type="button" data-spin="letter">Spin</button>
+            </div>
+
+            <div class="slot-window mini">
+              <div class="slot-content center">
+                <div class="slot-value" data-out="letterValue">–</div>
+              </div>
+            </div>
+
+            <div class="moduleFoot" data-status="letterStatus">Spin to reveal.</div>
           </section>
 
-          <section class="card miniCard revealable">
-            <div class="miniLabel">Dinner suggestion</div>
-            <div class="miniValue small" id="dinnerSuggestion">–</div>
+          <section class="module" aria-label="Lucky colour">
+            <div class="moduleHead">
+              <div>
+                <div class="moduleTitle">Lucky Colour</div>
+                <div class="moduleHint">One colour, one vibe</div>
+              </div>
+              <button class="btn" type="button" data-spin="color">Spin</button>
+            </div>
+
+            <div class="slot-window mini">
+              <div class="slot-content">
+                <div class="colorRow">
+                  <div class="swatch" data-out="colorSwatch"></div>
+                  <div>
+                    <div class="slot-name small" data-out="colorName">–</div>
+                    <div class="slot-mono" data-out="colorHex">–</div>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <div class="moduleFoot" data-status="colorStatus">Spin to reveal.</div>
           </section>
 
-          <section class="card miniCard revealable">
-            <div class="miniLabel">Left or Right?</div>
-            <div class="miniValue" id="leftRight">–</div>
+          <section class="module" aria-label="Emoji of the day">
+            <div class="moduleHead">
+              <div>
+                <div class="moduleTitle">Emoji</div>
+                <div class="moduleHint">Your symbol for today</div>
+              </div>
+              <button class="btn" type="button" data-spin="emoji">Spin</button>
+            </div>
+
+            <div class="slot-window mini">
+              <div class="slot-content center">
+                <div class="slot-value" data-out="emojiValue">–</div>
+              </div>
+            </div>
+
+            <div class="moduleFoot" data-status="emojiStatus">Spin to reveal.</div>
           </section>
         </div>
-
-        <div class="rightHint">Reveals after you spin.</div>
-      </aside>
-    </section>
-
-    <!-- FORTUNE -->
-    <section class="card fortuneCard" aria-label="Fortune cookie message">
-      <div class="fortuneWrap">
-        <div class="fortuneLabel">Fortune</div>
-        <div class="fortuneStrip" id="fortuneText">Spin the meter first.</div>
       </div>
+
+      <!-- Bottom: fortune + dinner (2 columns) -->
+      <div class="gridBottom">
+        <section class="module" aria-label="Fortune">
+          <div class="moduleHead">
+            <div>
+              <div class="moduleTitle">Fortune</div>
+              <div class="moduleHint">A tiny message for your day</div>
+            </div>
+            <button class="btn" type="button" data-spin="fortune">Spin</button>
+          </div>
+
+          <div class="slot-window wide">
+            <div class="slot-content">
+              <div class="fortuneStrip" data-out="fortuneValue">Spin to receive your fortune.</div>
+            </div>
+          </div>
+
+          <div class="moduleFoot" data-status="fortuneStatus">Spin to reveal.</div>
+        </section>
+
+        <section class="module" aria-label="Dinner suggestion">
+          <div class="moduleHead">
+            <div>
+              <div class="moduleTitle">Dinner</div>
+              <div class="moduleHint">Quick suggestion, low pressure</div>
+            </div>
+            <button class="btn" type="button" data-spin="dinner">Spin</button>
+          </div>
+
+          <div class="slot-window wide">
+            <div class="slot-content">
+              <div class="slot-name" data-out="dinnerValue">Spin to get a dinner idea.</div>
+              <div class="slot-text-detail muted" data-out="dinnerDetail"></div>
+            </div>
+          </div>
+
+          <div class="moduleFoot" data-status="dinnerStatus">Spin to reveal.</div>
+        </section>
+      </div>
+
+      <!-- Optional extra: Left/Right as a small strip under minis -->
+      <div class="stripRow">
+        <section class="module strip" aria-label="Left or right">
+          <div class="moduleHead">
+            <div>
+              <div class="moduleTitle">Left or Right?</div>
+              <div class="moduleHint">Flip a tiny decision</div>
+            </div>
+            <button class="btn" type="button" data-spin="lr">Spin</button>
+          </div>
+
+          <div class="slot-window stripWin">
+            <div class="slot-content center">
+              <div class="slot-value stripValue" data-out="lrValue">–</div>
+            </div>
+          </div>
+
+          <div class="moduleFoot" data-status="lrStatus">Spin to reveal.</div>
+        </section>
+      </div>
+
     </section>
   </main>
 
-  <script src="script.js?v=300" defer></script>
+  <script src="script.js?v=400" defer></script>
 </body>
 </html>
