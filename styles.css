@@ -1,16 +1,15 @@
-/* styles.css */
 :root{
   --bg: #e6dfeb;
   --card: #ffffff;
-  --text: #111111;
-  --muted: #555555;
-  --border: rgba(17,17,17,0.10);
-  --accent: #875da6;
+  --text: #030712;
+  --muted: #4b5563;
+  --border: rgba(3,7,18,0.12);
+  --accent: #885DA7;
 
-  --gStrong: rgba(85,190,10,0.95);
-  --gMid: rgba(85,190,10,0.65);
-  --gLight: rgba(85,190,10,0.40);
-  --gFaint: rgba(85,190,10,0.18);
+  --mega: rgba(85,190,10,0.95);
+  --super: rgba(85,190,10,0.70);
+  --bit: rgba(85,190,10,0.40);
+  --none: rgba(0,0,0,0.06);
 }
 
 *{ box-sizing: border-box; }
@@ -20,7 +19,7 @@ html, body{
   padding:0;
   background: var(--bg);
   color: var(--text);
-  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+  font-family: "IBM Plex Sans", system-ui, -apple-system, Segoe UI, Roboto, Helvetica, Arial, sans-serif;
 }
 
 .page{
@@ -41,13 +40,14 @@ html, body{
 .headerCard h1{
   margin: 0;
   font-size: clamp(22px, 3vw, 34px);
+  font-weight: 600;
   letter-spacing: -0.02em;
 }
 
 .sub{
   margin: 8px 0 0;
   color: var(--muted);
-  line-height: 1.45;
+  line-height: 1.55;
 }
 
 .sponsor{
@@ -55,10 +55,11 @@ html, body{
   color: var(--muted);
   font-size: 13px;
 }
+
 .sponsor a{
   color: var(--accent);
   text-decoration: none;
-  font-weight: 700;
+  font-weight: 600;
 }
 .sponsor a:hover{ text-decoration: underline; }
 
@@ -76,56 +77,120 @@ html, body{
 .sectionTitle{
   margin: 0;
   font-size: 18px;
+  font-weight: 600;
 }
 
 .hint{
   margin-top: 6px;
   color: var(--muted);
   font-size: 13px;
-  line-height: 1.45;
+  line-height: 1.5;
 }
 
-.wheelWrap{
+/* Slot window */
+.slot-wrapper{
+  display:flex;
+  justify-content:center;
   margin-top: 12px;
-  display: grid;
-  place-items: center;
-  position: relative;
+  margin-bottom: 8px;
 }
 
-.pointer{
-  position: absolute;
-  top: -2px;
-  width: 0;
-  height: 0;
-  border-left: 14px solid transparent;
-  border-right: 14px solid transparent;
-  border-bottom: 20px solid var(--accent);
-  filter: drop-shadow(0 4px 8px rgba(0,0,0,0.12));
-  z-index: 3;
+.slot-window{
+  background: #f9fafb;
+  border-radius: 16px;
+  border: 2px solid #030712;
+  padding: 0.9rem 1.1rem;
+  width: 100%;
+  max-width: 520px;
+  min-height: 150px;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  overflow:hidden;
+  box-shadow: 0 10px 25px rgba(15,23,42,0.12);
+  text-align:left;
 }
 
-canvas{
-  width: min(520px, 100%);
-  height: auto;
-  display: block;
+.slot-content{ width: 100%; }
+
+.slot-label{
+  font-size: 0.8rem;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: #6b7280;
+  margin-bottom: 0.15rem;
 }
 
-.wheelControls{
-  margin-top: 12px;
-  display: flex;
+.slot-row{
+  display:flex;
+  gap: 10px;
+  align-items: center;
+}
+
+.slot-icon{
+  width: 42px;
+  height: 42px;
+  display:grid;
+  place-items:center;
+  border-radius: 12px;
+  border: 1px solid rgba(3,7,18,0.12);
+  background: #fff;
+  font-size: 24px;
+}
+
+.slot-name{
+  font-size: 1.25rem;
+  font-weight: 600;
+  color: #030712;
+  margin: 0.1rem 0 0.15rem;
+  white-space: nowrap;
+  overflow:hidden;
+  text-overflow: ellipsis;
+}
+
+.slot-mantra{
+  font-style: italic;
+  font-size: 0.95rem;
+  color: #555;
+  margin-top: 0.35rem;
+  margin-bottom: 0.35rem;
+  min-height: 1.2em;
+}
+
+.slot-text-detail{
+  font-size: 0.92rem;
+  color: #374151;
+  line-height: 1.55;
+  min-height: 1.2em;
+}
+
+.slot-status{
+  font-size: 0.85rem;
+  color: #6b7280;
+  margin-top: 0.35rem;
+  min-height: 1.2em;
+}
+
+/* Buttons */
+.controls{
+  margin-top: 10px;
+  display:flex;
   gap: 10px;
   align-items: center;
   flex-wrap: wrap;
 }
 
 .btn{
-  appearance: none;
+  appearance:none;
   border: 1px solid var(--border);
   background: #fff;
+  color: #111;
   border-radius: 999px;
   padding: 10px 14px;
-  font-weight: 800;
+  font-size: 0.95rem;
+  font-weight: 600;
   cursor: pointer;
+  transition: 0.15s;
 }
 
 .btn.primary{
@@ -134,9 +199,14 @@ canvas{
   color: #fff;
 }
 
+.btn:hover:not(:disabled){
+  transform: translateY(-1px);
+}
+
 .btn:disabled{
-  opacity: 0.55;
+  opacity: 0.65;
   cursor: default;
+  transform: none;
 }
 
 .shareHint{
@@ -144,39 +214,21 @@ canvas{
   font-size: 13px;
 }
 
-.resultBox{
-  margin-top: 12px;
-  border: 1px solid var(--border);
-  border-radius: 16px;
-  padding: 12px;
-  background: rgba(0,0,0,0.02);
-}
-
-.resultTitle{
-  font-weight: 900;
-}
-
-.resultText{
-  margin-top: 6px;
-  color: var(--muted);
-  font-size: 13px;
-  line-height: 1.45;
-}
-
+/* Right tiles */
 .tilesCol{
-  display: grid;
+  display:grid;
   gap: 10px;
 }
 
 .tileGrid{
-  display: grid;
+  display:grid;
   grid-template-columns: repeat(2, minmax(0, 1fr));
   gap: 12px;
 }
 
 .miniCard{
   padding: 14px;
-  display: grid;
+  display:grid;
   gap: 10px;
   align-content: start;
   min-height: 112px;
@@ -185,25 +237,25 @@ canvas{
 .miniLabel{
   color: var(--muted);
   font-size: 12px;
-  font-weight: 800;
+  font-weight: 600;
   text-transform: uppercase;
   letter-spacing: 0.05em;
 }
 
 .miniValue{
   font-size: 30px;
-  font-weight: 900;
+  font-weight: 600;
   letter-spacing: -0.02em;
 }
 
 .miniValue.small{
   font-size: 18px;
-  font-weight: 850;
+  font-weight: 600;
   line-height: 1.2;
 }
 
 .colorRow{
-  display: flex;
+  display:flex;
   gap: 10px;
   align-items: center;
 }
@@ -216,14 +268,23 @@ canvas{
   background: rgba(0,0,0,0.03);
 }
 
-.colorName{
-  font-weight: 900;
-}
+.colorName{ font-weight: 600; }
 .colorHex{
   color: var(--muted);
   font-size: 12px;
   margin-top: 2px;
   font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", "Courier New", monospace;
+}
+
+.revealable{
+  opacity: 0.35;
+  filter: grayscale(0.35);
+  transition: opacity 220ms ease, filter 220ms ease, transform 220ms ease;
+}
+
+.revealable.revealed{
+  opacity: 1;
+  filter: none;
 }
 
 .rightHint{
@@ -232,14 +293,13 @@ canvas{
   padding: 0 4px;
 }
 
-.fortuneCard{
-  padding: 16px;
-}
+/* Fortune */
+.fortuneCard{ padding: 16px; }
 
 .fortuneLabel{
   color: var(--muted);
   font-size: 12px;
-  font-weight: 800;
+  font-weight: 600;
   text-transform: uppercase;
   letter-spacing: 0.05em;
 }
@@ -253,5 +313,10 @@ canvas{
   font-size: 20px;
   line-height: 1.25;
   letter-spacing: 0.01em;
-  font-family: "Brush Script MT", "Segoe Script", "Comic Sans MS", Georgia, serif;
+  font-family: "Segoe Script", "Brush Script MT", "Comic Sans MS", Georgia, serif;
+}
+
+@media (max-width: 480px){
+  .slot-window{ min-height: 155px; }
+  .slot-name{ font-size: 1.15rem; }
 }
