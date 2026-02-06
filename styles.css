@@ -1,16 +1,16 @@
+/* styles.css */
 :root{
   --bg: #e6dfeb;
   --card: #ffffff;
   --text: #111111;
   --muted: #555555;
   --border: rgba(17,17,17,0.10);
-
-  --green5: rgba(85,190,10,0.95);
-  --green4: rgba(85,190,10,0.55);
-  --green3: rgba(85,190,10,0.35);
-  --green1: rgba(85,190,10,0.18);
-
   --accent: #875da6;
+
+  --gStrong: rgba(85,190,10,0.95);
+  --gMid: rgba(85,190,10,0.65);
+  --gLight: rgba(85,190,10,0.40);
+  --gFaint: rgba(85,190,10,0.18);
 }
 
 *{ box-sizing: border-box; }
@@ -55,169 +55,85 @@ html, body{
   color: var(--muted);
   font-size: 13px;
 }
-
 .sponsor a{
   color: var(--accent);
   text-decoration: none;
-  font-weight: 600;
+  font-weight: 700;
 }
 .sponsor a:hover{ text-decoration: underline; }
 
-.adCard{ padding: 12px; }
-.adTop{
-  display:flex;
-  justify-content:center;
-  align-items:center;
-}
-.adImg{
-  max-width: 100%;
-  height: auto;
-  display:block;
-  border-radius: 12px;
+.mainTwoCol{
+  display: grid;
+  grid-template-columns: 1.2fr 0.8fr;
+  gap: 14px;
+  align-items: start;
 }
 
-.gridCard{ padding: 14px; }
-.gridTop{
-  display: grid;
-  gap: 6px;
-  margin-bottom: 10px;
+@media (max-width: 900px){
+  .mainTwoCol{ grid-template-columns: 1fr; }
 }
 
 .sectionTitle{
   margin: 0;
   font-size: 18px;
 }
+
 .hint{
+  margin-top: 6px;
   color: var(--muted);
   font-size: 13px;
   line-height: 1.45;
 }
 
-.boardWrap{
-  border: 1px solid var(--border);
-  border-radius: 16px;
-  padding: 10px;
-  background: rgba(0,0,0,0.02);
-}
-
-.board{
-  display:grid;
-  grid-template-columns: repeat(12, minmax(0, 1fr));
-  gap: 6px;
-}
-
-@media (max-width: 720px){
-  .board{ gap: 5px; }
-}
-
-.tile{
-  appearance: none;
-  border: 1px solid var(--border);
-  background: #fff;
-  border-radius: 10px;
-  padding: 0;
-  height: 36px;
-  cursor: pointer;
-  position: relative;
-  overflow: hidden;
+.wheelWrap{
+  margin-top: 12px;
   display: grid;
   place-items: center;
-  transition: transform 120ms ease, box-shadow 120ms ease, border-color 120ms ease;
-}
-
-@media (max-width: 720px){
-  .tile{ height: 32px; border-radius: 9px; }
-}
-
-.tile:hover{
-  transform: translateY(-1px);
-  box-shadow: 0 10px 18px rgba(0,0,0,0.06);
-  border-color: rgba(17,17,17,0.18);
-}
-
-.board.locked .tile{
-  cursor: default;
-}
-.board.locked .tile:hover{
-  transform: none;
-  box-shadow: none;
-}
-
-.label{
   position: relative;
-  z-index: 2;
-  font-weight: 800;
-  font-size: 16px;
-  letter-spacing: -0.02em;
-  color: rgba(17,17,17,0.92);
 }
 
-.label.zero{
-  opacity: 0.70;
-  font-weight: 700;
+.pointer{
+  position: absolute;
+  top: -2px;
+  width: 0;
+  height: 0;
+  border-left: 14px solid transparent;
+  border-right: 14px solid transparent;
+  border-bottom: 20px solid var(--accent);
+  filter: drop-shadow(0 4px 8px rgba(0,0,0,0.12));
+  z-index: 3;
 }
 
-.overlay{
-  position:absolute;
-  inset:0;
-  opacity: 0;
-  transform: scale(0.96);
-  transition: opacity 240ms ease, transform 240ms ease;
-  z-index: 1;
+canvas{
+  width: min(520px, 100%);
+  height: auto;
+  display: block;
 }
 
-.overlay.fill{
-  opacity: 1;
-  transform: scale(1);
-}
-
-.o-g5{ background: var(--green5); }
-.o-g4{ background: var(--green4); }
-.o-g3{ background: var(--green3); }
-.o-g1{ background: var(--green1); }
-
-.tile.chosen{
-  border-color: var(--accent);
-  border-width: 2px;
-}
-
-.resultArea{
+.wheelControls{
   margin-top: 12px;
-  border: 1px solid var(--border);
-  border-radius: 16px;
-  padding: 12px;
-  background: rgba(0,0,0,0.02);
-}
-
-.resultTitle{
-  font-weight: 800;
-  margin: 0;
-}
-
-.resultText{
-  margin: 6px 0 0;
-  color: var(--muted);
-  line-height: 1.45;
-  font-size: 13px;
-}
-
-.shareRow{
-  margin-top: 10px;
-  display:flex;
+  display: flex;
   gap: 10px;
   align-items: center;
   flex-wrap: wrap;
 }
 
 .btn{
-  appearance:none;
+  appearance: none;
   border: 1px solid var(--border);
   background: #fff;
   border-radius: 999px;
-  padding: 10px 12px;
-  font-weight: 700;
+  padding: 10px 14px;
+  font-weight: 800;
   cursor: pointer;
 }
+
+.btn.primary{
+  background: var(--accent);
+  border-color: var(--accent);
+  color: #fff;
+}
+
 .btn:disabled{
   opacity: 0.55;
   cursor: default;
@@ -228,62 +144,80 @@ html, body{
   font-size: 13px;
 }
 
-.fiveCol{
-  display:grid;
-  grid-template-columns: repeat(5, minmax(0, 1fr));
+.resultBox{
+  margin-top: 12px;
+  border: 1px solid var(--border);
+  border-radius: 16px;
+  padding: 12px;
+  background: rgba(0,0,0,0.02);
+}
+
+.resultTitle{
+  font-weight: 900;
+}
+
+.resultText{
+  margin-top: 6px;
+  color: var(--muted);
+  font-size: 13px;
+  line-height: 1.45;
+}
+
+.tilesCol{
+  display: grid;
+  gap: 10px;
+}
+
+.tileGrid{
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
   gap: 12px;
-}
-
-@media (max-width: 900px){
-  .fiveCol{ grid-template-columns: repeat(3, minmax(0, 1fr)); }
-}
-
-@media (max-width: 620px){
-  .fiveCol{ grid-template-columns: repeat(2, minmax(0, 1fr)); }
 }
 
 .miniCard{
   padding: 14px;
-  display:grid;
-  gap: 8px;
+  display: grid;
+  gap: 10px;
   align-content: start;
+  min-height: 112px;
 }
 
 .miniLabel{
   color: var(--muted);
   font-size: 12px;
-  font-weight: 700;
+  font-weight: 800;
   text-transform: uppercase;
   letter-spacing: 0.05em;
 }
 
 .miniValue{
-  font-size: 28px;
+  font-size: 30px;
   font-weight: 900;
   letter-spacing: -0.02em;
 }
 
 .miniValue.small{
   font-size: 18px;
-  font-weight: 800;
+  font-weight: 850;
   line-height: 1.2;
 }
 
 .colorRow{
-  display:flex;
+  display: flex;
   gap: 10px;
   align-items: center;
 }
 
 .swatch{
-  width: 40px;
-  height: 40px;
+  width: 42px;
+  height: 42px;
   border-radius: 12px;
   border: 1px solid var(--border);
+  background: rgba(0,0,0,0.03);
 }
 
 .colorName{
-  font-weight: 800;
+  font-weight: 900;
 }
 .colorHex{
   color: var(--muted);
@@ -292,29 +226,30 @@ html, body{
   font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", "Courier New", monospace;
 }
 
-.fortuneCard{
-  padding: 16px;
+.rightHint{
+  color: var(--muted);
+  font-size: 13px;
+  padding: 0 4px;
 }
 
-.fortuneWrap{
-  display:grid;
-  gap: 10px;
+.fortuneCard{
+  padding: 16px;
 }
 
 .fortuneLabel{
   color: var(--muted);
   font-size: 12px;
-  font-weight: 700;
+  font-weight: 800;
   text-transform: uppercase;
   letter-spacing: 0.05em;
 }
 
 .fortuneStrip{
-  padding: 14px 14px;
+  margin-top: 10px;
+  padding: 14px;
   border-radius: 14px;
   border: 1px dashed rgba(17,17,17,0.20);
   background: #fffaf0;
-  box-shadow: inset 0 0 0 1px rgba(0,0,0,0.03);
   font-size: 20px;
   line-height: 1.25;
   letter-spacing: 0.01em;
