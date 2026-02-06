@@ -1,12 +1,15 @@
-<!-- index.html -->
 <!doctype html>
 <html lang="en-CA">
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width,initial-scale=1" />
   <title>Luck Meter</title>
-  <meta name="description" content="Spin the wheel to see how lucky you're gonna be today." />
-  <link rel="stylesheet" href="styles.css?v=200" />
+  <meta name="description" content="Spin the Luck Meter to see how lucky you're gonna be today." />
+
+  <!-- IBM Plex Sans -->
+  <link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans:wght@300;400;600&display=swap" rel="stylesheet">
+
+  <link rel="stylesheet" href="styles.css?v=300" />
 </head>
 
 <body>
@@ -14,7 +17,7 @@
     <header class="card headerCard">
       <h1>Welcome to the Luck Meter</h1>
       <p class="sub">
-        Spin the wheel to see how lucky you're gonna be today.
+        Hit the button. The meter spins. Then you get your luck rating for the day.
       </p>
       <p class="sponsor">
         Sponsored by
@@ -23,46 +26,54 @@
     </header>
 
     <section class="mainTwoCol">
-      <!-- LEFT: WHEEL -->
-      <section class="card wheelCard" aria-label="Luck wheel">
-        <div class="wheelTop">
-          <h2 class="sectionTitle">Spin the wheel</h2>
+      <!-- LEFT: SLOT MACHINE -->
+      <section class="card slotCard" aria-label="Luck Meter slot machine">
+        <div class="slotTop">
+          <h2 class="sectionTitle">Let fate decide</h2>
           <div class="hint">
-            One spin. One vibe. Not science.
+            Not science. Just vibes.
           </div>
         </div>
 
-        <div class="wheelWrap">
-          <div class="pointer" aria-hidden="true"></div>
-          <canvas id="wheel" width="520" height="520" aria-label="Luck wheel canvas"></canvas>
+        <div class="slot-wrapper">
+          <div class="slot-window">
+            <div class="slot-content">
+              <div class="slot-label" id="slot-label">Today’s luck</div>
+
+              <div class="slot-row">
+                <div class="slot-icon" id="slot-icon">🍀</div>
+                <div class="slot-name" id="slot-name">Ready when you are</div>
+              </div>
+
+              <div class="slot-mantra" id="slot-mantra"></div>
+              <div class="slot-text-detail" id="slot-text-detail"></div>
+            </div>
+          </div>
         </div>
 
-        <div class="wheelControls">
-          <button class="btn primary" id="spinBtn" type="button">Spin</button>
-          <button class="btn" id="shareBtn" type="button" disabled>Copy share text</button>
-          <div class="shareHint" id="shareHint" aria-live="polite"></div>
-        </div>
+        <div class="slot-status" id="slot-status">Hit the button to test your luck.</div>
 
-        <div class="resultBox" aria-live="polite">
-          <div class="resultTitle" id="resultTitle">Spin to reveal your luck.</div>
-          <div class="resultText" id="resultText">Then we fill in your lucky extras for the day.</div>
+        <div class="controls">
+          <button id="spin-btn" class="btn primary" type="button">Spin the meter</button>
+          <button id="shareBtn" class="btn" type="button" disabled>Copy share text</button>
+          <div class="shareHint" id="shareHint"></div>
         </div>
       </section>
 
       <!-- RIGHT: 6 TILES -->
       <aside class="tilesCol" aria-label="Daily luck tiles">
         <div class="tileGrid">
-          <section class="card miniCard">
+          <section class="card miniCard revealable">
             <div class="miniLabel">Lucky number</div>
             <div class="miniValue" id="luckyNumber">–</div>
           </section>
 
-          <section class="card miniCard">
+          <section class="card miniCard revealable">
             <div class="miniLabel">Lucky letter</div>
             <div class="miniValue" id="luckyLetter">–</div>
           </section>
 
-          <section class="card miniCard">
+          <section class="card miniCard revealable">
             <div class="miniLabel">Lucky colour</div>
             <div class="colorRow">
               <div class="swatch" id="colorSwatch"></div>
@@ -73,25 +84,23 @@
             </div>
           </section>
 
-          <section class="card miniCard">
+          <section class="card miniCard revealable">
             <div class="miniLabel">Emoji of the day</div>
             <div class="miniValue" id="emojiOfDay">–</div>
           </section>
 
-          <section class="card miniCard">
+          <section class="card miniCard revealable">
             <div class="miniLabel">Dinner suggestion</div>
             <div class="miniValue small" id="dinnerSuggestion">–</div>
           </section>
 
-          <section class="card miniCard">
+          <section class="card miniCard revealable">
             <div class="miniLabel">Left or Right?</div>
             <div class="miniValue" id="leftRight">–</div>
           </section>
         </div>
 
-        <div class="rightHint">
-          These reveal after you spin.
-        </div>
+        <div class="rightHint">Reveals after you spin.</div>
       </aside>
     </section>
 
@@ -99,11 +108,11 @@
     <section class="card fortuneCard" aria-label="Fortune cookie message">
       <div class="fortuneWrap">
         <div class="fortuneLabel">Fortune</div>
-        <div class="fortuneStrip" id="fortuneText">Spin the wheel first.</div>
+        <div class="fortuneStrip" id="fortuneText">Spin the meter first.</div>
       </div>
     </section>
   </main>
 
-  <script src="script.js?v=200" defer></script>
+  <script src="script.js?v=300" defer></script>
 </body>
 </html>
