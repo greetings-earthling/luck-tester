@@ -4,138 +4,102 @@
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width,initial-scale=1" />
   <title>Luck Meter</title>
-  <meta name="description" content="Choose a spot to get your luck score out of 5 for the day." />
-  <link rel="stylesheet" href="styles.css?v=120" />
+  <meta name="description" content="Pick a spot. Reveal your luck score for today." />
+  <link rel="stylesheet" href="styles.css?v=130" />
 </head>
 
 <body>
   <main class="page">
     <header class="card headerCard">
-      <h1>Welcome to the Luck Meter!</h1>
-      <p class="sub">Choose a spot to get your luck score out of 5 for the day.</p>
+      <h1>Welcome to the Luck Meter</h1>
+      <p class="sub">
+        Pick any square. You will get a luck score out of 5 for today.
+        <br />
+        The closer you land to the green clover, the luckier your day is likely to be.
+      </p>
       <p class="sponsor">
         Sponsored by
         <a href="https://www.greetingsearthling.ca" target="_blank" rel="noopener noreferrer">Greetings, Earthling</a>
       </p>
     </header>
 
-    <!-- Top Sponsor -->
+    <!-- Top banner ad only -->
     <section class="card adCard" aria-label="Sponsor">
-      <div class="adSlot adTop hasImg">
+      <div class="adTop">
         <img class="adImg" src="ads/ad_728x90.jpg" alt="Sponsored ad" />
       </div>
     </section>
 
-    <section class="mainGrid">
-      <!-- LEFT: Luck meter -->
-      <section class="card leftCard" aria-label="Luck Meter">
-        <div class="leftTop">
-          <h2 class="sectionTitle">Luck Meter</h2>
-          <div class="hint">Choose a spot to get your luck score out of 5 for the day.</div>
+    <!-- Grid -->
+    <section class="card gridCard" aria-label="Luck grid">
+      <div class="gridTop">
+        <h2 class="sectionTitle">Pick a square</h2>
+        <div class="hint">
+          You are not trying to “win”.
+          You are checking what kind of luck day you are in for.
+        </div>
+      </div>
+
+      <div class="boardWrap">
+        <div class="board" id="board" aria-label="Luck board"></div>
+      </div>
+
+      <div class="resultArea" aria-live="polite">
+        <div class="resultTitle" id="resultTitle">Pick any square to reveal your luck.</div>
+        <div class="resultText" id="resultText">
+          After you pick, the board will reveal the clover and the luck rings.
         </div>
 
-        <div class="boardWrap" aria-label="Luck board">
-          <div class="board" id="board" aria-label="Luck grid"></div>
+        <div class="shareRow">
+          <button class="btn" id="shareBtn" type="button" disabled>Copy share text</button>
+          <div class="shareHint" id="shareHint"></div>
         </div>
-
-        <div class="leftBottom" aria-live="polite">
-          <div class="resultTitle" id="resultTitle">Pick a spot.</div>
-          <div class="resultText" id="resultText">Then the meter reveals how lucky you are today.</div>
-
-          <div class="shareRow">
-            <button class="btn" id="shareBtn" type="button" disabled>Share your result</button>
-            <div class="shareHint" id="shareHint" aria-live="polite"></div>
-          </div>
-        </div>
-      </section>
-
-      <!-- RIGHT: daily extras -->
-      <aside class="rightCol" aria-label="Daily luck extras">
-        <section class="card miniCard">
-          <h3 class="miniTitle">Lucky number of the day</h3>
-          <div class="bigValue" id="luckyNumber">7</div>
-
-          <div class="adSlot adRight hasImg">
-            <img class="adImg" src="ads/ad_300x100_1.jpg" alt="Sponsored ad" />
-          </div>
-        </section>
-
-        <section class="card miniCard">
-          <h3 class="miniTitle">Lucky letter of the day</h3>
-          <div class="bigValue" id="luckyLetter">M</div>
-
-          <div class="adSlot adRight hasImg">
-            <img class="adImg" src="ads/ad_300x100_2.jpg" alt="Sponsored ad" />
-          </div>
-        </section>
-
-        <section class="card miniCard">
-          <h3 class="miniTitle">Lucky colour of the day</h3>
-
-          <div class="colorRow">
-            <div class="colorSwatch" id="colorSwatch"></div>
-            <div class="colorInfo">
-              <div class="colorLabel" id="colorName">Lucky Green</div>
-              <div class="colorHex" id="colorHex">#55be0a</div>
-            </div>
-          </div>
-
-          <div class="adSlot adRight hasImg">
-            <img class="adImg" src="ads/ad_300x100_3.jpg" alt="Sponsored ad" />
-          </div>
-        </section>
-
-        <section class="card miniCard">
-          <h3 class="miniTitle">Left or Right?</h3>
-          <div class="bigValue" id="leftRight">LEFT</div>
-
-          <div class="adSlot adRight hasImg">
-            <img class="adImg" src="ads/ad_300x100_4.jpg" alt="Sponsored ad" />
-          </div>
-        </section>
-      </aside>
+      </div>
     </section>
 
-    <!-- Bottom extras -->
-    <section class="extrasGrid" aria-label="Extra suggestions">
-      <section class="card extraCard">
-        <h3 class="miniTitle">Dinner suggestion</h3>
-        <div class="extraValue" id="dinnerSuggestion">Tacos</div>
+    <!-- Five cards -->
+    <section class="fiveCol" aria-label="Daily extras">
+      <div class="card miniCard">
+        <div class="miniLabel">Lucky number</div>
+        <div class="miniValue" id="luckyNumber">7</div>
+      </div>
 
-        <div class="adSlot adBottom hasImg">
-          <img class="adImg" src="ads/ad_300x60_1.jpg" alt="Sponsored ad" />
+      <div class="card miniCard">
+        <div class="miniLabel">Lucky letter</div>
+        <div class="miniValue" id="luckyLetter">M</div>
+      </div>
+
+      <div class="card miniCard">
+        <div class="miniLabel">Lucky colour</div>
+        <div class="colorRow">
+          <div class="swatch" id="colorSwatch"></div>
+          <div class="colorText">
+            <div class="colorName" id="colorName">Lucky Green</div>
+            <div class="colorHex" id="colorHex">#55be0a</div>
+          </div>
         </div>
-      </section>
+      </div>
 
-      <section class="card extraCard">
-        <h3 class="miniTitle">Lucky micro-move</h3>
-        <div class="extraValue" id="microMove">Clean one small thing</div>
+      <div class="card miniCard">
+        <div class="miniLabel">Dinner suggestion</div>
+        <div class="miniValue small" id="dinnerSuggestion">Tacos</div>
+      </div>
 
-        <div class="adSlot adBottom hasImg">
-          <img class="adImg" src="ads/ad_300x60_2.jpg" alt="Sponsored ad" />
-        </div>
-      </section>
+      <div class="card miniCard">
+        <div class="miniLabel">Emoji of the day</div>
+        <div class="miniValue" id="emojiOfDay">✨</div>
+      </div>
+    </section>
 
-      <section class="card extraCard">
-        <h3 class="miniTitle">Lucky vibe</h3>
-        <div class="extraValue" id="luckyVibe">Calm</div>
-
-        <div class="adSlot adBottom hasImg">
-          <img class="adImg" src="ads/ad_300x60_3.jpg" alt="Sponsored ad" />
-        </div>
-      </section>
-
-      <section class="card extraCard">
-        <h3 class="miniTitle">Lucky place</h3>
-        <div class="extraValue" id="luckyPlace">Near a window</div>
-
-        <div class="adSlot adBottom hasImg">
-          <img class="adImg" src="ads/ad_300x60_4.jpg" alt="Sponsored ad" />
-        </div>
-      </section>
+    <!-- Fortune -->
+    <section class="card fortuneCard" aria-label="Fortune cookie message">
+      <div class="fortuneWrap">
+        <div class="fortuneLabel">Fortune</div>
+        <div class="fortuneStrip" id="fortuneText">You will find luck in small places.</div>
+      </div>
     </section>
   </main>
 
-  <script src="script.js?v=120" defer></script>
+  <script src="script.js?v=130" defer></script>
 </body>
 </html>
