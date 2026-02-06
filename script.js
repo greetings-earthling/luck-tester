@@ -1,35 +1,164 @@
+// script.js
 (function () {
   "use strict";
 
-  // Board config
-  const COLS = 12;
-  const ROWS = 12;
-  const COUNT = COLS * ROWS;
+  const canvas = document.getElementById("wheel");
+  const ctx = canvas.getContext("2d");
 
-  const boardEl = document.getElementById("board");
-  const resultTitleEl = document.getElementById("resultTitle");
-  const resultTextEl = document.getElementById("resultText");
-
+  const spinBtn = document.getElementById("spinBtn");
   const shareBtn = document.getElementById("shareBtn");
   const shareHint = document.getElementById("shareHint");
+
+  const resultTitle = document.getElementById("resultTitle");
+  const resultText = document.getElementById("resultText");
 
   const luckyNumberEl = document.getElementById("luckyNumber");
   const luckyLetterEl = document.getElementById("luckyLetter");
   const colorSwatch = document.getElementById("colorSwatch");
   const colorName = document.getElementById("colorName");
   const colorHex = document.getElementById("colorHex");
-  const dinnerSuggestionEl = document.getElementById("dinnerSuggestion");
   const emojiOfDayEl = document.getElementById("emojiOfDay");
-  const fortuneTextEl = document.getElementById("fortuneText");
+  const dinnerEl = document.getElementById("dinnerSuggestion");
+  const leftRightEl = document.getElementById("leftRight");
+  const fortuneEl = document.getElementById("fortuneText");
 
-  if (!boardEl) return;
+  // 16 slices total:
+  // 1 MEGA, 3 SUPER, 6 A BIT, 6 NOT MUCH
+  // Pointer is at 12 o'clock. We choose a target slice and rotate wheel so it lands there.
 
-  function rc(i){ return { r: Math.floor(i / COLS), c: i % COLS }; }
+  const slices = shuffle([
+    { tier: "MEGA", label: "MEGA LUCKY", icon: "🍀", color: "rgba(85,190,10,0.95)" },
 
-  // Square rings
-  function dist(a, b) {
-    const A = rc(a), B = rc(b);
-    return Math.max(Math.abs(A.r - B.r), Math.abs(A.c - B.c));
+    { tier: "SUPER", label: "SUPER LUCKY", icon: "✨", color: "rgba(85,190,10,0.75)" },
+    { tier: "SUPER", label: "SUPER LUCKY", icon: "🌟", color: "rgba(85,190,10,0.75)" },
+    { tier: "SUPER", label: "SUPER LUCKY", icon: "🎯", color: "rgba(85,190,10,0.75)" },
+
+    { tier: "BIT", label: "A BIT LUCKY", icon: "🙂", color: "rgba(85,190,10,0.45)" },
+    { tier: "BIT", label: "A BIT LUCKY", icon: "🧲", color: "rgba(85,190,10,0.45)" },
+    { tier: "BIT", label: "A BIT LUCKY", icon: "🪙", color: "rgba(85,190,10,0.45)" },
+    { tier: "BIT", label: "A BIT LUCKY", icon: "🧠", color: "rgba(85,190,10,0.45)" },
+    { tier: "BIT", label: "A BIT LUCKY", icon: "🪴", color: "rgba(85,190,10,0.45)" },
+    { tier: "BIT", label: "A BIT LUCKY", icon: "☀️", color: "rgba(85,190,10,0.45)" },
+
+    { tier: "NONE", label: "NOT MUCH LUCK", icon: "😐", color: "rgba(0,0,0,0.06)" },
+    { tier: "NONE", label: "NOT MUCH LUCK", icon: "🧊", color: "rgba(0,0,0,0.06)" },
+    { tier: "NONE", label: "NOT MUCH LUCK", icon: "🙃", color: "rgba(0,0,0,0.06)" },
+    { tier: "NONE", label: "NOT MUCH LUCK", icon: "😮‍💨", color: "rgba(0,0,0,0.06)" },
+    { tier: "NONE", label: "NOT MUCH LUCK", icon: "🫠", color: "rgba(0,0,0,0.06)" },
+    { tier: "NONE", label: "NOT MUCH LUCK", icon: "🤷", color: "rgba(0,0,0,0.06)" },
+  ]);
+
+  const sliceCount = slices.length;
+  const sliceAngle = (Math.PI * 2) / sliceCount;
+
+  // Wheel rotation state (radians)
+  let angle = 0;
+  let spinning = false;
+  let landedIndex = null;
+
+  // Extras locked after spin
+  let extras = null;
+
+  // Resize canvas for crispness
+  function fitCanvas() {
+    const cssSize = Math.min(520, canvas.parentElement.clientWidth);
+    const dpr = Math.max(1, Math.floor(window.devicePixelRatio || 1));
+    canvas.style.width = cssSize + "px";
+    canvas.style.height = cssSize + "px";
+    canvas.width = cssSize * dpr;
+    canvas.height = cssSize * dpr;
+    ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
+    drawWheel();
+  }
+
+  window.addEventListener("resize", fitCanvas);
+
+  function drawWheel() {
+    const w = canvas.width / (window.devicePixelRatio || 1);
+    const h = canvas.height / (window.devicePixelRatio || 1);
+    const cx = w / 2;
+    const cy = h / 2;
+    const r = Math.min(cx, cy) - 8;
+
+    ctx.clearRect(0, 0, w, h);
+
+    // Outer shadow ring
+    ctx.beginPath();
+    ctx.arc(cx, cy, r + 4, 0, Math.PI * 2);
+    ctx.fillStyle = "rgba(0,0,0,0.05)";
+    ctx.fill();
+
+    // Slices
+    for (let i = 0; i < sliceCount; i++) {
+      const start = angle + i * sliceAngle - Math.PI / 2;
+      const end = start + sliceAngle;
+
+      ctx.beginPath();
+      ctx.moveTo(cx, cy);
+      ctx.arc(cx, cy, r, start, end);
+      ctx.closePath();
+      ctx.fillStyle = slices[i].color;
+      ctx.fill();
+
+      // Slice divider
+      ctx.strokeStyle = "rgba(17,17,17,0.10)";
+      ctx.lineWidth = 1;
+      ctx.stroke();
+
+      // Icon + label
+      const mid = (start + end) / 2;
+      const iconRadius = r * 0.68;
+      const textRadius = r * 0.80;
+
+      ctx.save();
+      ctx.translate(cx, cy);
+      ctx.rotate(mid);
+
+      // Icon
+      ctx.font = "26px system-ui, -apple-system, Segoe UI, Roboto, Arial";
+      ctx.textAlign = "center";
+      ctx.textBaseline = "middle";
+      ctx.fillStyle = "rgba(17,17,17,0.92)";
+      ctx.fillText(slices[i].icon, iconRadius, 0);
+
+      // Short label
+      ctx.font = "800 12px system-ui, -apple-system, Segoe UI, Roboto, Arial";
+      ctx.fillStyle = "rgba(17,17,17,0.86)";
+      ctx.fillText(shortLabel(slices[i].tier), textRadius, 0);
+
+      ctx.restore();
+    }
+
+    // Center cap
+    ctx.beginPath();
+    ctx.arc(cx, cy, r * 0.18, 0, Math.PI * 2);
+    ctx.fillStyle = "#fff";
+    ctx.fill();
+    ctx.strokeStyle = "rgba(17,17,17,0.10)";
+    ctx.lineWidth = 2;
+    ctx.stroke();
+
+    ctx.font = "900 14px system-ui, -apple-system, Segoe UI, Roboto, Arial";
+    ctx.fillStyle = "rgba(17,17,17,0.90)";
+    ctx.textAlign = "center";
+    ctx.textBaseline = "middle";
+    ctx.fillText("SPIN", cx, cy);
+  }
+
+  function shortLabel(tier) {
+    if (tier === "MEGA") return "MEGA";
+    if (tier === "SUPER") return "SUPER";
+    if (tier === "BIT") return "A BIT";
+    return "NONE";
+  }
+
+  function shuffle(arr) {
+    const a = arr.slice();
+    for (let i = a.length - 1; i > 0; i--) {
+      const j = Math.floor(Math.random() * (i + 1));
+      [a[i], a[j]] = [a[j], a[i]];
+    }
+    return a;
   }
 
   function randInt(min, maxInclusive){
@@ -42,103 +171,104 @@
     return String.fromCharCode(65 + randInt(0, 25));
   }
 
-  // Daily extras
-  const colors = [
-    { name: "Lucky Green", hex: "#55be0a" },
-    { name: "Grape", hex: "#875da6" },
-    { name: "Sky", hex: "#5aa9e6" },
-    { name: "Sun", hex: "#ffcc33" },
-    { name: "Rose", hex: "#ff5d8f" },
-    { name: "Teal", hex: "#14b8a6" },
-    { name: "Tangerine", hex: "#ff7a00" },
-    { name: "Midnight", hex: "#111827" }
-  ];
+  function buildExtras() {
+    const colors = [
+      { name: "Lucky Green", hex: "#55be0a" },
+      { name: "Grape", hex: "#875da6" },
+      { name: "Sky", hex: "#5aa9e6" },
+      { name: "Sun", hex: "#ffcc33" },
+      { name: "Rose", hex: "#ff5d8f" },
+      { name: "Teal", hex: "#14b8a6" },
+      { name: "Tangerine", hex: "#ff7a00" },
+      { name: "Midnight", hex: "#111827" }
+    ];
 
-  const dinners = [
-    "Tacos",
-    "Pasta",
-    "Burgers",
-    "Stir fry",
-    "Pizza",
-    "Breakfast for dinner",
-    "Soup and grilled cheese",
-    "Sushi"
-  ];
+    const dinners = [
+      "Tacos",
+      "Pasta",
+      "Burgers",
+      "Stir fry",
+      "Pizza",
+      "Soup and grilled cheese",
+      "Breakfast for dinner",
+      "Sushi"
+    ];
 
-  const emojis = ["✨","🍀","🧠","🔥","🧊","🎯","🧲","🌊","🛠️","🎧","📚","🧃","🌞","🌙","🧭","🪴"];
+    const emojis = ["✨","🍀","🧠","🔥","🧊","🎯","🧲","🌊","🛠️","🎧","📚","🧃","🌞","🌙","🧭","🪴"];
 
-  const fortunes = [
-    "Small wins count. Collect them.",
-    "A simple choice will lead to a better outcome.",
-    "Today rewards steady effort, not perfect effort.",
-    "Your timing is better than you think.",
-    "A tiny risk brings a useful result.",
-    "An unexpected message improves your day.",
-    "Be curious. Curiosity is lucky.",
-    "The easy path is not always the right one, but today it might be.",
-    "Make space. Luck likes room to land.",
-    "You will notice something you usually miss.",
-    "One good decision beats ten good intentions.",
-    "A calm yes is stronger than a loud maybe.",
-    "Your next step is smaller than you fear.",
-    "Your luck improves when you move first.",
-    "A helpful person appears at the right time.",
-    "Say it plainly. Plain words are lucky."
-  ];
+    const fortunes = [
+      "Small wins count. Collect them.",
+      "A simple choice will lead to a better outcome.",
+      "Today rewards steady effort, not perfect effort.",
+      "Your timing is better than you think.",
+      "A tiny risk brings a useful result.",
+      "An unexpected message improves your day.",
+      "Be curious. Curiosity is lucky.",
+      "Make space. Luck likes room to land.",
+      "You will notice something you usually miss.",
+      "One good decision beats ten good intentions.",
+      "Your next step is smaller than you fear.",
+      "Your luck improves when you move first."
+    ];
 
-  luckyNumberEl.textContent = String(randInt(0, 9));
-  luckyLetterEl.textContent = randLetter();
-
-  const c = pick(colors);
-  colorSwatch.style.background = c.hex;
-  colorName.textContent = c.name;
-  colorHex.textContent = c.hex.toLowerCase();
-
-  dinnerSuggestionEl.textContent = pick(dinners);
-  emojiOfDayEl.textContent = pick(emojis);
-  fortuneTextEl.textContent = pick(fortunes);
-
-  // Luck board setup
-  const luckyIndex = Math.floor(Math.random() * COUNT);
-  const dists = Array.from({ length: COUNT }, (_, i) => dist(i, luckyIndex));
-
-  function scoreForDistance(d){
-    if (d === 0) return 5;
-    if (d === 1) return 4;
-    if (d === 2) return 3;
-    if (d === 3) return 1;
-    return 0;
+    return {
+      number: String(randInt(0, 9)),
+      letter: randLetter(),
+      color: pick(colors),
+      emoji: pick(emojis),
+      dinner: pick(dinners),
+      leftRight: Math.random() < 0.5 ? "LEFT" : "RIGHT",
+      fortune: pick(fortunes),
+    };
   }
 
-  function labelForScore(s){
-    if (s === 5) return "5/5: Clover zone";
-    if (s === 4) return "4/5: Very lucky day";
-    if (s === 3) return "3/5: Luck is on your side";
-    if (s === 1) return "1/5: Small luck day";
-    return "0/5: Make your own luck day";
+  function applyExtras() {
+    luckyNumberEl.textContent = extras.number;
+    luckyLetterEl.textContent = extras.letter;
+
+    colorSwatch.style.background = extras.color.hex;
+    colorName.textContent = extras.color.name;
+    colorHex.textContent = extras.color.hex.toLowerCase();
+
+    emojiOfDayEl.textContent = extras.emoji;
+    dinnerEl.textContent = extras.dinner;
+    leftRightEl.textContent = extras.leftRight;
+
+    fortuneEl.textContent = extras.fortune;
   }
 
-  function messageForScore(s){
-    if (s === 5) return "Big green energy. If you have been waiting to start something, today is friendly.";
-    if (s === 4) return "Oooh so close. Expect at least one nice break in your favour.";
-    if (s === 3) return "Good odds for small wins. Keep your eyes open and say yes to the easy openings.";
-    if (s === 1) return "Not nothing. Take the simple path and do one useful thing. That counts as luck too.";
-    return "No green zone today. That is fine. Keep it light, avoid high stakes choices, and create your own luck.";
+  function labelAndMessage(tier) {
+    if (tier === "MEGA") {
+      return {
+        title: "MEGA LUCKY DAY",
+        text: "Big tailwind energy. If you have a move to make, today is friendly."
+      };
+    }
+    if (tier === "SUPER") {
+      return {
+        title: "SUPER LUCKY DAY",
+        text: "Nice timing ahead. Expect at least one thing to go your way."
+      };
+    }
+    if (tier === "BIT") {
+      return {
+        title: "A BIT LUCKY",
+        text: "Small wins are on the menu. Keep it simple and take the openings."
+      };
+    }
+    return {
+      title: "NOT MUCH LUCK TODAY",
+      text: "Totally fine. Keep stakes low, stay loose, and make your own luck."
+    };
   }
 
-  function overlayClassByDistance(d){
-    if (d === 0) return "o-g5";
-    if (d === 1) return "o-g4";
-    if (d === 2) return "o-g3";
-    if (d === 3) return "o-g1";
-    return "";
-  }
-
-  function shareText(score){
+  function shareText() {
+    const s = slices[landedIndex];
+    const lm = labelAndMessage(s.tier);
     const url = window.location.href;
     return [
-      `The Official Luck Meter says: ${labelForScore(score)}`,
-      `${messageForScore(score)}`,
+      `The Official Luck Meter says: ${lm.title} ${s.icon}`,
+      lm.text,
       `Try yours: ${url}`
     ].join("\n");
   }
@@ -160,118 +290,85 @@
     return ok;
   }
 
-  let locked = false;
-  let chosenIndex = -1;
+  function spinToIndex(targetIndex) {
+    spinning = true;
+    spinBtn.disabled = true;
+    shareBtn.disabled = true;
+    shareHint.textContent = "";
 
-  function clearBoard() {
-    boardEl.querySelectorAll(".overlay").forEach(o => {
-      o.className = "overlay";
-      o.classList.remove("fill");
-    });
-    boardEl.querySelectorAll(".label").forEach(l => {
-      l.textContent = "";
-      l.classList.remove("zero");
-    });
-    boardEl.querySelectorAll(".tile").forEach(t => {
-      t.classList.remove("chosen");
-    });
-  }
+    // We want the target slice midpoint to land at pointer angle (12 o'clock).
+    // Pointer is at -90deg in our draw (we subtract PI/2). We can solve by rotating wheel.
+    const targetMid = (targetIndex + 0.5) * sliceAngle;
+    const pointerAngle = 0; // because our slice start is angle + i*sliceAngle - PI/2, and pointer is at top
+    // We want: angle + targetMid == pointerAngle + 2PI*k
+    // So: angle == -targetMid + 2PI*k
+    const current = angle % (Math.PI * 2);
 
-  function lockBoardUI() {
-    boardEl.classList.add("locked");
-    boardEl.querySelectorAll(".tile").forEach((tile, i) => {
-      tile.classList.toggle("chosen", i === chosenIndex);
-      tile.setAttribute("aria-disabled", "true");
-      tile.tabIndex = -1;
-    });
-  }
+    // Add multiple full spins for drama
+    const spins = 6 + Math.floor(Math.random() * 4); // 6-9
+    const desired = -targetMid + spins * Math.PI * 2;
 
-  function revealRings() {
-    const tiles = boardEl.querySelectorAll(".tile");
-    const waveDelay = 120;
+    const start = current;
+    const end = desired;
 
-    for (let ring = 0; ring <= 3; ring++) {
-      setTimeout(() => {
-        tiles.forEach((tile, i) => {
-          if (dists[i] !== ring) return;
+    const duration = 2400;
+    const startTime = performance.now();
 
-          const overlay = tile.querySelector(".overlay");
-          const label = tile.querySelector(".label");
-          if (!overlay || !label) return;
-
-          const s = scoreForDistance(dists[i]);
-
-          if (dists[i] === 0) {
-            label.textContent = "🍀";
-          } else {
-            label.textContent = String(s);
-            if (s === 0) label.classList.add("zero");
-          }
-
-          const cls = overlayClassByDistance(dists[i]);
-          if (cls) {
-            overlay.classList.add(cls);
-            overlay.classList.add("fill");
-          }
-        });
-      }, ring * waveDelay);
+    function easeOutCubic(t) {
+      return 1 - Math.pow(1 - t, 3);
     }
 
-    setTimeout(() => {
-      tiles.forEach((tile, i) => {
-        if (dists[i] <= 3) return;
-        const label = tile.querySelector(".label");
-        if (!label) return;
-        label.textContent = "0";
-        label.classList.add("zero");
-      });
-    }, 3 * waveDelay + 140);
+    function tick(now) {
+      const t = Math.min(1, (now - startTime) / duration);
+      const e = easeOutCubic(t);
+      angle = start + (end - start) * e;
+      drawWheel();
+
+      if (t < 1) {
+        requestAnimationFrame(tick);
+      } else {
+        spinning = false;
+        angle = end;
+        drawWheel();
+
+        landedIndex = targetIndex;
+        const s = slices[landedIndex];
+        const lm = labelAndMessage(s.tier);
+
+        resultTitle.textContent = `${lm.title} ${s.icon}`;
+        resultText.textContent = lm.text;
+
+        extras = buildExtras();
+        applyExtras();
+
+        shareBtn.disabled = false;
+        spinBtn.disabled = false;
+      }
+    }
+
+    requestAnimationFrame(tick);
   }
 
-  // Build board
-  boardEl.innerHTML = "";
-  for (let i = 0; i < COUNT; i++) {
-    const tile = document.createElement("button");
-    tile.type = "button";
-    tile.className = "tile";
-    tile.setAttribute("aria-label", "Pick this square");
-    tile.innerHTML = `<span class="label" aria-hidden="true"></span><div class="overlay"></div>`;
+  spinBtn.addEventListener("click", () => {
+    if (spinning) return;
 
-    tile.addEventListener("click", () => {
-      if (locked) return;
-      locked = true;
-      chosenIndex = i;
-
-      const score = scoreForDistance(dists[i]);
-      resultTitleEl.textContent = labelForScore(score);
-      resultTextEl.textContent = messageForScore(score);
-
-      shareBtn.disabled = false;
-      shareHint.textContent = "";
-
-      lockBoardUI();
-      clearBoard();
-
-      setTimeout(() => {
-        revealRings();
-      }, 320);
-    });
-
-    boardEl.appendChild(tile);
-  }
+    // Weighted distribution already baked into slices array
+    const idx = Math.floor(Math.random() * sliceCount);
+    spinToIndex(idx);
+  });
 
   shareBtn.addEventListener("click", async () => {
-    if (!locked || chosenIndex < 0) return;
-
-    const score = scoreForDistance(dists[chosenIndex]);
-    const text = shareText(score);
+    if (landedIndex === null) return;
     shareHint.textContent = "";
 
     try {
-      const ok = await copyToClipboard(text);
+      const ok = await copyToClipboard(shareText());
       shareHint.textContent = ok ? "Copied. Paste it anywhere." : "Could not auto-copy.";
     } catch {
       shareHint.textContent = "Could not auto-copy.";
     }
   });
+
+  // Init
+  fitCanvas();
 })();
