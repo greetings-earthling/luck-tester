@@ -1,372 +1,342 @@
 (function () {
   "use strict";
 
-  // --------------------
-  // Helpers
-  // --------------------
-  function byId(id){ return document.getElementById(id); }
-
-  function randInt(max){
-    return Math.floor(Math.random() * max);
+  // ---------- Helpers ----------
+  function randInt(min, max) {
+    return Math.floor(Math.random() * (max - min + 1)) + min;
   }
 
-  function formatMeta(item){
-    const type = item.type ? String(item.type) : "";
-    const year = (item.year !== undefined && item.year !== null) ? String(item.year) : "";
-    if (type && year) return `${type}, ${year}`;
-    if (type) return type;
-    return year;
+  function pick(arr) {
+    return arr[Math.floor(Math.random() * arr.length)];
   }
 
-  function slotSpin(list, titleEl, metaEl, noteEl, finalItem, done){
-    const minSteps = 18;
-    const maxSteps = 28;
-    const totalSteps = minSteps + randInt(maxSteps - minSteps + 1);
+  function shuffle(arr) {
+    const a = arr.slice();
+    for (let i = a.length - 1; i > 0; i--) {
+      const j = Math.floor(Math.random() * (i + 1));
+      [a[i], a[j]] = [a[j], a[i]];
+    }
+    return a;
+  }
 
-    let delay = 30;
-    const delayIncrease = 7;
+  function hexToRgb(hex) {
+    const h = String(hex || "").replace("#", "").trim();
+    if (h.length !== 6) return null;
+    const r = parseInt(h.slice(0, 2), 16);
+    const g = parseInt(h.slice(2, 4), 16);
+    const b = parseInt(h.slice(4, 6), 16);
+    if ([r, g, b].some(Number.isNaN)) return null;
+    return { r, g, b };
+  }
+
+  function readableTextColor(bgHex) {
+    const rgb = hexToRgb(bgHex);
+    if (!rgb) return "#111";
+    // perceived luminance
+    const L = (0.2126 * rgb.r + 0.7152 * rgb.g + 0.0722 * rgb.b) / 255;
+    return L > 0.62 ? "#111" : "#fff";
+  }
+
+  function spinText({
+    button,
+    stepsMin = 18,
+    stepsMax = 28,
+    delayStart = 35,
+    delayInc = 7,
+    onTick,
+    onDone
+  }) {
     let step = 0;
-    let idx = randInt(list.length);
+    const total = randInt(stepsMin, stepsMax);
+    let delay = delayStart;
 
-    function tick(){
-      idx = (idx + 1) % list.length;
-      const current = list[idx];
+    button.disabled = true;
 
-      titleEl.textContent = current.title || current;
-      if (metaEl) metaEl.textContent = current.meta ? current.meta : formatMeta(current);
-
-      titleEl.style.transform = (step % 2 === 0) ? "translateY(1px)" : "translateY(-1px)";
+    function tick() {
       step++;
+      if (onTick) onTick(step, total);
 
-      if (step < totalSteps){
-        delay += delayIncrease;
+      if (step < total) {
+        delay += delayInc;
         setTimeout(tick, delay);
       } else {
-        titleEl.style.transform = "translateY(0)";
-        titleEl.textContent = finalItem.title || finalItem;
-        if (metaEl) metaEl.textContent = finalItem.meta ? finalItem.meta : formatMeta(finalItem);
-        if (noteEl) noteEl.textContent = "";
-        done();
+        if (onDone) onDone();
+        button.disabled = false;
       }
     }
 
     tick();
   }
 
-  // --------------------
-  // Luck Meter (no reroll)
-  // --------------------
-  const luckTitle = byId("luck-title");
-  const luckMeta  = byId("luck-meta");
-  const luckNote  = byId("luck-note");
-  const luckSpin  = byId("luck-spin");
-  const luckSpinDisabled = byId("luck-spin-disabled");
+  // ---------- Data (fallbacks if your lists are missing) ----------
+  const WATCH = Array.isArray(window.WATCHLIST) && window.WATCHLIST.length
+    ? window.WATCHLIST.slice()
+    : [
+        { title: "The Matrix", type: "Movie", year: "1999" },
+        { title: "Heat", type: "Movie", year: "1995" },
+        { title: "The Office (US)", type: "TV", year: "2005–2013" },
+        { title: "Severance", type: "TV", year: "2022–" }
+      ];
+
+  const FOOD = Array.isArray(window.FOODLIST) && window.FOODLIST.length
+    ? window.FOODLIST.slice()
+    : ["Tacos", "Pizza", "Burgers", "Pasta", "Sushi"];
+
+  const FORTUNES = Array.isArray(window.FORTUNES) && window.FORTUNES.length
+    ? window.FORTUNES.slice()
+    : [
+        "Luck likes motion.",
+        "Small steps still count.",
+        "Good timing finds you when you are ready.",
+        "A little risk clears the fog.",
+        "You are closer than you think."
+      ];
+
+  // ---------- Luck Meter ----------
+  const luckResult = document.getElementById("luck-result");
+  const luckHint = document.getElementById("luck-hint");
+  const luckNote = document.getElementById("luck-note");
+  const luckSpin = document.getElementById("luck-spin");
 
   const luckOutcomes = [
-    // weights: 1 mega, 3 very, 6 on-side, 4 low-friction, 2 make-your-own
-    { title: "MEGA LUCKY DAY", meta: "🚀 Things may line up without you asking.", note: "Use it. Make one bold move." },
-
-    { title: "VERY LUCKY DAY", meta: "✨ Good timing energy is around you.", note: "Say yes faster than usual." },
-    { title: "VERY LUCKY DAY", meta: "✨ The universe is being weirdly cooperative.", note: "Lean into momentum." },
-    { title: "VERY LUCKY DAY", meta: "✨ Expect a couple pleasant surprises.", note: "Watch for easy wins." },
-
-    { title: "LUCK IS ON YOUR SIDE", meta: "🍀 A solid tailwind today.", note: "One small risk could pay off." },
-    { title: "LUCK IS ON YOUR SIDE", meta: "🍀 Things should flow better than normal.", note: "Do the thing you’ve been avoiding." },
-    { title: "LUCK IS ON YOUR SIDE", meta: "🍀 Not magic. Just smoother.", note: "Stay open to coincidences." },
-    { title: "LUCK IS ON YOUR SIDE", meta: "🍀 The vibes are friendly.", note: "Send the message. Make the ask." },
-    { title: "LUCK IS ON YOUR SIDE", meta: "🍀 Try your idea. Tiny is fine.", note: "Action creates luck." },
-    { title: "LUCK IS ON YOUR SIDE", meta: "🍀 Quietly fortunate.", note: "Keep your eyes up." },
-
-    { title: "LOW FRICTION DAY", meta: "🛼 Nothing dramatic. Just easier.", note: "Great day for errands and cleanup." },
-    { title: "LOW FRICTION DAY", meta: "🛼 The path is open.", note: "Take the straightforward route." },
-    { title: "LOW FRICTION DAY", meta: "🛼 Neutral to good.", note: "You won’t need to fight today." },
-    { title: "LOW FRICTION DAY", meta: "🛼 Steady energy.", note: "Consistency wins." },
-
-    { title: "MAKE YOUR OWN LUCK KIND OF DAY", meta: "🧰 The universe isn’t doing you favours.", note: "Keep it simple. Keep it moving." },
-    { title: "MAKE YOUR OWN LUCK KIND OF DAY", meta: "🧰 You’re the engine today.", note: "Avoid gambles. Choose control." },
+    { score: 5, title: "MEGA LUCKY DAY", note: "Green lights. Say yes to the good stuff." },
+    { score: 4, title: "VERY LUCKY DAY", note: "Nice tailwind. Take one confident swing." },
+    { score: 3, title: "LUCK IS AROUND YOU", note: "Not perfect, but things can click for you today." },
+    { score: 2, title: "LOW FRICTION DAY", note: "Nothing dramatic. Just a smoother ride." },
+    { score: 1, title: "MAKE YOUR OWN LUCK DAY", note: "Create the luck. Keep it simple and steady." },
+    { score: 0, title: "NOT MUCH LUCK TODAY", note: "Play it safe. Tomorrow is a new roll." }
   ];
 
-  let luckHasSpun = false;
-  let luckSpinning = false;
+  function doLuckSpin() {
+    const pool = shuffle(luckOutcomes);
+    let idx = 0;
 
-  luckSpin.addEventListener("click", () => {
-    if (luckHasSpun || luckSpinning) return;
+    luckHint.textContent = "Consulting the cosmos…";
+    luckNote.textContent = "";
 
-    luckSpinning = true;
-    luckSpin.disabled = true;
-    luckNote.textContent = "Consulting the cosmos…";
-
-    const final = luckOutcomes[randInt(luckOutcomes.length)];
-
-    slotSpin(
-      luckOutcomes,
-      luckTitle,
-      luckMeta,
-      luckNote,
-      final,
-      () => {
-        luckNote.textContent = final.note;
-        luckHasSpun = true;
-        luckSpinning = false;
-
-        luckSpin.style.display = "none";
-        luckSpinDisabled.style.display = "inline-flex";
+    spinText({
+      button: luckSpin,
+      stepsMin: 20,
+      stepsMax: 32,
+      delayStart: 35,
+      delayInc: 8,
+      onTick: () => {
+        idx = (idx + 1) % pool.length;
+        luckResult.textContent = pool[idx].title;
+      },
+      onDone: () => {
+        const chosen = pick(luckOutcomes);
+        luckResult.textContent = `${chosen.title} (${chosen.score}/5)`;
+        luckHint.textContent = "";
+        luckNote.textContent = chosen.note;
       }
-    );
+    });
+  }
+
+  luckSpin.addEventListener("click", doLuckSpin);
+
+  // ---------- Lucky Number ----------
+  const numResult = document.getElementById("num-result");
+  const numHint = document.getElementById("num-hint");
+  const numSpin = document.getElementById("num-spin");
+
+  numSpin.addEventListener("click", () => {
+    const seq = shuffle([0,1,2,3,4,5,6,7,8,9]);
+    let i = 0;
+    numHint.textContent = "";
+
+    spinText({
+      button: numSpin,
+      onTick: () => {
+        i = (i + 1) % seq.length;
+        numResult.textContent = String(seq[i]);
+      },
+      onDone: () => {
+        const final = String(randInt(0, 9));
+        numResult.textContent = final;
+        numHint.textContent = "Good luck.";
+      }
+    });
   });
 
-  // --------------------
-  // Lucky Number / Letter / Colour / Emoji (no reroll)
-  // --------------------
-  function oneSpinSetup(btnId, titleId, metaId, noteId, list, finalize){
-    const btn = byId(btnId);
-    const titleEl = byId(titleId);
-    const metaEl = metaId ? byId(metaId) : null;
-    const noteEl = noteId ? byId(noteId) : null;
+  // ---------- Lucky Letter ----------
+  const letterResult = document.getElementById("letter-result");
+  const letterHint = document.getElementById("letter-hint");
+  const letterSpin = document.getElementById("letter-spin");
+  const letters = "ABCDEFGHIJKLMNOPQRSTUVWXYZ".split("");
 
-    let hasSpun = false;
-    let spinning = false;
+  letterSpin.addEventListener("click", () => {
+    const seq = shuffle(letters);
+    let i = 0;
+    letterHint.textContent = "";
 
-    btn.addEventListener("click", () => {
-      if (hasSpun || spinning) return;
-      spinning = true;
-      btn.disabled = true;
-      if (noteEl) noteEl.textContent = "Spinning…";
-
-      const final = list[randInt(list.length)];
-      const finalItem = finalize ? finalize(final) : final;
-
-      slotSpin(
-        list.map(x => (typeof x === "string" || typeof x === "number") ? ({ title: String(x), meta: "" }) : x),
-        titleEl,
-        metaEl,
-        noteEl,
-        (typeof finalItem === "string" || typeof finalItem === "number") ? ({ title: String(finalItem), meta: "" }) : finalItem,
-        () => {
-          hasSpun = true;
-          spinning = false;
-          if (noteEl) noteEl.textContent = "";
-        }
-      );
+    spinText({
+      button: letterSpin,
+      onTick: () => {
+        i = (i + 1) % seq.length;
+        letterResult.textContent = seq[i];
+      },
+      onDone: () => {
+        const final = pick(letters);
+        letterResult.textContent = final;
+        letterHint.textContent = `${final} is calling to you.`;
+      }
     });
-  }
+  });
 
-  // Number 0–9
-  oneSpinSetup(
-    "num-spin",
-    "num-title",
-    "num-meta",
-    "num-note",
-    Array.from({ length: 10 }, (_, i) => ({ title: String(i), meta: "" })),
-    null
-  );
+  // ---------- Lucky Colour ----------
+  const colorResult = document.getElementById("color-result");
+  const colorHint = document.getElementById("color-hint");
+  const colorSpin = document.getElementById("color-spin");
 
-  // Letter A–Z
-  const letters = "ABCDEFGHIJKLMNOPQRSTUVWXYZ".split("").map(ch => ({ title: ch, meta: "" }));
-  oneSpinSetup("letter-spin", "letter-title", "letter-meta", "letter-note", letters, null);
-
-  // Colour (single)
-  const colours = [
-    { title: "Emerald", meta: "#1DB954" },
-    { title: "Cobalt", meta: "#2563EB" },
-    { title: "Tangerine", meta: "#F97316" },
-    { title: "Sunflower", meta: "#FACC15" },
-    { title: "Cherry", meta: "#EF4444" },
-    { title: "Grape", meta: "#875DA6" },
-    { title: "Teal", meta: "#14B8A6" },
-    { title: "Slate", meta: "#64748B" },
+  const colors = [
+    { name: "Emerald", hex: "#55be0a" },
+    { name: "Violet", hex: "#875da6" },
+    { name: "Ocean", hex: "#1677ff" },
+    { name: "Sunset", hex: "#ff6a3d" },
+    { name: "Gold", hex: "#f5c542" },
+    { name: "Rose", hex: "#ff4d8d" },
+    { name: "Mint", hex: "#2dd4bf" },
+    { name: "Midnight", hex: "#111827" }
   ];
-  oneSpinSetup("color-spin", "color-title", "color-meta", "color-note", colours, null);
 
-  // Emoji of the day
-  const emojis = [
-    { title: "😌", meta: "calm" },
-    { title: "😤", meta: "determined" },
-    { title: "🥴", meta: "goofy" },
-    { title: "🤷", meta: "shrug" },
-    { title: "🫠", meta: "melting" },
-    { title: "😍", meta: "heart eyes" },
-    { title: "😵‍💫", meta: "frazzled" },
-    { title: "😈", meta: "devilish" },
-    { title: "🤞", meta: "hopeful" },
-    { title: "☕", meta: "coffee mode" },
-  ];
-  oneSpinSetup("emoji-spin", "emoji-title", "emoji-meta", "emoji-note", emojis, null);
+  colorSpin.addEventListener("click", () => {
+    const seq = shuffle(colors);
+    let i = 0;
+    colorHint.textContent = "";
 
-  // --------------------
-  // Watch (reroll)
-  // --------------------
-  const watchList = Array.isArray(window.WATCHLIST) ? window.WATCHLIST.slice() : [];
-  const watchTitle = byId("watch-title");
-  const watchMeta  = byId("watch-meta");
-  const watchNote  = byId("watch-note");
-  const watchSpin  = byId("watch-spin");
-  const watchReroll = byId("watch-reroll");
-
-  function watchPick(){ return watchList[randInt(watchList.length)]; }
-
-  let watchHasSpun = false;
-  let watchSpinning = false;
-
-  function doWatchSpin(isReroll){
-    if (watchSpinning) return;
-    if (!isReroll && watchHasSpun) return;
-
-    watchSpinning = true;
-    watchNote.textContent = isReroll ? "Rerolling…" : "Consulting the streaming gods…";
-    watchReroll.disabled = true;
-
-    const final = watchPick();
-
-    slotSpin(
-      watchList,
-      watchTitle,
-      watchMeta,
-      watchNote,
-      final,
-      () => {
-        watchNote.textContent = "If it’s a no, reroll it. No guilt.";
-        watchSpinning = false;
-        watchReroll.disabled = false;
-
-        if (!isReroll){
-          watchHasSpun = true;
-          watchSpin.disabled = true;
-          watchSpin.textContent = "Spun";
-        }
+    spinText({
+      button: colorSpin,
+      onTick: () => {
+        i = (i + 1) % seq.length;
+        const c = seq[i];
+        colorResult.textContent = `${c.name} ${c.hex}`;
+        colorResult.style.setProperty("--pick", c.hex);
+        colorResult.style.setProperty("--pickText", readableTextColor(c.hex));
+      },
+      onDone: () => {
+        const c = pick(colors);
+        colorResult.textContent = `${c.name} ${c.hex}`;
+        colorResult.style.setProperty("--pick", c.hex);
+        colorResult.style.setProperty("--pickText", readableTextColor(c.hex));
+        colorHint.textContent = "Wear it. Notice it. Use it.";
       }
-    );
-  }
-
-  if (watchList.length){
-    watchSpin.addEventListener("click", () => doWatchSpin(false));
-    watchReroll.addEventListener("click", () => doWatchSpin(true));
-  } else {
-    watchTitle.textContent = "No watchlist found.";
-    watchMeta.textContent = "Add items in watchlist.js";
-    watchSpin.disabled = true;
-    watchReroll.disabled = true;
-  }
-
-  // --------------------
-  // Dinner (reroll)
-  // --------------------
-  const dinnerList = Array.isArray(window.DINNERLIST) ? window.DINNERLIST.slice() : [];
-  const dinnerTitle = byId("dinner-title");
-  const dinnerMeta  = byId("dinner-meta");
-  const dinnerNote  = byId("dinner-note");
-  const dinnerSpin  = byId("dinner-spin");
-  const dinnerReroll = byId("dinner-reroll");
-
-  function dinnerPick(){ return dinnerList[randInt(dinnerList.length)]; }
-
-  let dinnerHasSpun = false;
-  let dinnerSpinning = false;
-
-  function doDinnerSpin(isReroll){
-    if (dinnerSpinning) return;
-    if (!isReroll && dinnerHasSpun) return;
-
-    dinnerSpinning = true;
-    dinnerNote.textContent = isReroll ? "Rerolling…" : "Consulting your stomach…";
-    dinnerReroll.disabled = true;
-
-    const final = dinnerPick();
-
-    slotSpin(
-      dinnerList,
-      dinnerTitle,
-      dinnerMeta,
-      dinnerNote,
-      final,
-      () => {
-        dinnerNote.textContent = "If you hate it, reroll it. We’re not monsters.";
-        dinnerSpinning = false;
-        dinnerReroll.disabled = false;
-
-        if (!isReroll){
-          dinnerHasSpun = true;
-          dinnerSpin.disabled = true;
-          dinnerSpin.textContent = "Spun";
-        }
-      }
-    );
-  }
-
-  if (dinnerList.length){
-    dinnerSpin.addEventListener("click", () => doDinnerSpin(false));
-    dinnerReroll.addEventListener("click", () => doDinnerSpin(true));
-  } else {
-    dinnerTitle.textContent = "No dinner list found.";
-    dinnerMeta.textContent = "Add items in dinnerlist.js";
-    dinnerSpin.disabled = true;
-    dinnerReroll.disabled = true;
-  }
-
-  // --------------------
-  // Fortune (reroll)
-  // --------------------
-  const fortunes = Array.isArray(window.FORTUNES) ? window.FORTUNES.slice() : [];
-  const fortuneText = byId("fortune-text");
-  const fortuneSpin = byId("fortune-spin");
-  const fortuneReroll = byId("fortune-reroll");
-
-  let fortuneHasSpun = false;
-  let fortuneSpinning = false;
-
-  function fortunePick(){ return fortunes[randInt(fortunes.length)]; }
-
-  function doFortune(isReroll){
-    if (fortuneSpinning) return;
-    if (!isReroll && fortuneHasSpun) return;
-
-    fortuneSpinning = true;
-    fortuneReroll.disabled = true;
-
-    const minSteps = 16;
-    const maxSteps = 26;
-    const totalSteps = minSteps + randInt(maxSteps - minSteps + 1);
-
-    let delay = 22;
-    const delayIncrease = 6;
-    let step = 0;
-
-    function tick(){
-      fortuneText.textContent = fortunes[randInt(fortunes.length)];
-      fortuneText.style.transform = (step % 2 === 0) ? "translateY(1px)" : "translateY(-1px)";
-      step++;
-
-      if (step < totalSteps){
-        delay += delayIncrease;
-        setTimeout(tick, delay);
-      } else {
-        fortuneText.style.transform = "translateY(0)";
-        fortuneText.textContent = fortunePick();
-
-        fortuneSpinning = false;
-        fortuneReroll.disabled = false;
-
-        if (!isReroll){
-          fortuneHasSpun = true;
-          fortuneSpin.disabled = true;
-          fortuneSpin.textContent = "Spun";
-          fortuneReroll.disabled = false;
-        }
-      }
-    }
-
-    tick();
-  }
-
-  if (fortunes.length){
-    fortuneSpin.addEventListener("click", () => {
-      doFortune(false);
-      fortuneReroll.disabled = false;
     });
-    fortuneReroll.addEventListener("click", () => doFortune(true));
-  } else {
-    fortuneText.textContent = "No fortunes found.";
-    fortuneSpin.disabled = true;
-    fortuneReroll.disabled = true;
-  }
+  });
+
+  // ---------- Emoji of the day ----------
+  const emojiResult = document.getElementById("emoji-result");
+  const emojiHint = document.getElementById("emoji-hint");
+  const emojiSpin = document.getElementById("emoji-spin");
+
+  const emojis = ["✨","🍀","🔥","🧠","🫶","😌","😤","😵‍💫","🥳","🤝","☕","🏠","🐶","🐱","🪩","🧊"];
+
+  emojiSpin.addEventListener("click", () => {
+    const seq = shuffle(emojis);
+    let i = 0;
+    emojiHint.textContent = "";
+
+    spinText({
+      button: emojiSpin,
+      onTick: () => {
+        i = (i + 1) % seq.length;
+        emojiResult.textContent = seq[i];
+      },
+      onDone: () => {
+        const final = pick(emojis);
+        emojiResult.textContent = final;
+        emojiHint.textContent = "This one is yours today.";
+      }
+    });
+  });
+
+  // ---------- What should I eat ----------
+  const foodResult = document.getElementById("food-result");
+  const foodHint = document.getElementById("food-hint");
+  const foodSpin = document.getElementById("food-spin");
+
+  foodSpin.addEventListener("click", () => {
+    const seq = shuffle(FOOD);
+    let i = 0;
+    foodHint.textContent = "Choosing…";
+
+    spinText({
+      button: foodSpin,
+      stepsMin: 18,
+      stepsMax: 26,
+      delayStart: 28,
+      delayInc: 6,
+      onTick: () => {
+        i = (i + 1) % seq.length;
+        foodResult.textContent = seq[i];
+      },
+      onDone: () => {
+        const final = pick(FOOD);
+        foodResult.textContent = final;
+        foodHint.textContent = "Keep it simple tonight.";
+      }
+    });
+  });
+
+  // ---------- What should I watch (fixed: shuffled spin) ----------
+  const watchResult = document.getElementById("watch-result");
+  const watchMeta = document.getElementById("watch-meta");
+  const watchHint = document.getElementById("watch-hint");
+  const watchSpin = document.getElementById("watch-spin");
+
+  watchSpin.addEventListener("click", () => {
+    const seq = shuffle(WATCH);
+    let i = 0;
+    watchHint.textContent = "Scanning the archives…";
+    watchMeta.textContent = "";
+
+    spinText({
+      button: watchSpin,
+      stepsMin: 22,
+      stepsMax: 34,
+      delayStart: 25,
+      delayInc: 7,
+      onTick: () => {
+        i = (i + 1) % seq.length;
+        const item = seq[i];
+        watchResult.textContent = item.title;
+        watchMeta.textContent = `${item.type} • ${item.year}`;
+      },
+      onDone: () => {
+        const item = pick(WATCH);
+        watchResult.textContent = item.title;
+        watchMeta.textContent = `${item.type} • ${item.year}`;
+        watchHint.textContent = "";
+      }
+    });
+  });
+
+  // ---------- Fortune ----------
+  const fortuneResult = document.getElementById("fortune-result");
+  const fortuneHint = document.getElementById("fortune-hint");
+  const fortuneSpin = document.getElementById("fortune-spin");
+
+  fortuneSpin.addEventListener("click", () => {
+    const seq = shuffle(FORTUNES);
+    let i = 0;
+    fortuneHint.textContent = "Cracking the cookie…";
+
+    spinText({
+      button: fortuneSpin,
+      stepsMin: 16,
+      stepsMax: 24,
+      delayStart: 28,
+      delayInc: 6,
+      onTick: () => {
+        i = (i + 1) % seq.length;
+        fortuneResult.textContent = seq[i];
+      },
+      onDone: () => {
+        const final = pick(FORTUNES);
+        fortuneResult.textContent = final;
+        fortuneHint.textContent = "";
+      }
+    });
+  });
+
 })();
