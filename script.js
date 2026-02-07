@@ -1,328 +1,264 @@
 (function () {
-  // ---- Luck Meter options ----
-  const luckOptions = [
-    {
-      tier: "MEGA",
-      name: "MEGA LUCKY DAY",
-      icon: "🍀",
-      mantra: "Green light. Go.",
-      text: "Luck is on your side today. Take the shot you’ve been hesitating on."
-    },
-    {
-      tier: "SUPER",
-      name: "SUPER LUCKY DAY",
-      icon: "✨",
-      mantra: "Timing is your friend.",
-      text: "Expect at least one perfectly timed break. Say yes to the easy opening."
-    },
-    {
-      tier: "BIT",
-      name: "A BIT LUCKY",
-      icon: "🙂",
-      mantra: "Small wins count.",
-      text: "Not magic, but smoother than average. Keep it simple and you’ll notice it."
-    },
-    {
-      tier: "NONE",
-      name: "MAKE YOUR OWN LUCK DAY",
-      icon: "🧱",
-      mantra: "No tailwind today. That’s fine.",
-      text: "Keep stakes low and manufacture your own good breaks. Momentum beats luck."
-    }
+  // ---------- Pools ----------
+  const decidePool = [
+    { main: "YES", sub: "You already know the answer. This is permission." },
+    { main: "NO", sub: "Not now. Save your energy for the right door." },
+    { main: "MAYBE", sub: "Gather one more detail, then decide fast." },
+    { main: "DO IT", sub: "A clean swing. No overthinking allowed." },
+    { main: "WAIT", sub: "Not forever. Just long enough to be sure." },
+    { main: "ASK AGAIN TOMORROW", sub: "Today is noisy. Tomorrow is clearer." }
   ];
 
-  // Weighted distribution: 16 total
-  // 1 MEGA, 3 SUPER, 6 BIT, 6 NONE
-  const luckWeighted = [
-    "MEGA",
-    "SUPER","SUPER","SUPER",
-    "BIT","BIT","BIT","BIT","BIT","BIT",
-    "NONE","NONE","NONE","NONE","NONE","NONE"
+  // Classic plus modern, mixed
+  const eightBallPool = [
+    { main: "It is certain.", sub: "The cosmos is confident." },
+    { main: "Without a doubt.", sub: "This one is a yes." },
+    { main: "Reply hazy.", sub: "Try again after coffee." },
+    { main: "Ask again later.", sub: "The universe is buffering." },
+    { main: "Better not tell you now.", sub: "Mystery adds flavour." },
+    { main: "Don’t count on it.", sub: "Not this time." },
+    { main: "My sources say no.", sub: "Gentle no, but still no." },
+    { main: "Outlook not so good.", sub: "Protect your time." },
+    { main: "Signs point to yes.", sub: "Lean into it." },
+    { main: "Yes.", sub: "Simple. Clean. Done." }
   ];
 
-  // ---- Data pools ----
-  const colors = [
-    { name: "Lucky Green", hex: "#55be0a" },
-    { name: "Grape", hex: "#885DA7" },
-    { name: "Sky", hex: "#5aa9e6" },
-    { name: "Sun", hex: "#ffcc33" },
-    { name: "Rose", hex: "#ff5d8f" },
-    { name: "Teal", hex: "#14b8a6" },
-    { name: "Tangerine", hex: "#ff7a00" },
-    { name: "Midnight", hex: "#111827" }
+  const focusPool = [
+    { main: "One small win", sub: "Pick something tiny and finish it." },
+    { main: "Clarity", sub: "Remove one source of noise." },
+    { main: "Momentum", sub: "Start before you feel ready." },
+    { main: "Connection", sub: "Text someone. No agenda." },
+    { main: "Care", sub: "Do one kind thing for future you." },
+    { main: "Curiosity", sub: "Follow the interesting thread." }
   ];
 
-  const emojis = ["✨","🍀","🧠","🔥","🧊","🎯","🧲","🌊","🛠️","🎧","📚","🧃","🌞","🌙","🧭","🪴","🤝","🧘","🚀","🧩"];
-
-  const dinners = [
-    { name: "Tacos", detail: "Keep it easy. Store-bought shells counts." },
-    { name: "Pasta", detail: "One pan sauce. You’re done in 20 minutes." },
-    { name: "Burgers", detail: "Smash style. Minimal effort, maximum reward." },
-    { name: "Stir fry", detail: "Whatever is in the fridge. That’s the recipe." },
-    { name: "Pizza", detail: "Frozen is allowed. Add a topping and call it a win." },
-    { name: "Soup + grilled cheese", detail: "Comfort food that never fails." },
-    { name: "Breakfast for dinner", detail: "Eggs solve problems." },
-    { name: "Sushi", detail: "Takeout night. Treat yourself." },
-    { name: "Chicken bowls", detail: "Rice, protein, sauce. Repeat forever." },
-    { name: "Wraps", detail: "Anything tastes better wrapped." }
+  // Keep small for now. We can expand later.
+  const watchPool = [
+    { title: "The Bear", note: "Sharp, stressful, great." },
+    { title: "Severance", note: "Beautiful weirdness." },
+    { title: "The Matrix", note: "Classic reset." },
+    { title: "Hot Fuzz", note: "Comedy comfort." },
+    { title: "True Detective (S1)", note: "Heavy, but elite." },
+    { title: "Chef", note: "Pure good vibes." },
+    { title: "Arrival", note: "Quiet, smart, emotional." },
+    { title: "Parks and Rec", note: "Easy win." }
   ];
 
-  const fortunes = [
-    "Small wins count. Collect them.",
-    "Your timing is better than you think.",
-    "One good decision beats ten good intentions.",
-    "Make space. Luck likes room to land.",
-    "A helpful person appears at the right time.",
-    "Say it plainly. Plain words are lucky.",
-    "Curiosity is a form of luck.",
-    "Today rewards steady effort, not perfect effort.",
-    "You will notice something you usually miss.",
-    "The simplest option is the lucky one."
+  const dinnerPool = [
+    { title: "Tacos", note: "Store-bought counts." },
+    { title: "Pasta", note: "One pan sauce. Done." },
+    { title: "Burgers", note: "Smash style if you can." },
+    { title: "Stir fry", note: "Fridge clean-out edition." },
+    { title: "Pizza", note: "Frozen is allowed." },
+    { title: "Soup + grilled cheese", note: "Comfort guaranteed." },
+    { title: "Breakfast for dinner", note: "Eggs solve problems." },
+    { title: "Wraps", note: "Anything tastes better wrapped." }
   ];
 
-  // ---- Slot spin utility ----
-  function pick(arr) {
-    return arr[Math.floor(Math.random() * arr.length)];
-  }
-
+  // ---------- Slot animation ----------
   function randInt(min, maxInclusive){
     return Math.floor(Math.random() * (maxInclusive - min + 1)) + min;
   }
 
-  function randLetter(){
-    return String.fromCharCode(65 + randInt(0, 25));
+  function pick(arr){
+    return arr[Math.floor(Math.random() * arr.length)];
   }
 
-  function findLuckByTier(tier){
-    return luckOptions.find(x => x.tier === tier) || luckOptions[2];
-  }
+  function spinText(elMain, elSub, pool, getMain, getSub, finalItem, done) {
+    const steps = randInt(20, 34);
+    let delay = 28;
+    const delayInc = 7;
 
-  function spinText(el, items, getText, done) {
-    // Slot-machine-ish: quick ticks then slow down
-    const minSteps = 18;
-    const maxSteps = 30;
-    const totalSteps = randInt(minSteps, maxSteps);
-
-    let delay = 30;
-    const delayIncrease = 6;
-
+    let i = randInt(0, pool.length - 1);
     let step = 0;
-    let index = randInt(0, items.length - 1);
 
-    function tick() {
-      index = (index + 1) % items.length;
-      el.textContent = getText(items[index]);
+    function tick(){
+      i = (i + 1) % pool.length;
+      const item = pool[i];
 
-      // tiny oscillation
-      el.style.transform = step % 2 === 0 ? "translateY(1px)" : "translateY(-1px)";
+      elMain.textContent = getMain(item);
+      if (elSub) elSub.textContent = getSub ? getSub(item) : "";
+
+      elMain.style.transform = step % 2 === 0 ? "translateY(1px)" : "translateY(-1px)";
       step++;
 
-      if (step < totalSteps) {
-        delay += delayIncrease;
+      if (step < steps) {
+        delay += delayInc;
         setTimeout(tick, delay);
       } else {
-        el.style.transform = "translateY(0)";
-        done(items[index]);
+        elMain.style.transform = "translateY(0)";
+        elMain.textContent = getMain(finalItem);
+        if (elSub) elSub.textContent = getSub ? getSub(finalItem) : "";
+        done();
       }
     }
 
     tick();
   }
 
-  // ---- DOM bindings ----
-  const outs = {
-    luckIcon: document.querySelector('[data-out="luckIcon"]'),
-    luckName: document.querySelector('[data-out="luckName"]'),
-    luckMantra: document.querySelector('[data-out="luckMantra"]'),
-    luckText: document.querySelector('[data-out="luckText"]'),
-
-    numberValue: document.querySelector('[data-out="numberValue"]'),
-    letterValue: document.querySelector('[data-out="letterValue"]'),
-
-    colorSwatch: document.querySelector('[data-out="colorSwatch"]'),
-    colorName: document.querySelector('[data-out="colorName"]'),
-    colorHex: document.querySelector('[data-out="colorHex"]'),
-
-    emojiValue: document.querySelector('[data-out="emojiValue"]'),
-
-    fortuneValue: document.querySelector('[data-out="fortuneValue"]'),
-
-    dinnerValue: document.querySelector('[data-out="dinnerValue"]'),
-    dinnerDetail: document.querySelector('[data-out="dinnerDetail"]'),
-
-    lrValue: document.querySelector('[data-out="lrValue"]')
-  };
-
-  const statuses = {
-    luck: document.querySelector('[data-status="luckStatus"]'),
-    number: document.querySelector('[data-status="numberStatus"]'),
-    letter: document.querySelector('[data-status="letterStatus"]'),
-    color: document.querySelector('[data-status="colorStatus"]'),
-    emoji: document.querySelector('[data-status="emojiStatus"]'),
-    fortune: document.querySelector('[data-status="fortuneStatus"]'),
-    dinner: document.querySelector('[data-status="dinnerStatus"]'),
-    lr: document.querySelector('[data-status="lrStatus"]')
-  };
-
-  const spinButtons = Array.from(document.querySelectorAll("[data-spin]"));
-  const spinning = new Set();
-
-  function setStatus(key, msg){
-    if (statuses[key]) statuses[key].textContent = msg;
+  function disableButtons(scope, disabled){
+    scope.querySelectorAll('button[data-action="spin"]').forEach(b => b.disabled = disabled);
   }
 
-  function disableBtn(btn, disabled){
-    btn.disabled = disabled;
+  // ---------- Card logic ----------
+  const usedOnce = new Set();
+
+  function setStatus(key, text){
+    const el = document.querySelector(`[data-status="${key}Status"]`);
+    if (el) el.textContent = text;
   }
 
-  // ---- Spin handlers ----
-  function spinLuck(btn){
-    if (spinning.has("luck")) return;
-    spinning.add("luck");
-    disableBtn(btn, true);
+  // Prompts selection for 8 ball
+  const promptChips = Array.from(document.querySelectorAll('.chip[data-prompt]'));
+  const eightPromptEl = document.querySelector('[data-out="eightPrompt"]');
+  const eightPromptLabel = document.querySelector('[data-out="eightPromptLabel"]');
+  let selectedPrompt = "";
 
-    setStatus("luck", "Consulting the cosmos…");
-    outs.luckMantra.textContent = "";
-    outs.luckText.textContent = "";
+  function setPrompt(p){
+    selectedPrompt = p;
+    eightPromptLabel.textContent = "Prompt";
+    eightPromptEl.textContent = p;
+    promptChips.forEach(c => c.classList.toggle("active", c.getAttribute("data-prompt") === p));
+  }
 
-    // Preselect result
-    const tier = pick(luckWeighted);
-    const final = findLuckByTier(tier);
-
-    // We spin the NAME only, then reveal icon/mantra/text
-    const nameEl = outs.luckName;
-    const iconEl = outs.luckIcon;
-
-    spinText(nameEl, luckOptions, x => x.name, () => {
-      iconEl.textContent = final.icon;
-      nameEl.textContent = final.name;
-      outs.luckMantra.textContent = final.mantra;
-      outs.luckText.textContent = final.text;
-      setStatus("luck", "Transmission received.");
-      spinning.delete("luck");
-      disableBtn(btn, false);
+  if (promptChips.length) {
+    setPrompt(promptChips[0].getAttribute("data-prompt"));
+    promptChips.forEach(chip => {
+      chip.addEventListener("click", () => setPrompt(chip.getAttribute("data-prompt")));
     });
   }
 
-  function spinNumber(btn){
-    if (spinning.has("number")) return;
-    spinning.add("number");
-    disableBtn(btn, true);
+  // ---------- Spins ----------
+  function spinDecide(card){
+    const key = "decide";
+    if (usedOnce.has(key)) {
+      setStatus(key, "That’s the answer. Walk it off.");
+      return;
+    }
 
-    setStatus("number", "Spinning…");
-    const pool = Array.from({length:10}, (_,i)=>String(i));
-    spinText(outs.numberValue, pool, x => x, (final) => {
-      outs.numberValue.textContent = final;
-      setStatus("number", "Locked in.");
-      spinning.delete("number");
-      disableBtn(btn, false);
+    const mainEl = document.querySelector('[data-out="decideMain"]');
+    const subEl = document.querySelector('[data-out="decideSub"]');
+
+    const final = pick(decidePool);
+
+    disableButtons(card, true);
+    setStatus(key, "Consulting the cosmos…");
+
+    spinText(mainEl, subEl, decidePool, x => x.main, x => x.sub, final, () => {
+      usedOnce.add(key);
+      setStatus(key, "Locked in. No take-backs.");
+      disableButtons(card, false);
+      // keep button enabled but it will refuse politely next time
     });
   }
 
-  function spinLetter(btn){
-    if (spinning.has("letter")) return;
-    spinning.add("letter");
-    disableBtn(btn, true);
+  function spinEight(card){
+    const key = "eight";
+    if (usedOnce.has(key)) {
+      setStatus(key, "The ball has spoken. Sit with it.");
+      return;
+    }
 
-    setStatus("letter", "Spinning…");
-    const pool = Array.from({length:26}, (_,i)=>String.fromCharCode(65+i));
-    spinText(outs.letterValue, pool, x => x, (final) => {
-      outs.letterValue.textContent = final;
-      setStatus("letter", "Locked in.");
-      spinning.delete("letter");
-      disableBtn(btn, false);
+    const mainEl = document.querySelector('[data-out="eightMain"]');
+    const subEl = document.querySelector('[data-out="eightSub"]');
+
+    const final = pick(eightBallPool);
+
+    disableButtons(card, true);
+    setStatus(key, "Shaking the void…");
+
+    // Make sure prompt exists
+    if (!selectedPrompt) setPrompt("Should I do the thing?");
+
+    spinText(mainEl, subEl, eightBallPool, x => x.main, x => x.sub, final, () => {
+      usedOnce.add(key);
+      setStatus(key, "Answer delivered. No refunds.");
+      disableButtons(card, false);
     });
   }
 
-  function spinColor(btn){
-    if (spinning.has("color")) return;
-    spinning.add("color");
-    disableBtn(btn, true);
+  function spinFocus(card){
+    const key = "focus";
+    if (usedOnce.has(key)) {
+      setStatus(key, "You already have your focus.");
+      return;
+    }
 
-    setStatus("color", "Spinning…");
-    // Spin the name as the visible ticker
-    spinText(outs.colorName, colors, x => x.name, (final) => {
-      outs.colorName.textContent = final.name;
-      outs.colorHex.textContent = final.hex.toLowerCase();
-      outs.colorSwatch.style.background = final.hex;
-      setStatus("color", "Locked in.");
-      spinning.delete("color");
-      disableBtn(btn, false);
+    const mainEl = document.querySelector('[data-out="focusMain"]');
+    const subEl = document.querySelector('[data-out="focusSub"]');
+
+    const final = pick(focusPool);
+
+    disableButtons(card, true);
+    setStatus(key, "Dialing in…");
+
+    spinText(mainEl, subEl, focusPool, x => x.main, x => x.sub, final, () => {
+      usedOnce.add(key);
+      setStatus(key, "Keep it simple. Do that.");
+      disableButtons(card, false);
     });
   }
 
-  function spinEmoji(btn){
-    if (spinning.has("emoji")) return;
-    spinning.add("emoji");
-    disableBtn(btn, true);
+  function spinWatch(card){
+    const key = "watch";
+    const mainEl = document.querySelector('[data-out="watchMain"]');
+    const subEl = document.querySelector('[data-out="watchSub"]');
 
-    setStatus("emoji", "Spinning…");
-    spinText(outs.emojiValue, emojis, x => x, (final) => {
-      outs.emojiValue.textContent = final;
-      setStatus("emoji", "Locked in.");
-      spinning.delete("emoji");
-      disableBtn(btn, false);
-    });
+    const final = pick(watchPool);
+
+    disableButtons(card, true);
+    setStatus(key, "Rolling credits…");
+
+    spinText(
+      mainEl,
+      subEl,
+      watchPool,
+      x => x.title,
+      x => x.note,
+      final,
+      () => {
+        setStatus(key, "You can reroll. But will you?");
+        disableButtons(card, false);
+      }
+    );
   }
 
-  function spinFortune(btn){
-    if (spinning.has("fortune")) return;
-    spinning.add("fortune");
-    disableBtn(btn, true);
+  function spinDinner(card){
+    const key = "dinner";
+    const mainEl = document.querySelector('[data-out="dinnerMain"]');
+    const subEl = document.querySelector('[data-out="dinnerSub"]');
 
-    setStatus("fortune", "Cracking the cookie…");
-    // Spin shortened fortune previews for effect
-    const pool = fortunes.slice();
-    spinText(outs.fortuneValue, pool, x => x, (final) => {
-      outs.fortuneValue.textContent = final;
-      setStatus("fortune", "Received.");
-      spinning.delete("fortune");
-      disableBtn(btn, false);
-    });
+    const final = pick(dinnerPool);
+
+    disableButtons(card, true);
+    setStatus(key, "Summoning snacks…");
+
+    spinText(
+      mainEl,
+      subEl,
+      dinnerPool,
+      x => x.title,
+      x => x.note,
+      final,
+      () => {
+        setStatus(key, "Reroll if you must.");
+        disableButtons(card, false);
+      }
+    );
   }
 
-  function spinDinner(btn){
-    if (spinning.has("dinner")) return;
-    spinning.add("dinner");
-    disableBtn(btn, true);
-
-    setStatus("dinner", "Spinning…");
-    spinText(outs.dinnerValue, dinners, x => x.name, (final) => {
-      outs.dinnerValue.textContent = final.name;
-      outs.dinnerDetail.textContent = final.detail;
-      setStatus("dinner", "Locked in.");
-      spinning.delete("dinner");
-      disableBtn(btn, false);
-    });
-  }
-
-  function spinLR(btn){
-    if (spinning.has("lr")) return;
-    spinning.add("lr");
-    disableBtn(btn, true);
-
-    setStatus("lr", "Spinning…");
-    const pool = ["LEFT", "RIGHT"];
-    spinText(outs.lrValue, pool, x => x, (final) => {
-      outs.lrValue.textContent = final;
-      setStatus("lr", "Locked in.");
-      spinning.delete("lr");
-      disableBtn(btn, false);
-    });
-  }
-
-  // ---- Wire buttons ----
-  spinButtons.forEach(btn => {
-    const key = btn.getAttribute("data-spin");
+  // ---------- Button wiring ----------
+  document.querySelectorAll('button[data-action="spin"]').forEach(btn => {
+    const target = btn.getAttribute("data-target");
     btn.addEventListener("click", () => {
-      if (key === "luck") return spinLuck(btn);
-      if (key === "number") return spinNumber(btn);
-      if (key === "letter") return spinLetter(btn);
-      if (key === "color") return spinColor(btn);
-      if (key === "emoji") return spinEmoji(btn);
-      if (key === "fortune") return spinFortune(btn);
-      if (key === "dinner") return spinDinner(btn);
-      if (key === "lr") return spinLR(btn);
+      const card = document.querySelector(`.ballot[data-card="${target}"]`);
+      if (!card) return;
+
+      if (target === "decide") return spinDecide(card);
+      if (target === "eight") return spinEight(card);
+      if (target === "focus") return spinFocus(card);
+      if (target === "watch") return spinWatch(card);
+      if (target === "dinner") return spinDinner(card);
     });
   });
 
