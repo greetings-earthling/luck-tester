@@ -3,154 +3,47 @@
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width,initial-scale=1" />
-  <title>Zoltar-ish Universe Decider</title>
-  <meta name="description" content="Let the universe decide. Tap a card, get an answer." />
-
-  <!-- IBM Plex Sans -->
-  <link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans:wght@300;400;600&display=swap" rel="stylesheet">
-
-  <link rel="stylesheet" href="styles.css?v=510" />
+  <title>Luck Meter</title>
+  <meta name="description" content="A playful luck meter and a few daily randomizers. Not science. Just vibes." />
+  <link rel="stylesheet" href="styles.css" />
 </head>
 
 <body>
-  <main class="page">
-    <header class="top card">
-      <div class="titleRow">
-        <div class="badge">Zoltar Mode</div>
-        <div class="brand">Luck Meter</div>
-      </div>
-
-      <h1>Let the universe decide</h1>
+  <main class="wrap">
+    <header class="topCard">
+      <h1>Welcome to the Luck Meter</h1>
       <p class="sub">
-        Tap a card. It spins. You get an answer.
+        Choose a spot to get your luck score out of 5 for the day.
       </p>
-
-      <p class="sponsor">
-        Sponsored by
-        <a href="https://www.greetingsearthling.ca" target="_blank" rel="noopener noreferrer">Greetings, Earthling</a>
+      <p class="sponsored">
+        Sponsored by <a href="https://www.greetingsearthling.ca" target="_blank" rel="noopener noreferrer">Greetings, Earthling</a>
       </p>
     </header>
 
-    <section class="stack" aria-label="Decision cards">
-      <!-- Card 1: Universe Decider (no reroll) -->
-      <section class="card ballot" data-card="decide" aria-label="Let the universe decide">
-        <div class="ballotHead">
-          <div>
-            <div class="ballotTitle">Let the universe decide</div>
-            <div class="ballotHint">A simple answer for a simple moment.</div>
-          </div>
-          <button class="btn primary" type="button" data-action="spin" data-target="decide">Ask</button>
-        </div>
+    <!-- Watch Spinner Card -->
+    <section class="card" aria-label="What should I watch spinner">
+      <div class="cardHead">
+        <h2>What should I watch?</h2>
+        <p class="cardSub">One spin. Or reroll if you need a different vibe.</p>
+      </div>
 
-        <div class="window">
-          <div class="windowLabel">Answer</div>
-          <div class="windowValue big" data-out="decideMain">Tap Ask</div>
-          <div class="windowSub" data-out="decideSub"></div>
-        </div>
+      <div class="slotWindow" role="region" aria-live="polite">
+        <div class="slotLabel">Today’s pick</div>
+        <div class="slotTitle" id="watch-title">Tap spin.</div>
+        <div class="slotMeta" id="watch-meta"></div>
+        <div class="slotNote" id="watch-note"></div>
+      </div>
 
-        <div class="foot" data-status="decideStatus">One pull. No take-backs.</div>
-      </section>
-
-      <!-- Card 2: Magic 8 Ball (no reroll) -->
-      <section class="card ballot" data-card="eight" aria-label="Magic 8 ball">
-        <div class="ballotHead">
-          <div>
-            <div class="ballotTitle">Magic 8 Ball</div>
-            <div class="ballotHint">Pick a prompt. The rest is cosmic bureaucracy.</div>
-          </div>
-          <button class="btn" type="button" data-action="spin" data-target="eight">Ask</button>
-        </div>
-
-        <div class="promptRow" role="group" aria-label="8 ball prompts">
-          <button class="chip" type="button" data-prompt="Should I do the thing?">Should I do the thing?</button>
-          <button class="chip" type="button" data-prompt="Is today a good day to start?">Is today a good day to start?</button>
-          <button class="chip" type="button" data-prompt="Should I wait?">Should I wait?</button>
-          <button class="chip" type="button" data-prompt="Am I overthinking this?">Am I overthinking this?</button>
-        </div>
-
-        <div class="window">
-          <div class="windowLabel" data-out="eightPromptLabel">Prompt</div>
-          <div class="windowValue" data-out="eightPrompt">Pick a prompt</div>
-
-          <div class="divider"></div>
-
-          <div class="windowLabel">Answer</div>
-          <div class="windowValue big" data-out="eightMain">Tap Ask</div>
-          <div class="windowSub" data-out="eightSub"></div>
-        </div>
-
-        <div class="foot" data-status="eightStatus">One answer. Sit with it.</div>
-      </section>
-
-      <!-- Card 3: Today's Focus (no reroll) -->
-      <section class="card ballot" data-card="focus" aria-label="Today's focus">
-        <div class="ballotHead">
-          <div>
-            <div class="ballotTitle">Today’s focus</div>
-            <div class="ballotHint">A gentle direction. Not a command.</div>
-          </div>
-          <button class="btn" type="button" data-action="spin" data-target="focus">Reveal</button>
-        </div>
-
-        <div class="window">
-          <div class="windowLabel">Focus</div>
-          <div class="windowValue big" data-out="focusMain">Tap Reveal</div>
-          <div class="windowSub" data-out="focusSub"></div>
-        </div>
-
-        <div class="foot" data-status="focusStatus">One focus. Keep it simple.</div>
-      </section>
-
-      <!-- Card 4: What should I watch? (reroll allowed) -->
-      <section class="card ballot" data-card="watch" aria-label="What should I watch">
-        <div class="ballotHead">
-          <div>
-            <div class="ballotTitle">What should I watch?</div>
-            <div class="ballotHint">Spin again is allowed. Tonight counts as self-care.</div>
-          </div>
-          <div class="btnRow">
-            <button class="btn" type="button" data-action="spin" data-target="watch">Spin</button>
-            <button class="btn ghost" type="button" data-action="spin" data-target="watch">Spin again</button>
-          </div>
-        </div>
-
-        <div class="window">
-          <div class="windowLabel">Pick</div>
-          <div class="windowValue big" data-out="watchMain">Tap Spin</div>
-          <div class="windowSub" data-out="watchSub"></div>
-        </div>
-
-        <div class="foot" data-status="watchStatus">Rerolls are morally acceptable.</div>
-      </section>
-
-      <!-- Card 5: What should I have for dinner? (reroll allowed) -->
-      <section class="card ballot" data-card="dinner" aria-label="Dinner spinner">
-        <div class="ballotHead">
-          <div>
-            <div class="ballotTitle">What should I have for dinner?</div>
-            <div class="ballotHint">The universe is hungry too.</div>
-          </div>
-          <div class="btnRow">
-            <button class="btn" type="button" data-action="spin" data-target="dinner">Spin</button>
-            <button class="btn ghost" type="button" data-action="spin" data-target="dinner">Spin again</button>
-          </div>
-        </div>
-
-        <div class="window">
-          <div class="windowLabel">Pick</div>
-          <div class="windowValue big" data-out="dinnerMain">Tap Spin</div>
-          <div class="windowSub" data-out="dinnerSub"></div>
-        </div>
-
-        <div class="foot" data-status="dinnerStatus">Reroll if you are not emotionally ready.</div>
-      </section>
+      <div class="btnRow">
+        <button class="btn" id="watch-spin" type="button">Spin</button>
+        <button class="btn btnGhost" id="watch-reroll" type="button" disabled>Reroll</button>
+      </div>
     </section>
-
-    <footer class="disclaimer">
-      Not science. Not fate. Just a little glowing rectangle giving you permission to move forward.
-    </footer>
   </main>
+
+  <!-- Data -->
   <script src="watchlist.js"></script>
-  <script src="script.js?v=510" defer></script>
+  <!-- Logic -->
+  <script src="script.js"></script>
 </body>
 </html>
