@@ -1,183 +1,143 @@
 <!doctype html>
-<html lang="en-CA">
+<html lang="en">
 <head>
-  <meta charset="utf-8" />
-  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
   <title>Luck Meter</title>
-  <meta name="description" content="Spin the Luck Meter. Then grab a few fun extras. Not science. Just vibes." />
+
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans:wght@300;400;600;700&display=swap" rel="stylesheet">
+
   <link rel="stylesheet" href="styles.css" />
 </head>
 
 <body>
-  <main class="wrap">
-    <!-- PRIMARY: Luck Meter -->
-    <section class="card cardHero" aria-label="Luck Meter">
-      <header class="heroHead">
-        <h1>Welcome to the Luck Meter</h1>
-        <p class="heroSub">
-          Spin once to get your luck rating for today.
-        </p>
-        <p class="heroSponsor">
-          Sponsored by <a href="https://www.greetingsearthling.ca" target="_blank" rel="noopener noreferrer">Greetings, Earthling</a>
-        </p>
-      </header>
-
-      <div class="slotWindow heroWindow" role="region" aria-live="polite">
-        <div class="slotLabel">Today’s Luck</div>
-        <div class="slotTitle" id="luck-title">Tap spin.</div>
-        <div class="slotMeta" id="luck-meta"></div>
-        <div class="slotNote" id="luck-note">No rerolls. Tiny ritual vibes.</div>
+  <div class="page">
+    <header class="topCard">
+      <div class="topLeft">
+        <h1 class="h1">Welcome to the Luck Meter</h1>
+        <p class="sub">Press spin to get your luck score out of 5 for the day.</p>
       </div>
 
-      <div class="btnRow">
-        <button class="btn" id="luck-spin" type="button">Spin the Luck Meter</button>
-        <button class="btn btnGhost" id="luck-spin-disabled" type="button" disabled style="display:none;">Spun</button>
+      <div class="topRight">
+        <a class="sponsor" href="https://www.greetingsearthling.ca" target="_blank" rel="noopener">
+          Sponsored by <span>Greetings, Earthling</span>
+        </a>
       </div>
-    </section>
+    </header>
 
-    <!-- BONUS GRID -->
-    <section class="grid" aria-label="Bonus luck widgets">
-      <!-- Lucky Number -->
-      <article class="card">
-        <div class="cardHead">
-          <h2>Lucky Number</h2>
-          <p class="cardSub">A tiny nudge.</p>
+    <main class="stack">
+      <!-- Luck Meter -->
+      <article class="card big">
+        <div class="rowTop">
+          <h2 class="rowTitle">Luck meter</h2>
+          <p class="rowHint" id="luck-hint"></p>
         </div>
 
-        <div class="slotWindow" aria-live="polite">
-          <div class="slotLabel">Today’s number</div>
-          <div class="slotTitle" id="num-title">Tap spin.</div>
-          <div class="slotMeta" id="num-meta"></div>
-          <div class="slotNote" id="num-note"></div>
+        <div class="rowMain">
+          <div class="rowResult rowResultBig" id="luck-result">Tap spin.</div>
+          <button class="btnSpin btnSpinBig" id="luck-spin" type="button">Spin</button>
         </div>
 
-        <div class="btnRow">
-          <button class="btn" id="num-spin" type="button">Spin</button>
+        <p class="bigNote" id="luck-note"></p>
+      </article>
+
+      <!-- Small cards, 2-up -->
+      <section class="twoup">
+        <!-- Lucky number -->
+        <article class="card compact">
+          <div class="rowTop">
+            <h2 class="rowTitle">Lucky number</h2>
+            <p class="rowHint" id="num-hint"></p>
+          </div>
+          <div class="rowMain">
+            <div class="rowResult rowResultSingle" id="num-result">?</div>
+            <button class="btnSpin" id="num-spin" type="button">Spin</button>
+          </div>
+        </article>
+
+        <!-- Lucky letter -->
+        <article class="card compact">
+          <div class="rowTop">
+            <h2 class="rowTitle">Lucky letter</h2>
+            <p class="rowHint" id="letter-hint"></p>
+          </div>
+          <div class="rowMain">
+            <div class="rowResult rowResultSingle" id="letter-result">?</div>
+            <button class="btnSpin" id="letter-spin" type="button">Spin</button>
+          </div>
+        </article>
+
+        <!-- Lucky colour -->
+        <article class="card compact">
+          <div class="rowTop">
+            <h2 class="rowTitle">Lucky colour</h2>
+            <p class="rowHint" id="color-hint"></p>
+          </div>
+          <div class="rowMain">
+            <div class="rowResult colorFill" id="color-result">Tap spin.</div>
+            <button class="btnSpin" id="color-spin" type="button">Spin</button>
+          </div>
+        </article>
+
+        <!-- Emoji of the day -->
+        <article class="card compact">
+          <div class="rowTop">
+            <h2 class="rowTitle">Emoji of the day</h2>
+            <p class="rowHint" id="emoji-hint"></p>
+          </div>
+          <div class="rowMain">
+            <div class="rowResult rowResultSingle" id="emoji-result">?</div>
+            <button class="btnSpin" id="emoji-spin" type="button">Spin</button>
+          </div>
+        </article>
+      </section>
+
+      <!-- What to eat -->
+      <article class="card compact">
+        <div class="rowTop">
+          <h2 class="rowTitle">What should I eat?</h2>
+          <p class="rowHint" id="food-hint">Rerolls allowed.</p>
+        </div>
+        <div class="rowMain">
+          <div class="rowResult rowResultWide" id="food-result">Tap spin.</div>
+          <button class="btnSpin" id="food-spin" type="button">Spin</button>
         </div>
       </article>
 
-      <!-- Lucky Letter -->
-      <article class="card">
-        <div class="cardHead">
-          <h2>Lucky Letter</h2>
-          <p class="cardSub">For names, signs, and coincidences.</p>
+      <!-- What to watch -->
+      <article class="card compact">
+        <div class="rowTop">
+          <h2 class="rowTitle">What should I watch?</h2>
+          <p class="rowHint" id="watch-hint">Rerolls allowed.</p>
         </div>
-
-        <div class="slotWindow" aria-live="polite">
-          <div class="slotLabel">Today’s letter</div>
-          <div class="slotTitle" id="letter-title">Tap spin.</div>
-          <div class="slotMeta" id="letter-meta"></div>
-          <div class="slotNote" id="letter-note"></div>
+        <div class="rowMain">
+          <div class="rowResult rowResultWide" id="watch-result">Tap spin.</div>
+          <button class="btnSpin" id="watch-spin" type="button">Spin</button>
         </div>
-
-        <div class="btnRow">
-          <button class="btn" id="letter-spin" type="button">Spin</button>
-        </div>
+        <p class="miniMeta" id="watch-meta"></p>
       </article>
 
-      <!-- Lucky Colour -->
-      <article class="card">
-        <div class="cardHead">
-          <h2>Lucky Colour</h2>
-          <p class="cardSub">One colour. Keep it simple.</p>
+      <!-- Fortune -->
+      <article class="card compact">
+        <div class="rowTop">
+          <h2 class="rowTitle">Fortune</h2>
+          <p class="rowHint" id="fortune-hint"></p>
         </div>
-
-        <div class="slotWindow" aria-live="polite">
-          <div class="slotLabel">Today’s colour</div>
-          <div class="slotTitle" id="color-title">Tap spin.</div>
-          <div class="slotMeta" id="color-meta"></div>
-          <div class="slotNote" id="color-note"></div>
-        </div>
-
-        <div class="btnRow">
-          <button class="btn" id="color-spin" type="button">Spin</button>
+        <div class="rowMain">
+          <div class="rowResult rowResultWide fortuneStrip" id="fortune-result">Tap spin.</div>
+          <button class="btnSpin" id="fortune-spin" type="button">Spin</button>
         </div>
       </article>
+    </main>
+  </div>
 
-      <!-- Emoji of the Day -->
-      <article class="card">
-        <div class="cardHead">
-          <h2>Emoji of the Day</h2>
-          <p class="cardSub">If you need a mascot.</p>
-        </div>
-
-        <div class="slotWindow" aria-live="polite">
-          <div class="slotLabel">Today’s emoji</div>
-          <div class="slotTitle" id="emoji-title">Tap spin.</div>
-          <div class="slotMeta" id="emoji-meta"></div>
-          <div class="slotNote" id="emoji-note"></div>
-        </div>
-
-        <div class="btnRow">
-          <button class="btn" id="emoji-spin" type="button">Spin</button>
-        </div>
-      </article>
-
-      <!-- What to Watch -->
-      <article class="card">
-        <div class="cardHead">
-          <h2>What should I watch?</h2>
-          <p class="cardSub">Rerolls allowed.</p>
-        </div>
-
-        <div class="slotWindow" aria-live="polite">
-          <div class="slotLabel">Today’s pick</div>
-          <div class="slotTitle" id="watch-title">Tap spin.</div>
-          <div class="slotMeta" id="watch-meta"></div>
-          <div class="slotNote" id="watch-note"></div>
-        </div>
-
-        <div class="btnRow">
-          <button class="btn" id="watch-spin" type="button">Spin</button>
-          <button class="btn btnGhost" id="watch-reroll" type="button" disabled>Reroll</button>
-        </div>
-      </article>
-
-      <!-- Dinner -->
-      <article class="card">
-        <div class="cardHead">
-          <h2>What should I eat?</h2>
-          <p class="cardSub">Rerolls allowed.</p>
-        </div>
-
-        <div class="slotWindow" aria-live="polite">
-          <div class="slotLabel">Today’s idea</div>
-          <div class="slotTitle" id="dinner-title">Tap spin.</div>
-          <div class="slotMeta" id="dinner-meta"></div>
-          <div class="slotNote" id="dinner-note"></div>
-        </div>
-
-        <div class="btnRow">
-          <button class="btn" id="dinner-spin" type="button">Spin</button>
-          <button class="btn btnGhost" id="dinner-reroll" type="button" disabled>Reroll</button>
-        </div>
-      </article>
-    </section>
-
-    <!-- Fortune (full width at bottom) -->
-    <section class="card fortuneCard" aria-label="Fortune cookie message">
-      <div class="cardHead">
-        <h2>Fortune</h2>
-        <p class="cardSub">A little paper-strip energy.</p>
-      </div>
-
-      <div class="fortuneStrip" role="region" aria-live="polite">
-        <span class="fortuneQuote" id="fortune-text">Tap spin.</span>
-      </div>
-
-      <div class="btnRow">
-        <button class="btn" id="fortune-spin" type="button">Spin</button>
-        <button class="btn btnGhost" id="fortune-reroll" type="button" disabled>Reroll</button>
-      </div>
-    </section>
-  </main>
-
-  <!-- Data -->
+  <!-- Data files (optional but recommended). Load BEFORE script.js -->
   <script src="watchlist.js"></script>
-  <script src="dinnerlist.js"></script>
+  <script src="foodlist.js"></script>
   <script src="fortunelist.js"></script>
 
-  <!-- Logic -->
   <script src="script.js"></script>
 </body>
 </html>
