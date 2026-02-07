@@ -1,214 +1,234 @@
 :root{
   --bg: #e6dfeb;
-  --card: #ffffff;
-  --text: #111111;
-  --muted: #555555;
-  --stroke: rgba(0,0,0,0.10);
-  --shadow: 0 10px 24px rgba(0,0,0,0.10);
   --accent: #875da6;
-  --accentDark: #6d4786;
+
+  --card: #ffffff;
+  --ink: #111827;
+  --muted: rgba(17,24,39,0.62);
+
+  --border: rgba(0,0,0,0.08);
+  --stroke: rgba(0,0,0,0.12);
+
+  --shadow: 0 12px 26px rgba(17,24,39,0.10);
 }
 
 *{ box-sizing: border-box; }
 
-html,body{
-  margin:0;
-  padding:0;
-  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+body{
+  margin: 0;
+  font-family: "IBM Plex Sans", system-ui, -apple-system, Segoe UI, Roboto, Arial, sans-serif;
   background: var(--bg);
-  color: var(--text);
+  color: var(--ink);
 }
 
-.wrap{
+.page{
   max-width: 960px;
   margin: 0 auto;
-  padding: 18px 14px 40px;
+  padding: 16px 14px 22px;
+}
+
+.topCard{
+  background: var(--card);
+  border: 1px solid var(--border);
+  border-radius: 18px;
+  padding: 14px 14px;
+  display: flex;
+  align-items: flex-end;
+  justify-content: space-between;
+  gap: 14px;
+  box-shadow: var(--shadow);
+}
+
+.h1{
+  margin: 0 0 4px;
+  font-size: 28px;
+  font-weight: 800;
+  letter-spacing: -0.02em;
+}
+
+.sub{
+  margin: 0;
+  color: var(--muted);
+  font-size: 14px;
+  line-height: 1.4;
+}
+
+.sponsor{
+  display: inline-block;
+  font-size: 13px;
+  color: var(--muted);
+  text-decoration: none;
+  white-space: nowrap;
+}
+
+.sponsor span{
+  color: var(--accent);
+  font-weight: 700;
+}
+
+.stack{
+  display: grid;
+  gap: 12px;
+  margin-top: 12px;
+}
+
+.twoup{
+  display: grid;
+  gap: 12px;
+  grid-template-columns: 1fr;
+}
+
+@media (min-width: 760px){
+  .twoup{ grid-template-columns: 1fr 1fr; }
 }
 
 .card{
   background: var(--card);
-  border: 1px solid var(--stroke);
+  border: 1px solid var(--border);
   border-radius: 18px;
-  padding: 16px 18px;
+  padding: 12px;
   box-shadow: var(--shadow);
 }
 
-.card + .card{ margin-top: 14px; }
-
-.cardHero{
-  padding: 18px 18px 16px;
+.card.big{
+  padding: 14px;
 }
 
-.heroHead{
-  margin-bottom: 12px;
-}
-
-h1{
-  margin: 0 0 6px;
-  font-size: clamp(22px, 3vw, 34px);
-  letter-spacing: -0.02em;
-}
-
-.heroSub{
-  margin: 0 0 6px;
-  color: var(--muted);
-  font-size: 15px;
-  line-height: 1.45;
-}
-
-.heroSponsor{
-  margin: 0;
-  font-size: 13px;
-  color: var(--muted);
-}
-
-.heroSponsor a{
-  color: var(--accent);
-  text-decoration: none;
-  font-weight: 650;
-}
-
-.heroSponsor a:hover{
-  text-decoration: underline;
-}
-
-.cardHead{
+.rowTop{
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: 10px;
   margin-bottom: 10px;
 }
 
-.cardHead h2{
-  margin: 0 0 4px;
-  font-size: 16px;
-}
-
-.cardSub{
+.rowTitle{
   margin: 0;
-  color: var(--muted);
-  font-size: 13px;
-  line-height: 1.35;
-}
-
-.grid{
-  margin-top: 14px;
-  display: grid;
-  grid-template-columns: repeat(3, minmax(0, 1fr));
-  gap: 14px;
-}
-
-@media (max-width: 900px){
-  .grid{ grid-template-columns: repeat(2, minmax(0, 1fr)); }
-}
-
-@media (max-width: 560px){
-  .grid{ grid-template-columns: 1fr; }
-}
-
-.slotWindow{
-  border: 2px solid rgba(0,0,0,0.14);
-  border-radius: 16px;
-  padding: 12px 14px;
-  background: #f9fafb;
-  box-shadow: 0 8px 18px rgba(0,0,0,0.10);
-  overflow: hidden;
-}
-
-.heroWindow{
-  border-color: rgba(135,93,166,0.50);
-}
-
-.slotLabel{
-  font-size: 11px;
-  letter-spacing: 0.10em;
-  text-transform: uppercase;
-  color: rgba(0,0,0,0.45);
-  margin-bottom: 6px;
-}
-
-.slotTitle{
-  font-size: 18px;
+  font-size: 16px;
   font-weight: 800;
+}
+
+.rowHint{
+  margin: 0;
+  font-size: 13px;
+  color: var(--muted);
+  text-align: right;
+}
+
+.rowMain{
+  display: flex;
+  align-items: stretch;
+  gap: 10px;
+}
+
+/* Result box: fixed height so titles do not push things around */
+.rowResult{
+  flex: 1;
+  min-height: 56px;
+  border-radius: 14px;
+  border: 2px solid var(--stroke);
+  background: #f9fafb;
+
+  display: flex;
+  align-items: center;
+  padding: 10px 12px;
+
+  font-size: 22px;
+  font-weight: 700;
   letter-spacing: -0.01em;
-  margin-bottom: 6px;
-  white-space: nowrap;
+
   overflow: hidden;
+  white-space: nowrap;
   text-overflow: ellipsis;
 }
 
-.cardHero .slotTitle{
-  font-size: 22px;
+/* Big luck meter result */
+.rowResultBig{
+  min-height: 72px;
+  font-size: 30px;
+  font-weight: 800;
 }
 
-.slotMeta{
-  font-size: 14px;
-  color: rgba(0,0,0,0.70);
-  margin-bottom: 6px;
+/* Single character tiles: bigger and centered */
+.rowResultSingle{
+  justify-content: center;
+  font-size: 34px;
+  font-weight: 900;
+  letter-spacing: -0.02em;
 }
 
-.slotNote{
-  font-size: 13px;
-  color: rgba(0,0,0,0.55);
-  min-height: 18px;
+/* Wide content (watch, fortune, food) */
+.rowResultWide{
+  font-size: 18px;
+  font-weight: 700;
 }
 
-.btnRow{
-  display: flex;
-  gap: 10px;
-  margin-top: 12px;
-  flex-wrap: wrap;
+/* Color tile fills the entire result area */
+.colorFill{
+  background: var(--pick, #f9fafb);
+  color: var(--pickText, #111);
+  border-color: rgba(0,0,0,0.18);
 }
 
-.btn{
-  appearance: none;
+/* Fortune strip look */
+.fortuneStrip{
+  background: #fffdf4;
+  border-color: rgba(0,0,0,0.18);
+  font-family: ui-serif, Georgia, "Times New Roman", serif;
+  font-weight: 700;
+  font-size: 18px;
+}
+
+/* Buttons */
+.btnSpin{
+  width: 112px;
+  border-radius: 14px;
   border: 1px solid var(--accent);
   background: var(--accent);
   color: #fff;
-  padding: 10px 14px;
-  border-radius: 999px;
+  font-weight: 800;
   font-size: 14px;
-  font-weight: 650;
   cursor: pointer;
-  transition: transform 0.15s ease, background 0.15s ease, border-color 0.15s ease, opacity 0.15s ease;
+  transition: transform 120ms ease, background 120ms ease, border-color 120ms ease;
 }
 
-.btn:hover:not(:disabled){
-  background: var(--accentDark);
-  border-color: var(--accentDark);
+.btnSpin:hover{
+  background: #6d4786;
+  border-color: #6d4786;
   transform: translateY(-1px);
 }
 
-.btn:disabled{
-  opacity: 0.55;
+.btnSpin:disabled{
+  opacity: 0.65;
   cursor: default;
+  transform: none;
 }
 
-.btnGhost{
-  background: transparent;
-  color: var(--accent);
+/* Bigger button for main luck meter */
+.btnSpinBig{
+  width: 140px;
+  font-size: 15px;
 }
 
-.btnGhost:hover:not(:disabled){
-  background: rgba(135,93,166,0.10);
-  border-color: var(--accentDark);
-  color: var(--accentDark);
+.bigNote{
+  margin: 10px 2px 0;
+  color: var(--muted);
+  font-size: 14px;
+  line-height: 1.45;
+  min-height: 1.2em;
 }
 
-.fortuneCard{
-  margin-top: 14px;
+.miniMeta{
+  margin: 8px 2px 0;
+  color: var(--muted);
+  font-size: 13px;
+  min-height: 1.1em;
 }
 
-.fortuneStrip{
-  margin-top: 4px;
-  border-radius: 14px;
-  border: 1px solid rgba(0,0,0,0.10);
-  background: #fffdf6;
-  padding: 14px 16px;
-  box-shadow: inset 0 0 0 2px rgba(0,0,0,0.03);
-}
-
-.fortuneQuote{
-  display: block;
-  font-family: ui-serif, Georgia, "Times New Roman", serif;
-  font-size: 18px;
-  line-height: 1.35;
-  color: rgba(0,0,0,0.85);
+@media (max-width: 520px){
+  .h1{ font-size: 24px; }
+  .btnSpin{ width: 96px; }
+  .btnSpinBig{ width: 118px; }
+  .rowResultBig{ font-size: 26px; }
+  .rowResultSingle{ font-size: 32px; }
 }
