@@ -1,143 +1,275 @@
-<!doctype html>
+<!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <title>Luck Meter</title>
+<meta charset="UTF-8" />
+<title>The Oracle</title>
+<meta name="viewport" content="width=device-width, initial-scale=1" />
 
-  <link rel="preconnect" href="https://fonts.googleapis.com">
-  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans:wght@300;400;600;700&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans:wght@400;600&display=swap" rel="stylesheet">
 
-  <link rel="stylesheet" href="styles.css" />
+<style>
+:root {
+  --ink:#030712;
+  --muted:#6b7280;
+  --card:#f9fafb;
+  --border:#030712;
+}
+
+* { box-sizing:border-box; }
+
+body {
+  margin:0;
+  padding:1rem;
+  font-family:"IBM Plex Sans", system-ui, sans-serif;
+  background:#fff;
+  color:var(--ink);
+}
+
+.wrapper {
+  max-width:720px;
+  margin:0 auto;
+  display:flex;
+  flex-direction:column;
+  gap:1rem;
+}
+
+.card {
+  background:var(--card);
+  border:2px solid var(--border);
+  border-radius:16px;
+  padding:0.75rem 1rem;
+}
+
+.card h2 {
+  margin:0 0 0.25rem;
+  font-size:1rem;
+  font-weight:600;
+}
+
+.output {
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  font-size:1.4rem;
+  font-weight:600;
+  height:56px;
+  border-radius:12px;
+  background:#fff;
+  border:1px solid #e5e7eb;
+}
+
+/* Luck meter */
+.luck-output {
+  height:72px;
+  font-size:1.6rem;
+}
+
+/* Four-wide row */
+.row4 {
+  display:grid;
+  grid-template-columns:repeat(4,1fr);
+  gap:0.5rem;
+}
+
+.mini {
+  padding:0.5rem;
+}
+
+.mini .output {
+  height:48px;
+  font-size:1.8rem;
+}
+
+/* Color tile */
+.colorBox {
+  color:#000;
+}
+
+/* Wide interactive rows */
+.wide {
+  display:grid;
+  grid-template-columns:72px 1fr;
+  gap:0.75rem;
+  align-items:center;
+}
+
+.iconBtn {
+  width:64px;
+  height:64px;
+  border-radius:50%;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  font-size:1.6rem;
+  cursor:pointer;
+  user-select:none;
+  background:#111;
+  color:#fff;
+}
+
+.cookie {
+  background:#e5c07b;
+  color:#000;
+}
+
+.note {
+  font-size:0.85rem;
+  color:var(--muted);
+  margin-top:0.25rem;
+}
+</style>
 </head>
 
 <body>
-  <div class="page">
-    <header class="topCard">
-      <div class="topLeft">
-        <h1 class="h1">Welcome to the Luck Meter</h1>
-        <p class="sub">Press spin to get your luck score out of 5 for the day.</p>
-      </div>
+<div class="wrapper">
 
-      <div class="topRight">
-        <a class="sponsor" href="https://www.greetingsearthling.ca" target="_blank" rel="noopener">
-          Sponsored by <span>Greetings, Earthling</span>
-        </a>
-      </div>
-    </header>
-
-    <main class="stack">
-      <!-- Luck Meter -->
-      <article class="card big">
-        <div class="rowTop">
-          <h2 class="rowTitle">Luck meter</h2>
-          <p class="rowHint" id="luck-hint"></p>
-        </div>
-
-        <div class="rowMain">
-          <div class="rowResult rowResultBig" id="luck-result">Tap spin.</div>
-          <button class="btnSpin btnSpinBig" id="luck-spin" type="button">Spin</button>
-        </div>
-
-        <p class="bigNote" id="luck-note"></p>
-      </article>
-
-      <!-- Small cards, 2-up -->
-      <section class="twoup">
-        <!-- Lucky number -->
-        <article class="card compact">
-          <div class="rowTop">
-            <h2 class="rowTitle">Lucky number</h2>
-            <p class="rowHint" id="num-hint"></p>
-          </div>
-          <div class="rowMain">
-            <div class="rowResult rowResultSingle" id="num-result">?</div>
-            <button class="btnSpin" id="num-spin" type="button">Spin</button>
-          </div>
-        </article>
-
-        <!-- Lucky letter -->
-        <article class="card compact">
-          <div class="rowTop">
-            <h2 class="rowTitle">Lucky letter</h2>
-            <p class="rowHint" id="letter-hint"></p>
-          </div>
-          <div class="rowMain">
-            <div class="rowResult rowResultSingle" id="letter-result">?</div>
-            <button class="btnSpin" id="letter-spin" type="button">Spin</button>
-          </div>
-        </article>
-
-        <!-- Lucky colour -->
-        <article class="card compact">
-          <div class="rowTop">
-            <h2 class="rowTitle">Lucky colour</h2>
-            <p class="rowHint" id="color-hint"></p>
-          </div>
-          <div class="rowMain">
-            <div class="rowResult colorFill" id="color-result">Tap spin.</div>
-            <button class="btnSpin" id="color-spin" type="button">Spin</button>
-          </div>
-        </article>
-
-        <!-- Emoji of the day -->
-        <article class="card compact">
-          <div class="rowTop">
-            <h2 class="rowTitle">Emoji of the day</h2>
-            <p class="rowHint" id="emoji-hint"></p>
-          </div>
-          <div class="rowMain">
-            <div class="rowResult rowResultSingle" id="emoji-result">?</div>
-            <button class="btnSpin" id="emoji-spin" type="button">Spin</button>
-          </div>
-        </article>
-      </section>
-
-      <!-- What to eat -->
-      <article class="card compact">
-        <div class="rowTop">
-          <h2 class="rowTitle">What should I eat?</h2>
-          <p class="rowHint" id="food-hint">Rerolls allowed.</p>
-        </div>
-        <div class="rowMain">
-          <div class="rowResult rowResultWide" id="food-result">Tap spin.</div>
-          <button class="btnSpin" id="food-spin" type="button">Spin</button>
-        </div>
-      </article>
-
-      <!-- What to watch -->
-      <article class="card compact">
-        <div class="rowTop">
-          <h2 class="rowTitle">What should I watch?</h2>
-          <p class="rowHint" id="watch-hint">Rerolls allowed.</p>
-        </div>
-        <div class="rowMain">
-          <div class="rowResult rowResultWide" id="watch-result">Tap spin.</div>
-          <button class="btnSpin" id="watch-spin" type="button">Spin</button>
-        </div>
-        <p class="miniMeta" id="watch-meta"></p>
-      </article>
-
-      <!-- Fortune -->
-      <article class="card compact">
-        <div class="rowTop">
-          <h2 class="rowTitle">Fortune</h2>
-          <p class="rowHint" id="fortune-hint"></p>
-        </div>
-        <div class="rowMain">
-          <div class="rowResult rowResultWide fortuneStrip" id="fortune-result">Tap spin.</div>
-          <button class="btnSpin" id="fortune-spin" type="button">Spin</button>
-        </div>
-      </article>
-    </main>
+  <!-- LUCK METER -->
+  <div class="card">
+    <h2>How lucky are you today?</h2>
+    <div class="output luck-output" id="luckOutput">Tap to reveal</div>
   </div>
 
-  <!-- Data files (optional but recommended). Load BEFORE script.js -->
-  <script src="watchlist.js"></script>
-  <script src="foodlist.js"></script>
-  <script src="fortunelist.js"></script>
+  <!-- 4 WIDE -->
+  <div class="row4">
+    <div class="card mini">
+      <h2>#</h2>
+      <div class="output" id="numOut">–</div>
+    </div>
+    <div class="card mini">
+      <h2>Letter</h2>
+      <div class="output" id="letterOut">–</div>
+    </div>
+    <div class="card mini">
+      <h2>Colour</h2>
+      <div class="output colorBox" id="colorOut">–</div>
+    </div>
+    <div class="card mini">
+      <h2>Emoji</h2>
+      <div class="output" id="emojiOut">–</div>
+    </div>
+  </div>
 
-  <script src="script.js"></script>
+  <!-- MAGIC 8 BALL -->
+  <div class="card">
+    <h2>Magic 8-Ball</h2>
+    <div class="wide">
+      <div class="iconBtn" id="ball">8</div>
+      <div>
+        <div class="output" id="ballOut">Think of a question.</div>
+        <div class="note">Click the ball to shake.</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- FORTUNE COOKIE -->
+  <div class="card">
+    <h2>Fortune</h2>
+    <div class="wide">
+      <div class="iconBtn cookie" id="cookie">🥠</div>
+      <div>
+        <div class="output" id="fortuneOut">Click the cookie.</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- WHAT TO EAT -->
+  <div class="card">
+    <h2>What should I eat?</h2>
+    <div class="output" id="foodOut">Tap to decide</div>
+  </div>
+
+  <!-- WHAT TO WATCH -->
+  <div class="card">
+    <h2>What should I watch?</h2>
+    <div class="output" id="watchOut">Tap to decide</div>
+  </div>
+
+</div>
+
+<script>
+/* helpers */
+const pick = arr => arr[Math.floor(Math.random()*arr.length)];
+
+/* Luck */
+const luckLevels = [
+  "✨ Mega lucky",
+  "🍀 Pretty lucky",
+  "🙂 A little luck",
+  "😐 Neutral day",
+  "🙃 Not much luck"
+];
+document.getElementById("luckOutput").onclick = e => {
+  e.target.textContent = pick(luckLevels);
+};
+
+/* Mini tiles */
+document.getElementById("numOut").onclick = e => {
+  e.target.textContent = Math.floor(Math.random()*99)+1;
+};
+document.getElementById("letterOut").onclick = e => {
+  e.target.textContent = String.fromCharCode(65+Math.floor(Math.random()*26));
+};
+const colors = [
+  {name:"Blue", hex:"#3b82f6"},
+  {name:"Green", hex:"#22c55e"},
+  {name:"Red", hex:"#ef4444"},
+  {name:"Purple", hex:"#a855f7"},
+  {name:"Yellow", hex:"#facc15"}
+];
+document.getElementById("colorOut").onclick = e => {
+  const c = pick(colors);
+  e.textContent = c.name;
+  e.style.background = c.hex;
+};
+const emojis = ["😀","🔥","🌿","🚀","🍕","🎲","✨","👀"];
+document.getElementById("emojiOut").onclick = e => {
+  e.target.textContent = pick(emojis);
+};
+
+/* Magic 8 Ball */
+const answers = [
+  "Yes",
+  "No",
+  "Ask again later",
+  "Outlook good",
+  "Very doubtful",
+  "Without a doubt",
+  "Signs point to yes"
+];
+document.getElementById("ball").onclick = () => {
+  document.getElementById("ballOut").textContent = pick(answers);
+};
+
+/* Fortune cookie */
+const fortunes = [
+  "Good things are quietly lining up.",
+  "A warm thought becomes tomorrow’s good news.",
+  "Luck favors motion.",
+  "You’re closer than you think.",
+  "Say yes to the small thing."
+];
+document.getElementById("cookie").onclick = e => {
+  e.textContent = "🥠";
+  document.getElementById("fortuneOut").textContent = pick(fortunes);
+};
+
+/* Food */
+const food = ["Pizza","Tacos","Pasta","Chicken","Burgers","Soup"];
+document.getElementById("foodOut").onclick = e => {
+  e.target.textContent = pick(food);
+};
+
+/* Watch */
+const watch = [
+  "The Matrix (1999)",
+  "Breaking Bad (TV)",
+  "Jurassic Park (1993)",
+  "Fargo (TV)",
+  "Back to the Future (1985)"
+];
+document.getElementById("watchOut").onclick = e => {
+  e.target.textContent = pick(watch);
+};
+</script>
 </body>
 </html>
