@@ -1,246 +1,257 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-<meta charset="UTF-8">
-<title>The Oracle</title>
-<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta charset="UTF-8" />
+<title>Luck Meter</title>
+<meta name="viewport" content="width=device-width, initial-scale=1" />
 
 <link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans:wght@400;600&display=swap" rel="stylesheet">
 
 <style>
 :root {
-  --ink:#030712;
-  --card:#f9fafb;
+  --bg: #e6dfeb;
+  --card: #ffffff;
+  --accent: #875da6;
+  --green: #55be0a;
+  --text: #111827;
+  --muted: #6b7280;
 }
 
-*{box-sizing:border-box}
+* { box-sizing: border-box; }
 
-body{
-  margin:0;
-  padding:1rem;
-  font-family:"IBM Plex Sans",system-ui,sans-serif;
-  background:#fff;
-  color:var(--ink);
+body {
+  margin: 0;
+  font-family: "IBM Plex Sans", system-ui, sans-serif;
+  background: var(--bg);
+  color: var(--text);
 }
 
-.wrapper{
-  max-width:720px;
-  margin:0 auto;
-  display:flex;
-  flex-direction:column;
-  gap:1rem;
+.container {
+  max-width: 960px;
+  margin: 0 auto;
+  padding: 1.5rem 1rem 3rem;
 }
 
-.card{
-  background:var(--card);
-  border:2px solid var(--ink);
-  border-radius:16px;
-  padding:0.75rem 1rem;
+/* ---------- HEADER ---------- */
+
+header {
+  text-align: center;
+  margin-bottom: 2rem;
 }
 
-h2{
-  margin:0 0 0.25rem;
-  font-size:1rem;
+header h1 {
+  font-size: 1.8rem;
+  margin: 0 0 0.4rem;
 }
 
-.output{
-  height:56px;
-  display:flex;
-  align-items:center;
-  justify-content:center;
-  font-size:1.4rem;
-  font-weight:600;
-  background:#fff;
-  border-radius:12px;
-  border:1px solid #e5e7eb;
-  overflow:hidden;
+header p {
+  margin: 0;
+  color: var(--muted);
 }
 
-.luck{
-  height:72px;
-  position:relative;
+/* ---------- CARDS ---------- */
+
+.card {
+  background: var(--card);
+  border-radius: 18px;
+  padding: 1.25rem;
+  margin-bottom: 1.5rem;
+  box-shadow: 0 12px 30px rgba(0,0,0,0.08);
 }
 
-.smoke::after{
-  content:"";
-  position:absolute;
-  inset:0;
-  background:radial-gradient(circle at center,rgba(0,0,0,.15),transparent 60%);
-  animation:smoke 1.4s ease-out;
-  pointer-events:none;
+/* ---------- LUCK METER ---------- */
+
+.luckBox {
+  height: 140px;
+  border-radius: 14px;
+  background: #f9fafb;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 1.6rem;
+  font-weight: 600;
 }
 
-@keyframes smoke{
-  0%{opacity:0;transform:scale(.6)}
-  50%{opacity:.6}
-  100%{opacity:0;transform:scale(1.3)}
+/* ---------- MINI TILES ---------- */
+
+.grid4 {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 1rem;
 }
 
-.row4{
-  display:grid;
-  grid-template-columns:repeat(4,1fr);
-  gap:.5rem;
+.mini {
+  background: #f9fafb;
+  border-radius: 14px;
+  padding: 0.8rem;
+  text-align: center;
 }
 
-.mini .output{
-  height:48px;
-  font-size:1.8rem;
+.mini h3 {
+  font-size: 0.75rem;
+  text-transform: uppercase;
+  color: var(--muted);
+  margin: 0 0 0.3rem;
 }
 
-.colorFill{
-  color:#000;
+.mini .value {
+  font-size: 2rem;
+  font-weight: 600;
 }
 
-.wide{
-  display:grid;
-  grid-template-columns:72px 1fr;
-  gap:.75rem;
-  align-items:center;
+/* ---------- WIDE ORACLE / FORTUNE ---------- */
+
+.wideCard {
+  position: relative;
+  display: grid;
+  grid-template-columns: 1fr 2fr;
+  gap: 1rem;
+  align-items: center;
 }
 
-.icon{
-  width:64px;
-  height:64px;
-  border-radius:50%;
-  display:flex;
-  align-items:center;
-  justify-content:center;
-  font-size:1.6rem;
-  cursor:pointer;
-  user-select:none;
-  background:#111;
-  color:#fff;
+.instructions {
+  position: relative;
+  padding-right: 1rem;
 }
 
-.cookie{background:#e5c07b;color:#000}
-
-.shake{
-  animation:shake .6s;
+.instructions p {
+  margin: 0 0 0.4rem;
+  font-size: 0.9rem;
+  color: var(--muted);
 }
 
-@keyframes shake{
-  0%{transform:rotate(0)}
-  20%{transform:rotate(-10deg)}
-  40%{transform:rotate(10deg)}
-  60%{transform:rotate(-8deg)}
-  80%{transform:rotate(8deg)}
-  100%{transform:rotate(0)}
+.icon {
+  position: absolute;
+  bottom: -10px;
+  left: 0;
+  font-size: 5rem;
+  z-index: 2;
+  cursor: pointer;
+}
+
+.outputBox {
+  background: #ffffff;
+  border-radius: 14px;
+  padding: 1.2rem 1.2rem 1.2rem 2rem;
+  min-height: 120px;
+  display: flex;
+  align-items: center;
+  font-size: 1.1rem;
+}
+
+/* ---------- FOOTER ---------- */
+
+footer {
+  text-align: center;
+  font-size: 0.8rem;
+  color: var(--muted);
+  margin-top: 2rem;
 }
 </style>
 </head>
 
 <body>
-<div class="wrapper">
+<div class="container">
 
-<!-- LUCK -->
+<header>
+  <h1>Luck Meter</h1>
+  <p>Playful. Random. Absolutely not science.</p>
+</header>
+
+<!-- LUCK METER -->
 <div class="card">
-  <h2>How lucky are you today?</h2>
-  <div class="output luck" id="luckOut">Tap to reveal</div>
-</div>
-
-<!-- 4 WIDE -->
-<div class="row4">
-  <div class="card mini"><h2>#</h2><div class="output" id="num">–</div></div>
-  <div class="card mini"><h2>Letter</h2><div class="output" id="letter">–</div></div>
-  <div class="card mini"><h2>Colour</h2><div class="output colorFill" id="color">–</div></div>
-  <div class="card mini"><h2>Emoji</h2><div class="output" id="emoji">–</div></div>
-</div>
-
-<!-- 8 BALL -->
-<div class="card">
-  <h2>Magic 8-Ball</h2>
-  <div class="wide">
-    <div class="icon" id="ball">8</div>
-    <div class="output" id="ballOut">Think of a question.</div>
+  <div class="luckBox" id="luckResult">
+    Tap to reveal today’s luck
   </div>
 </div>
 
-<!-- FORTUNE -->
-<div class="card">
-  <h2>Fortune</h2>
-  <div class="wide">
-    <div class="icon cookie" id="cookie">🥠</div>
-    <div class="output" id="fortuneOut">Click the cookie.</div>
+<!-- MINI ROW -->
+<div class="grid4">
+  <div class="mini"><h3>Lucky #</h3><div class="value" id="num">–</div></div>
+  <div class="mini"><h3>Letter</h3><div class="value" id="letter">–</div></div>
+  <div class="mini"><h3>Colour</h3><div class="value" id="color">–</div></div>
+  <div class="mini"><h3>Emoji</h3><div class="value" id="emoji">–</div></div>
+</div>
+
+<!-- MAGIC 8 BALL -->
+<div class="card wideCard">
+  <div class="instructions">
+    <p>Think of a yes/no question.</p>
+    <p>Click the 8-Ball.</p>
+    <div class="icon" id="eightBall">🎱</div>
+  </div>
+  <div class="outputBox" id="eightResult">
+    The universe is listening…
   </div>
 </div>
 
-<!-- EAT -->
-<div class="card">
-  <h2>What should I eat?</h2>
-  <div class="output" id="food">Tap to decide</div>
+<!-- FORTUNE COOKIE -->
+<div class="card wideCard">
+  <div class="instructions">
+    <p>Ready for a fortune?</p>
+    <p>Crack the cookie.</p>
+    <div class="icon" id="cookie">🥠</div>
+  </div>
+  <div class="outputBox" id="fortuneResult">
+    Your fortune awaits.
+  </div>
 </div>
 
-<!-- WATCH -->
-<div class="card">
-  <h2>What should I watch?</h2>
-  <div class="output" id="watch">Tap to decide</div>
-</div>
+<footer>
+  Sponsored by Greetings, Earthling
+</footer>
 
 </div>
 
 <script>
-const pick=a=>a[Math.floor(Math.random()*a.length)]
+/* ---------- SIMPLE RANDOMS ---------- */
 
-/* Luck */
-const luck=[
-"✨ Mega lucky",
-"🍀 Pretty lucky",
-"🙂 A little luck",
-"😐 Neutral day",
-"🙃 Not much luck"
-]
-luckOut.onclick=()=>{
-  luckOut.classList.remove("smoke")
-  void luckOut.offsetWidth
-  luckOut.classList.add("smoke")
-  luckOut.textContent=pick(luck)
-}
+const luckTexts = [
+  "Mega lucky day.",
+  "Luck is on your side.",
+  "Low-friction day.",
+  "Make-your-own-luck day.",
+  "Not much luck — stay sharp."
+];
 
-/* Minis */
-num.onclick=()=>num.textContent=Math.floor(Math.random()*99)+1
-letter.onclick=()=>letter.textContent=String.fromCharCode(65+Math.random()*26)
-const cols=[["Blue","#3b82f6"],["Green","#22c55e"],["Red","#ef4444"],["Purple","#a855f7"]]
-color.onclick=()=>{
-  const c=pick(cols)
-  color.textContent=c[0]
-  color.style.background=c[1]
-}
-const emos=["😀","🔥","🌿","🚀","🍕","🎲","✨"]
-emoji.onclick=()=>emoji.textContent=pick(emos)
+const eightAnswers = [
+  "Yes.",
+  "No.",
+  "Ask again later.",
+  "Signs point to yes.",
+  "Outlook not so good."
+];
 
-/* 8 Ball */
-const answers=["Yes","No","Ask again","Outlook good","Very doubtful","Absolutely"]
-ball.onclick=()=>{
-  ball.classList.remove("shake")
-  void ball.offsetWidth
-  ball.classList.add("shake")
-  ballOut.textContent=pick(answers)
-}
+const fortunes = [
+  "Good things come to those who refresh.",
+  "Luck is borrowed, not owned.",
+  "An unexpected win is nearby.",
+  "Today favors small risks.",
+  "Patience pays off."
+];
 
-/* Fortune */
-const fortunes=[
-"Good things are quietly lining up.",
-"A warm thought becomes tomorrow’s good news.",
-"Luck favors motion.",
-"You’re closer than you think."
-]
-cookie.onclick=()=>{
-  cookie.textContent="🥠💥"
-  fortuneOut.textContent=pick(fortunes)
-}
+document.getElementById("luckResult").onclick = () => {
+  document.getElementById("luckResult").textContent =
+    luckTexts[Math.floor(Math.random()*luckTexts.length)];
+};
 
-/* Food & Watch */
-const foodList=["Pizza","Tacos","Pasta","Chicken","Burgers"]
-food.onclick=()=>food.textContent=pick(foodList)
+document.getElementById("eightBall").onclick = () => {
+  document.getElementById("eightResult").textContent =
+    eightAnswers[Math.floor(Math.random()*eightAnswers.length)];
+};
 
-const watchList=[
-"The Matrix (1999)",
-"Fargo (TV)",
-"Jurassic Park (1993)",
-"Breaking Bad (TV)",
-"Back to the Future (1985)"
-]
-watch.onclick=()=>watch.textContent=pick(watchList)
+document.getElementById("cookie").onclick = () => {
+  document.getElementById("fortuneResult").textContent =
+    fortunes[Math.floor(Math.random()*fortunes.length)];
+};
+
+document.getElementById("num").textContent = Math.floor(Math.random()*10);
+document.getElementById("letter").textContent =
+  String.fromCharCode(65 + Math.floor(Math.random()*26));
+document.getElementById("emoji").textContent = ["🍀","✨","😌","🔥","🧠"][Math.floor(Math.random()*5)];
+document.getElementById("color").style.background = "#55be0a";
+document.getElementById("color").style.borderRadius = "8px";
 </script>
+
 </body>
 </html>
