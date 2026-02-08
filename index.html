@@ -4,148 +4,198 @@
 <meta charset="UTF-8" />
 <title>Luck Meter</title>
 <meta name="viewport" content="width=device-width, initial-scale=1" />
-
 <link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans:wght@400;600&display=swap" rel="stylesheet">
 
 <style>
-:root {
-  --bg: #e6dfeb;
-  --card: #ffffff;
-  --accent: #875da6;
-  --green: #55be0a;
-  --text: #111827;
-  --muted: #6b7280;
+:root{
+  --bg:#e6dfeb;
+  --card:#ffffff;
+  --accent:#875da6;
+  --text:#111827;
+  --muted:#6b7280;
+  --soft:#f9fafb;
+  --shadow:0 12px 30px rgba(0,0,0,.08);
+  --radius:18px;
 }
 
-* { box-sizing: border-box; }
-
-body {
-  margin: 0;
-  font-family: "IBM Plex Sans", system-ui, sans-serif;
-  background: var(--bg);
-  color: var(--text);
+*{box-sizing:border-box}
+body{
+  margin:0;
+  font-family:"IBM Plex Sans",system-ui,sans-serif;
+  background:var(--bg);
+  color:var(--text);
 }
 
-.container {
-  max-width: 960px;
-  margin: 0 auto;
-  padding: 1.5rem 1rem 3rem;
+.container{
+  max-width:960px;
+  margin:0 auto;
+  padding:24px 16px 48px;
 }
 
-/* ---------- HEADER ---------- */
-
-header {
-  text-align: center;
-  margin-bottom: 2rem;
+header{
+  text-align:center;
+  margin:0 0 18px;
+}
+header h1{
+  margin:0 0 6px;
+  font-size:32px;
+  font-weight:600;
+}
+header p{
+  margin:0;
+  color:var(--muted);
 }
 
-header h1 {
-  font-size: 1.8rem;
-  margin: 0 0 0.4rem;
+/* cards */
+.card{
+  background:var(--card);
+  border-radius:var(--radius);
+  padding:18px;
+  box-shadow:var(--shadow);
+  margin:16px 0;
 }
 
-header p {
-  margin: 0;
-  color: var(--muted);
+/* luck meter */
+.luckBox{
+  height:132px;
+  border-radius:14px;
+  background:var(--soft);
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  font-size:22px;
+  font-weight:600;
+  text-align:center;
+  padding:12px;
+  cursor:pointer;
+  user-select:none;
 }
 
-/* ---------- CARDS ---------- */
-
-.card {
-  background: var(--card);
-  border-radius: 18px;
-  padding: 1.25rem;
-  margin-bottom: 1.5rem;
-  box-shadow: 0 12px 30px rgba(0,0,0,0.08);
+/* 4-wide minis */
+.grid4{
+  display:grid;
+  grid-template-columns:repeat(4,1fr);
+  gap:12px;
+  margin:16px 0;
 }
 
-/* ---------- LUCK METER ---------- */
-
-.luckBox {
-  height: 140px;
-  border-radius: 14px;
-  background: #f9fafb;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  font-size: 1.6rem;
-  font-weight: 600;
+.mini{
+  background:var(--card);
+  border-radius:14px;
+  box-shadow:var(--shadow);
+  padding:12px 12px 14px;
+  text-align:center;
+  min-height:92px;
+  display:flex;
+  flex-direction:column;
+  justify-content:center;
+  gap:6px;
 }
 
-/* ---------- MINI TILES ---------- */
-
-.grid4 {
-  display: grid;
-  grid-template-columns: repeat(4, 1fr);
-  gap: 1rem;
+.mini h3{
+  margin:0;
+  font-size:12px;
+  letter-spacing:.08em;
+  text-transform:uppercase;
+  color:var(--muted);
+  font-weight:600;
 }
 
-.mini {
-  background: #f9fafb;
-  border-radius: 14px;
-  padding: 0.8rem;
-  text-align: center;
+.mini .value{
+  font-size:34px;
+  font-weight:600;
+  line-height:1;
 }
 
-.mini h3 {
-  font-size: 0.75rem;
-  text-transform: uppercase;
-  color: var(--muted);
-  margin: 0 0 0.3rem;
+/* color tile: fill area */
+.mini.colorTile{
+  padding:10px;
+}
+.colorSwatch{
+  height:46px;
+  border-radius:12px;
+  background:#d1d5db;
+}
+.colorMeta{
+  font-size:12px;
+  color:var(--muted);
+  margin-top:6px;
 }
 
-.mini .value {
-  font-size: 2rem;
-  font-weight: 600;
-}
-
-/* ---------- WIDE ORACLE / FORTUNE ---------- */
-
-.wideCard {
-  position: relative;
-  display: grid;
+/* wide “slot” cards */
+.wide{
+  display:grid;
   grid-template-columns: 1fr 2fr;
-  gap: 1rem;
-  align-items: center;
+  gap:14px;
+  align-items:center;
 }
 
-.instructions {
-  position: relative;
-  padding-right: 1rem;
+.leftPane{
+  position:relative;
+  padding-left:84px; /* space reserved for the icon so it never covers text */
+  min-height:110px;
+  display:flex;
+  flex-direction:column;
+  justify-content:center;
+  gap:6px;
 }
 
-.instructions p {
-  margin: 0 0 0.4rem;
-  font-size: 0.9rem;
-  color: var(--muted);
+.leftPane .kicker{
+  font-size:12px;
+  letter-spacing:.08em;
+  text-transform:uppercase;
+  color:var(--muted);
+  font-weight:600;
+  margin:0;
+}
+.leftPane .instr{
+  margin:0;
+  color:var(--muted);
+  font-size:14px;
+  line-height:1.35;
 }
 
-.icon {
-  position: absolute;
-  bottom: -10px;
-  left: 0;
-  font-size: 5rem;
-  z-index: 2;
-  cursor: pointer;
+.bigIcon{
+  position:absolute;
+  left:8px;
+  top:50%;
+  transform:translateY(-50%);
+  width:68px;
+  height:68px;
+  border-radius:999px;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  font-size:46px;
+  background:var(--card);
+  box-shadow:0 10px 24px rgba(0,0,0,.12);
+  cursor:pointer;
+  user-select:none;
 }
 
-.outputBox {
-  background: #ffffff;
-  border-radius: 14px;
-  padding: 1.2rem 1.2rem 1.2rem 2rem;
-  min-height: 120px;
-  display: flex;
-  align-items: center;
-  font-size: 1.1rem;
+.output{
+  background:var(--soft);
+  border-radius:14px;
+  padding:16px;
+  min-height:110px;
+  display:flex;
+  align-items:center;
+  font-size:18px;
 }
 
-/* ---------- FOOTER ---------- */
+/* footer */
+footer{
+  text-align:center;
+  margin-top:18px;
+  color:var(--muted);
+  font-size:12px;
+}
 
-footer {
-  text-align: center;
-  font-size: 0.8rem;
-  color: var(--muted);
-  margin-top: 2rem;
+/* responsive */
+@media (max-width:820px){
+  .grid4{grid-template-columns:repeat(2,1fr)}
+  .wide{grid-template-columns:1fr}
+  .output{min-height:96px}
 }
 </style>
 </head>
@@ -158,60 +208,66 @@ footer {
   <p>Playful. Random. Absolutely not science.</p>
 </header>
 
-<!-- LUCK METER -->
 <div class="card">
-  <div class="luckBox" id="luckResult">
+  <div class="luckBox" id="luckResult" role="button" aria-label="Reveal today’s luck">
     Tap to reveal today’s luck
   </div>
 </div>
 
-<!-- MINI ROW -->
 <div class="grid4">
-  <div class="mini"><h3>Lucky #</h3><div class="value" id="num">–</div></div>
-  <div class="mini"><h3>Letter</h3><div class="value" id="letter">–</div></div>
-  <div class="mini"><h3>Colour</h3><div class="value" id="color">–</div></div>
-  <div class="mini"><h3>Emoji</h3><div class="value" id="emoji">–</div></div>
-</div>
+  <div class="mini">
+    <h3>Lucky #</h3>
+    <div class="value" id="num">—</div>
+  </div>
 
-<!-- MAGIC 8 BALL -->
-<div class="card wideCard">
-  <div class="instructions">
-    <p>Think of a yes/no question.</p>
-    <p>Click the 8-Ball.</p>
-    <div class="icon" id="eightBall">🎱</div>
+  <div class="mini">
+    <h3>Letter</h3>
+    <div class="value" id="letter">—</div>
   </div>
-  <div class="outputBox" id="eightResult">
-    The universe is listening…
-  </div>
-</div>
 
-<!-- FORTUNE COOKIE -->
-<div class="card wideCard">
-  <div class="instructions">
-    <p>Ready for a fortune?</p>
-    <p>Crack the cookie.</p>
-    <div class="icon" id="cookie">🥠</div>
+  <div class="mini colorTile">
+    <h3>Colour</h3>
+    <div class="colorSwatch" id="colorSwatch"></div>
+    <div class="colorMeta" id="colorMeta">Tap to reveal</div>
   </div>
-  <div class="outputBox" id="fortuneResult">
-    Your fortune awaits.
+
+  <div class="mini">
+    <h3>Emoji</h3>
+    <div class="value" id="emoji">—</div>
   </div>
 </div>
 
-<footer>
-  Sponsored by Greetings, Earthling
-</footer>
+<div class="card wide">
+  <div class="leftPane">
+    <div class="bigIcon" id="eightBall" aria-label="Shake the 8-ball">🎱</div>
+    <p class="kicker">Magic 8-Ball</p>
+    <p class="instr">Think of a yes or no question, then click the ball.</p>
+  </div>
+  <div class="output" id="eightResult">The universe is listening…</div>
+</div>
+
+<div class="card wide">
+  <div class="leftPane">
+    <div class="bigIcon" id="cookie" aria-label="Crack the fortune cookie">🥠</div>
+    <p class="kicker">Fortune Cookie</p>
+    <p class="instr">Click the cookie to crack it and reveal a fortune.</p>
+  </div>
+  <div class="output" id="fortuneResult">Your fortune awaits.</div>
+</div>
+
+<footer>Sponsored by Greetings, Earthling</footer>
 
 </div>
 
 <script>
-/* ---------- SIMPLE RANDOMS ---------- */
+/* No auto-spins. Everything starts blank and reveals only on click. */
 
 const luckTexts = [
   "Mega lucky day.",
   "Luck is on your side.",
   "Low-friction day.",
   "Make-your-own-luck day.",
-  "Not much luck — stay sharp."
+  "Not much luck. Stay sharp."
 ];
 
 const eightAnswers = [
@@ -223,34 +279,60 @@ const eightAnswers = [
 ];
 
 const fortunes = [
-  "Good things come to those who refresh.",
+  "A warm thought becomes tomorrow’s good news.",
   "Luck is borrowed, not owned.",
   "An unexpected win is nearby.",
   "Today favors small risks.",
   "Patience pays off."
 ];
 
-document.getElementById("luckResult").onclick = () => {
-  document.getElementById("luckResult").textContent =
-    luckTexts[Math.floor(Math.random()*luckTexts.length)];
-};
+const emojis = ["🍀","✨","😌","🔥","🧠","🌈","🧿"];
 
-document.getElementById("eightBall").onclick = () => {
-  document.getElementById("eightResult").textContent =
-    eightAnswers[Math.floor(Math.random()*eightAnswers.length)];
-};
+const colors = [
+  { name: "Green", hex: "#55be0a" },
+  { name: "Purple", hex: "#875da6" },
+  { name: "Sky", hex: "#60a5fa" },
+  { name: "Gold", hex: "#f59e0b" },
+  { name: "Coral", hex: "#fb7185" },
+  { name: "Mint", hex: "#34d399" }
+];
 
-document.getElementById("cookie").onclick = () => {
-  document.getElementById("fortuneResult").textContent =
-    fortunes[Math.floor(Math.random()*fortunes.length)];
-};
+function pick(arr){ return arr[Math.floor(Math.random()*arr.length)]; }
 
-document.getElementById("num").textContent = Math.floor(Math.random()*10);
-document.getElementById("letter").textContent =
-  String.fromCharCode(65 + Math.floor(Math.random()*26));
-document.getElementById("emoji").textContent = ["🍀","✨","😌","🔥","🧠"][Math.floor(Math.random()*5)];
-document.getElementById("color").style.background = "#55be0a";
-document.getElementById("color").style.borderRadius = "8px";
+/* Luck meter */
+document.getElementById("luckResult").addEventListener("click", () => {
+  document.getElementById("luckResult").textContent = pick(luckTexts);
+});
+
+/* Mini tiles: tap each to reveal */
+document.getElementById("num").addEventListener("click", (e) => {
+  e.currentTarget.textContent = String(Math.floor(Math.random()*10));
+});
+
+document.getElementById("letter").addEventListener("click", (e) => {
+  e.currentTarget.textContent = String.fromCharCode(65 + Math.floor(Math.random()*26));
+});
+
+document.getElementById("emoji").addEventListener("click", (e) => {
+  e.currentTarget.textContent = pick(emojis);
+});
+
+document.getElementById("colorSwatch").addEventListener("click", () => {
+  const c = pick(colors);
+  document.getElementById("colorSwatch").style.background = c.hex;
+  document.getElementById("colorMeta").textContent = `${c.name}  ${c.hex}`;
+});
+
+/* 8-ball and cookie */
+document.getElementById("eightBall").addEventListener("click", () => {
+  document.getElementById("eightResult").textContent = pick(eightAnswers);
+});
+
+document.getElementById("cookie").addEventListener("click", () => {
+  const cookie = document.getElementById("cookie");
+  cookie.textContent = "🥠"; // keep simple for now
+  document.getElementById("fortuneResult").textContent = pick(fortunes);
+});
 </script>
 
 </body>
