@@ -60,137 +60,153 @@ header p{
 }
 
 /* =========================
-   LUCK METER – Real bounce version
-   0–10 scale, starts at 5
+   LUCK METER (top)
    ========================= */
-
-const luckSpinBtn = document.getElementById("luckSpin");
-luckSpinBtn.textContent = "How lucky am I today?";
-
-const lmPanel = document.getElementById("lmPanel");
-const lmResult = document.getElementById("lmResult");
-const lmMeta = document.getElementById("lmMeta");
-const lmTrack = document.getElementById("lmTrack");
-const lmBall = document.getElementById("lmBall");
-
-let lmSpinning = false;
-
-function clamp(n,a,b){ return Math.max(a, Math.min(b,n)); }
-
-/* Bell curve around 5.6 */
-function rollLuckScore(){
-  let u = 0, v = 0;
-  while(u === 0) u = Math.random();
-  while(v === 0) v = Math.random();
-  const z = Math.sqrt(-2.0 * Math.log(u)) * Math.cos(2.0 * Math.PI * v);
-  const raw = 5.6 + z * 1.8;
-  return Math.round(clamp(raw,0,10));
+.lmHead{
+  display:flex;
+  align-items:flex-start;
+  justify-content:space-between;
+  gap:12px;
+  margin-bottom:12px;
+}
+.lmCopy{
+  margin:0;
+  color:var(--muted);
+  line-height:1.35;
+  font-size:14px;
+}
+.lmCopy strong{
+  color:var(--text);
+  font-weight:600;
+}
+.lmBtn{
+  appearance:none;
+  border:1px solid var(--accent);
+  background:var(--accent);
+  color:#fff;
+  border-radius:999px;
+  padding:10px 14px;
+  font-weight:600;
+  cursor:pointer;
+  transition:.15s;
+  white-space:nowrap;
+}
+.lmBtn:hover:not(:disabled){
+  background:#6d4786;
+  border-color:#6d4786;
+  transform:translateY(-1px);
+}
+.lmBtn:disabled{
+  opacity:.65;
+  cursor:default;
+  transform:none;
 }
 
-function bandForScore(s){
-  if (s <= 3) return "bad";
-  if (s <= 6) return "neutral";
-  return "good";
+.lmPanel{
+  border-radius:14px;
+  padding:14px;
+  position:relative;
+  overflow:hidden;
+  border:1px solid rgba(0,0,0,.06);
+  background:var(--soft);
+  transition: background 220ms ease;
 }
 
-function metaForScore(s){
-  if (s <= 2) return "Low tide. Keep it simple.";
-  if (s <= 3) return "Proceed carefully.";
-  if (s <= 6) return "Balanced energy.";
-  if (s <= 8) return "Nice tailwind today.";
-  return "Green lights everywhere.";
+.lmStatus{
+  display:flex;
+  align-items:baseline;
+  justify-content:space-between;
+  gap:12px;
+  margin-bottom:10px;
+}
+.lmResult{
+  font-size:18px;
+  font-weight:600;
+  margin:0;
+}
+.lmMeta{
+  margin:0;
+  color:var(--muted);
+  font-size:13px;
 }
 
-function getTickX(score){
-  const w = lmTrack.getBoundingClientRect().width;
-  return (score / 10) * w;
+.lmTrackWrap{
+  position:relative;
+  padding:10px 8px 0;
 }
 
-function setBallPx(x){
-  lmBall.style.left = `${x}px`;
+.lmTrack{
+  height:12px;
+  border-radius:999px;
+  background:rgba(0,0,0,.10);
+  position:relative;
 }
 
-/* Start at 5 */
-function resetToNeutral(){
-  const centerX = getTickX(5);
-  setBallPx(centerX);
-  lmResult.textContent = "Score: 5 / 10";
-  lmMeta.textContent = "Neutral balance.";
-  lmPanel.classList.remove("bad","good");
-  lmPanel.classList.add("neutral");
+.lmBall{
+  width:18px;
+  height:18px;
+  border-radius:999px;
+  background:#111827;
+  position:absolute;
+  top:50%;
+  transform:translate(-50%,-50%);
+  left:50%;
+  box-shadow:0 8px 18px rgba(0,0,0,.18);
 }
 
-window.addEventListener("load", resetToNeutral);
-window.addEventListener("resize", () => {
-  if(!lmSpinning) resetToNeutral();
-});
-
-/* REAL bounce animation */
-function animateBounceTo(score){
-
-  const targetX = getTickX(score);
-  const width = lmTrack.getBoundingClientRect().width;
-
-  const duration = 5200 + Math.random()*1200; // long tension
-  const start = performance.now();
-
-  function frame(now){
-    const elapsed = now - start;
-    let t = clamp(elapsed / duration, 0, 1);
-
-    /* Oscillate 0 → 10 → 0 repeatedly */
-    const cycles = 6; // number of full sweeps
-    const sweep = Math.sin(t * Math.PI * cycles);
-    const decay = (1 - t);
-
-    const sweepX = (width * sweep * decay);
-    const baseX = width/2 + sweepX;
-
-    /* Blend toward final target near end */
-    const blendStart = 0.75;
-    let x;
-
-    if(t < blendStart){
-      x = baseX;
-    } else {
-      const blendT = (t - blendStart) / (1 - blendStart);
-      x = baseX + (targetX - baseX) * blendT;
-    }
-
-    setBallPx(clamp(x,0,width));
-
-    if(t < 1){
-      requestAnimationFrame(frame);
-    } else {
-      setBallPx(targetX);
-      lmSpinning = false;
-      luckSpinBtn.disabled = false;
-    }
-  }
-
-  requestAnimationFrame(frame);
+.lmTicks{
+  display:flex;
+  justify-content:space-between;
+  margin-top:10px;
+  font-size:12px;
+  color:var(--muted);
+}
+.lmTicks span{
+  width:1px;
+  text-align:center;
+  position:relative;
+}
+.lmTicks span::before{
+  content:"";
+  position:absolute;
+  top:-8px;
+  left:50%;
+  transform:translateX(-50%);
+  width:2px;
+  height:8px;
+  background:rgba(0,0,0,.18);
+  border-radius:2px;
 }
 
-luckSpinBtn.addEventListener("click", () => {
-  if(lmSpinning) return;
-  lmSpinning = true;
-  luckSpinBtn.disabled = true;
+.lmLegend{
+  display:flex;
+  justify-content:space-between;
+  margin-top:10px;
+  font-size:12px;
+  color:var(--muted);
+  letter-spacing:.06em;
+  text-transform:uppercase;
+}
+.lmLegend b{
+  font-weight:600;
+  color:var(--text);
+  letter-spacing:.06em;
+}
 
-  lmResult.textContent = "Consulting fate...";
-  lmMeta.textContent = "";
+/* stronger, score-driven background wash */
+.lmWash{
+  position:absolute;
+  inset:0;
+  pointer-events:none;
+  opacity:0;
+  transition: opacity 220ms ease;
+}
+.lmPanel.hasWash .lmWash{ opacity:1; }
 
-  const score = rollLuckScore();
-  const band = bandForScore(score);
-
-  animateBounceTo(score);
-
-  setTimeout(() => {
-    lmPanel.classList.remove("bad","neutral","good");
-    lmPanel.classList.add(band);
-    lmResult.textContent = `Score: ${score} / 10`;
-    lmMeta.textContent = metaForScore(score);
-  }, 4700);
-});
+@media (max-width:820px){
+  .lmHead{flex-direction:column; align-items:stretch;}
+  .lmBtn{width:100%;}
+}
 
 /* =========================
    4-wide minis
@@ -213,6 +229,8 @@ luckSpinBtn.addEventListener("click", () => {
   flex-direction:column;
   justify-content:center;
   gap:6px;
+  cursor:pointer;
+  user-select:none;
 }
 
 .mini h3{
@@ -255,7 +273,7 @@ luckSpinBtn.addEventListener("click", () => {
 
 .leftPane{
   position:relative;
-  padding-left:84px; /* space reserved for the icon so it never covers text */
+  padding-left:84px;
   min-height:110px;
   display:flex;
   flex-direction:column;
@@ -331,7 +349,7 @@ footer{
   <p>Playful. Random. Absolutely not science.</p>
 </header>
 
-<!-- LUCK METER (updated section only) -->
+<!-- LUCK METER -->
 <div class="card" id="luck-card">
   <div class="lmHead">
     <p class="lmCopy">
@@ -339,23 +357,23 @@ footer{
       A reading of your energy.<br>
       Let it guide you today.
     </p>
-    <button class="lmBtn" id="luckSpin" type="button">Consult fate</button>
+    <button class="lmBtn" id="luckSpin" type="button">How lucky am I today?</button>
   </div>
 
-  <div class="lmPanel neutral" id="lmPanel">
-    <div class="lmGlow"></div>
+  <div class="lmPanel neutral hasWash" id="lmPanel">
+    <div class="lmWash" id="lmWash"></div>
 
     <div class="lmStatus">
-      <p class="lmResult" id="lmResult">Score: — / 10</p>
-      <p class="lmMeta" id="lmMeta">Most days land near the middle.</p>
+      <p class="lmResult" id="lmResult">Score: 5 / 10</p>
+      <p class="lmMeta" id="lmMeta">Neutral start. Tap the button.</p>
     </div>
 
-    <div class="lmTrackWrap" id="lmWrap">
+    <div class="lmTrackWrap">
       <div class="lmTrack" id="lmTrack">
-        <div class="lmBall" id="lmBall" style="left:0%"></div>
+        <div class="lmBall" id="lmBall"></div>
       </div>
 
-      <div class="lmTicks" id="lmTicks" aria-hidden="true">
+      <div class="lmTicks" aria-hidden="true">
         <span>0</span><span>1</span><span>2</span><span>3</span><span>4</span><span>5</span><span>6</span><span>7</span><span>8</span><span>9</span><span>10</span>
       </div>
 
@@ -368,38 +386,41 @@ footer{
   </div>
 </div>
 
+<!-- MINI TILES -->
 <div class="grid4">
-  <div class="mini">
+  <div class="mini" id="miniNum">
     <h3>Lucky #</h3>
     <div class="value" id="num">—</div>
   </div>
 
-  <div class="mini">
+  <div class="mini" id="miniLetter">
     <h3>Letter</h3>
     <div class="value" id="letter">—</div>
   </div>
 
-  <div class="mini colorTile">
+  <div class="mini colorTile" id="miniColor">
     <h3>Colour</h3>
     <div class="colorSwatch" id="colorSwatch"></div>
     <div class="colorMeta" id="colorMeta">Tap to reveal</div>
   </div>
 
-  <div class="mini">
+  <div class="mini" id="miniEmoji">
     <h3>Emoji</h3>
     <div class="value" id="emoji">—</div>
   </div>
 </div>
 
+<!-- MAGIC 8 BALL -->
 <div class="card wide">
   <div class="leftPane">
     <div class="bigIcon" id="eightBall" aria-label="Shake the 8-ball">🎱</div>
     <p class="kicker">Magic 8-Ball</p>
-    <p class="instr">Think of a question. Shake the 8-Ball. Results may vary.</p>
+    <p class="instr">Think of a question. Give it a shake. Blame the universe.</p>
   </div>
   <div class="output" id="eightResult">The universe is listening…</div>
 </div>
 
+<!-- FORTUNE COOKIE -->
 <div class="card wide">
   <div class="leftPane">
     <div class="bigIcon" id="cookie" aria-label="Crack the fortune cookie">🥠</div>
@@ -414,7 +435,7 @@ footer{
 </div>
 
 <script>
-/* No auto-spins. Everything starts blank and reveals only on click. */
+/* No auto-spins. Everything reveals only on click. */
 
 const eightAnswers = [
   "Yes.",
@@ -445,23 +466,23 @@ const colors = [
 
 function pick(arr){ return arr[Math.floor(Math.random()*arr.length)]; }
 
-/* Mini tiles: tap each to reveal */
-document.getElementById("num").addEventListener("click", (e) => {
-  e.currentTarget.textContent = String(Math.floor(Math.random()*10));
+/* Minis: click whole tile */
+document.getElementById("miniNum").addEventListener("click", () => {
+  document.getElementById("num").textContent = String(Math.floor(Math.random()*10));
 });
-document.getElementById("letter").addEventListener("click", (e) => {
-  e.currentTarget.textContent = String.fromCharCode(65 + Math.floor(Math.random()*26));
+document.getElementById("miniLetter").addEventListener("click", () => {
+  document.getElementById("letter").textContent = String.fromCharCode(65 + Math.floor(Math.random()*26));
 });
-document.getElementById("emoji").addEventListener("click", (e) => {
-  e.currentTarget.textContent = pick(emojis);
+document.getElementById("miniEmoji").addEventListener("click", () => {
+  document.getElementById("emoji").textContent = pick(emojis);
 });
-document.getElementById("colorSwatch").addEventListener("click", () => {
+document.getElementById("miniColor").addEventListener("click", () => {
   const c = pick(colors);
   document.getElementById("colorSwatch").style.background = c.hex;
   document.getElementById("colorMeta").textContent = `${c.name}  ${c.hex}`;
 });
 
-/* 8-ball and cookie */
+/* 8-ball + cookie */
 document.getElementById("eightBall").addEventListener("click", () => {
   document.getElementById("eightResult").textContent = pick(eightAnswers);
 });
@@ -470,8 +491,9 @@ document.getElementById("cookie").addEventListener("click", () => {
 });
 
 /* =========================
-   LUCK METER (bell curve + long tension animation)
-   0–10 with neutral 4–6 common
+   LUCK METER
+   Real bounce: 0 -> 10 -> 0, slows down, lands on final
+   Starts at 5
    ========================= */
 
 const luckSpinBtn = document.getElementById("luckSpin");
@@ -480,18 +502,14 @@ const lmResult = document.getElementById("lmResult");
 const lmMeta = document.getElementById("lmMeta");
 const lmTrack = document.getElementById("lmTrack");
 const lmBall = document.getElementById("lmBall");
+const lmWash = document.getElementById("lmWash");
 
 let lmSpinning = false;
+let lastScore = 5;
 
-function clamp(n, a, b){ return Math.max(a, Math.min(b, n)); }
-function easeInOutCubic(t){
-  return t < 0.5 ? 4*t*t*t : 1 - Math.pow(-2*t + 2, 3)/2;
-}
-function easeOutCubic(t){
-  return 1 - Math.pow(1 - t, 3);
-}
+function clamp(n,a,b){ return Math.max(a, Math.min(b,n)); }
 
-/* Box–Muller normal distribution */
+/* Normal distribution (Box-Muller), slightly positive */
 function randNormal(mean, sd){
   let u = 0, v = 0;
   while (u === 0) u = Math.random();
@@ -499,10 +517,8 @@ function randNormal(mean, sd){
   const z = Math.sqrt(-2.0 * Math.log(u)) * Math.cos(2.0 * Math.PI * v);
   return mean + z * sd;
 }
-
-/* Score: bell-ish, slightly positive (mean 5.7), clamp 0–10, integer */
 function rollLuckScore(){
-  const raw = randNormal(5.7, 1.75);
+  const raw = randNormal(5.7, 1.8);
   return Math.round(clamp(raw, 0, 10));
 }
 
@@ -513,80 +529,116 @@ function bandForScore(s){
 }
 
 function metaForScore(s){
-  if (s <= 1) return "Lay low. Avoid fragile electronics.";
-  if (s <= 3) return "A little resistance today. Keep it simple.";
+  if (s <= 1) return "Lay low. Keep liquids away from electronics.";
+  if (s <= 3) return "Some resistance today. Slow down a bit.";
   if (s <= 6) return "Balanced. You steer the day.";
-  if (s <= 8) return "Tailwind energy. Take one small swing.";
+  if (s <= 8) return "Nice tailwind. Take one small swing.";
   return "Spicy luck. Do the thing you’ve been delaying.";
 }
 
-function getTickX(score){
-  // score 0..10 mapped to track width
-  const rect = lmTrack.getBoundingClientRect();
-  const left = 0;
-  const right = rect.width;
-  const t = score / 10;
-  return left + (right - left) * t;
+function trackWidth(){
+  return lmTrack.getBoundingClientRect().width;
+}
+
+function tickX(score){
+  const w = trackWidth();
+  return (score / 10) * w;
 }
 
 function setBallPx(x){
-  // set left in pixels relative to track
   lmBall.style.left = `${x}px`;
 }
 
-/* Long “fate deciding” animation:
-   - base moves from 0 to target
-   - oscillation around base decays (amplitude + frequency)
-   - includes a tiny pre-land hesitation
-*/
-function animateLuckTo(score){
-  const targetX = getTickX(score);
-  const startX = getTickX(0);
+/* Background wash intensity */
+function setWash(score){
+  const band = bandForScore(score);
+  const t = score / 10; // 0..1
 
-  const duration = 5200 + Math.floor(Math.random()*1600); // 5.2–6.8s
+  let base, alpha;
+  if (band === "bad"){
+    base = "185,28,28";
+    alpha = 0.18 + (0.35 * (1 - t)); // stronger when lower
+  } else if (band === "neutral"){
+    base = "107,114,128";
+    alpha = 0.14 + 0.10 * Math.abs(0.5 - t);
+  } else {
+    base = "22,163,74";
+    alpha = 0.18 + (0.28 * t); // stronger when higher
+  }
+
+  lmWash.style.background =
+    `radial-gradient(circle at 50% 45%,
+      rgba(${base}, ${alpha}) 0%,
+      rgba(${base}, ${alpha * 0.55}) 35%,
+      rgba(${base}, 0) 72%)`;
+}
+
+/* Start state at 5 */
+function setToScore(score){
+  lastScore = score;
+  setBallPx(tickX(score));
+  lmPanel.classList.remove("bad","neutral","good");
+  lmPanel.classList.add(bandForScore(score));
+  lmResult.textContent = `Score: ${score} / 10`;
+  lmMeta.textContent = (score === 5) ? "Neutral start. Tap the button." : metaForScore(score);
+  setWash(score);
+}
+
+/* Bounce path helper:
+   triangular wave 0..1..0 repeating (looks like hitting ends)
+*/
+function triWave(u){
+  // u can be any number, take fractional part
+  const f = u - Math.floor(u);
+  return f < 0.5 ? (f * 2) : (2 - f * 2);
+}
+
+/* Ease out */
+function easeOutCubic(t){ return 1 - Math.pow(1 - t, 3); }
+
+function animateBounceTo(score){
+  const w = trackWidth();
+  const target = tickX(score);
+
+  // random length for tension
+  const duration = 5200 + Math.random() * 1400; // 5.2–6.6s
   const start = performance.now();
 
-  // range for oscillation (pixels)
-  const trackW = lmTrack.getBoundingClientRect().width;
-  const oscRange = Math.max(40, trackW * 0.38);
-
-  // random phase so it feels alive
-  const phase = Math.random() * Math.PI * 2;
+  // number of full end-to-end sweeps
+  const sweeps = 7 + Math.floor(Math.random() * 3); // 7–9
 
   function frame(now){
     const elapsed = now - start;
-    let t = clamp(elapsed / duration, 0, 1);
+    const t = clamp(elapsed / duration, 0, 1);
 
-    // build tension: slow near the end
-    const baseT = easeInOutCubic(t);
+    // phase 1: bounce end to end with slowing
+    // speed slows naturally by easing the time input
+    const slowT = easeOutCubic(t);
 
-    // base path: drift from start toward target
-    const base = startX + (targetX - startX) * baseT;
+    // position from 0..w using triangular wave
+    const bouncePos = triWave(slowT * sweeps) * w;
 
-    // oscillation: big early, tiny late
-    const amp = Math.pow(1 - t, 1.15); // decay
-    const freq = (10 - 8*t);          // slows down (10 -> 2)
-    const wobble = Math.sin((t * freq * Math.PI * 2) + phase) * oscRange * amp;
+    // phase 2: in last 18%, pull toward target and settle
+    let x = bouncePos;
+    if (t > 0.82){
+      const bt = (t - 0.82) / 0.18; // 0..1
+      const pull = easeOutCubic(bt);
+      x = bouncePos + (target - bouncePos) * pull;
 
-    // final “hesitation” (a brief slow float before lock)
-    let hesitation = 0;
-    if (t > 0.86 && t < 0.97){
-      const ht = (t - 0.86) / 0.11; // 0..1
-      hesitation = Math.sin(ht * Math.PI) * 10; // small nudge
+      // tiny final micro-bounce
+      const micro = (1 - pull) * 10 * Math.sin(bt * Math.PI * 5);
+      x += micro;
     }
 
-    const x = clamp(base + wobble + hesitation, 0, trackW);
-    setBallPx(x);
+    setBallPx(clamp(x, 0, w));
 
     if (t < 1){
       requestAnimationFrame(frame);
-      return;
+    } else {
+      setBallPx(target);
+      lmSpinning = false;
+      luckSpinBtn.disabled = false;
     }
-
-    // snap to exact tick
-    setBallPx(targetX);
-    lmSpinning = false;
-    luckSpinBtn.disabled = false;
   }
 
   requestAnimationFrame(frame);
@@ -597,41 +649,23 @@ luckSpinBtn.addEventListener("click", () => {
   lmSpinning = true;
   luckSpinBtn.disabled = true;
 
-  // reset state + show “deciding”
-  lmPanel.classList.remove("bad","neutral","good");
-  lmPanel.classList.add("neutral");
   lmResult.textContent = "Score: deciding…";
-  lmMeta.textContent = "Consulting the cosmos…";
+  lmMeta.textContent = "Consulting fate…";
 
-  // choose final score now (animation is just theatre)
   const score = rollLuckScore();
-  const band = bandForScore(score);
 
-  // start animation (long)
-  animateLuckTo(score);
+  // animate
+  animateBounceTo(score);
 
-  // reveal text a beat before the end for tension
-  const revealDelay = 4300; // fixed; animation duration varies so this feels “near the end”
+  // reveal near the end
   setTimeout(() => {
-    lmPanel.classList.remove("bad","neutral","good");
-    lmPanel.classList.add(band);
-    lmResult.textContent = `Score: ${score} / 10`;
-    lmMeta.textContent = metaForScore(score);
-  }, revealDelay);
+    setToScore(score);
+  }, 5200);
 });
 
-// ensure ball is positioned correctly on load (0)
-window.addEventListener("load", () => {
-  // position ball at 0 tick
-  const x0 = getTickX(0);
-  setBallPx(x0);
-});
+window.addEventListener("load", () => setToScore(5));
 window.addEventListener("resize", () => {
-  // keep ball aligned if the layout changes
-  const x0 = getTickX(0);
-  if (!lmSpinning && (lmResult.textContent.includes("—") || lmResult.textContent.includes("deciding"))){
-    setBallPx(x0);
-  }
+  if (!lmSpinning) setToScore(lastScore);
 });
 </script>
 
