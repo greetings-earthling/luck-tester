@@ -296,10 +296,10 @@ if (luckSpinBtn && lmResult && lmMeta && lmTrack && lmBall && lmWash && lmBar) {
     return mean + z * sd;
   }
 
-  function rollLuckScore() {
-    const raw = randNormal(5.8, 1.7);
-    return Math.round(clamp(raw, 0, 10));
-  }
+ function rollLuckScore() {
+  const raw = randNormal(6.1, 2.1);
+  return Math.round(clamp(raw, 0, 10));
+}
 
   function todayKey() {
     const d = new Date();
