@@ -121,108 +121,107 @@ watchBtn.addEventListener("click", () => {
   });
 });
 
-/* ---------- Luck Meter (bounce + daily lock) ---------- */
-const luckSpinBtn = $("luckSpin");
-const lmResult = $("lmResult");
-const lmMeta = $("lmMeta");
-const lmTrack = $("lmTrack");
-const lmBall = $("lmBall");
-const lmWash = $("lmWash");
-const lmBar = $("lmBar");
-const devRow = $("devRow");
-const resetLuckBtn = $("resetLuck");
+/* =========================
+   LUCK METER (BOUNCE, NO JUMP)
+   ========================= */
+const luckSpinBtn = document.getElementById("luckSpin");
+const lmResult = document.getElementById("lmResult");
+const lmMeta = document.getElementById("lmMeta");
+const lmTrack = document.getElementById("lmTrack");
+const lmBall = document.getElementById("lmBall");
+const lmWash = document.getElementById("lmWash");
+const lmBar = document.getElementById("lmBar");
+const devRow = document.getElementById("devRow");
+const resetLuckBtn = document.getElementById("resetLuck");
 
 let lmSpinning = false;
 let lastScore = 5;
 
+const TEST_MODE = new URLSearchParams(location.search).get("test") === "1";
+
+function clamp(n,a,b){ return Math.max(a, Math.min(b,n)); }
+
 function trackWidth(){
   return lmTrack.getBoundingClientRect().width;
 }
-function tickX(score){
-  return (score / 10) * trackWidth();
+function setBall01(t01){
+  const w = trackWidth();
+  lmBall.style.left = `${t01 * w}px`;
 }
-function setBallPx(x){
-  lmBall.style.left = `${x}px`;
+function setToScore(score){
+  lastScore = score;
+  const t01 = score / 10;
+  setBall01(t01);
+  lmResult.textContent = `Score: ${score} / 10`;
+  lmMeta.textContent = messageForScore(score);      // <-- your custom messages go here
+  setColourFromT(t01);
 }
 
+/* Normal distribution, slightly positive */
 function randNormal(mean, sd){
-  let u = 0, v = 0;
-  while (u === 0) u = Math.random();
-  while (v === 0) v = Math.random();
-  const z = Math.sqrt(-2.0 * Math.log(u)) * Math.cos(2.0 * Math.PI * v);
-  return mean + z * sd;
+  let u=0, v=0;
+  while (u===0) u = Math.random();
+  while (v===0) v = Math.random();
+  const z = Math.sqrt(-2*Math.log(u)) * Math.cos(2*Math.PI*v);
+  return mean + z*sd;
 }
 function rollLuckScore(){
-  // Slightly positive bell curve
   const raw = randNormal(5.8, 1.7);
   return Math.round(clamp(raw, 0, 10));
 }
 
-/* Per-number message (you can replace these anytime, emojis included) */
-const luckMessages = {
-  0: "🧨 0/10. Avoid chaos. Drink water.",
-  1: "🪦 1/10. Low luck. High caution.",
-  2: "🌧️ 2/10. Quiet day. Don’t push it.",
-  3: "🧊 3/10. Small wins only.",
-  4: "⚖️ 4/10. Slightly off. Keep it simple.",
-  5: "⚖️ 5/10. Neutral. You steer the day.",
-  6: "🍀 6/10. Slightly lucky. Small risks pay.",
-  7: "✨ 7/10. Good luck. Say yes to ease.",
-  8: "🔥 8/10. Strong luck. Go do the thing.",
-  9: "🚀 9/10. Big luck. Take the clean shot.",
-  10:"👑 10/10. Mega luck. Be bold."
-};
-
-function metaForScore(s){
-  return luckMessages[s] || `${s}/10.`;
+/* Custom message per number (emoji OK) */
+function messageForScore(s){
+  const map = {
+    0: "🧨 0/10. Do not test fate today.",
+    1: "🧯 1/10. Keep it small and safe.",
+    2: "🪨 2/10. Low luck. High caution.",
+    3: "🌧️ 3/10. Not great. You’ll survive.",
+    4: "⚖️ 4/10. Slightly off. Stay steady.",
+    5: "🧘 5/10. Neutral. You steer.",
+    6: "🍀 6/10. Slightly lucky. Take the easy win.",
+    7: "✨ 7/10. Good luck today. Momentum’s real.",
+    8: "🔥 8/10. Very lucky. Say yes to the good idea.",
+    9: "🚀 9/10. Big luck. Bold moves welcomed.",
+    10:"👑 10/10. Mega luck. Do the thing."
+  };
+  return map[s] || `${s}/10.`;
 }
 
+/* Colour (make wash match side you’re on) */
 function setColourFromT(t){
-  // t 0..1. Keep wash consistent: left is red, right is green.
-  const badAmt = clamp((0.5 - t) / 0.5, 0, 1);
-  const goodAmt = clamp((t - 0.5) / 0.5, 0, 1);
+  // t: 0..1
+  const bias = (t - 0.5) * 2; // -1..1
+  const redA = clamp(-bias, 0, 1);
+  const greenA = clamp(bias, 0, 1);
+  const neutralA = 1 - Math.max(redA, greenA);
 
   lmBar.style.background =
     `linear-gradient(90deg,
-      rgba(185,28,28,${0.12 + badAmt*0.55}) 0%,
-      rgba(107,114,128,0.10) 50%,
-      rgba(22,163,74,${0.12 + goodAmt*0.55}) 100%
+      rgba(185,28,28,${0.10 + redA*0.65}) 0%,
+      rgba(107,114,128,${0.08 + neutralA*0.40}) 50%,
+      rgba(22,163,74,${0.10 + greenA*0.65}) 100%
     )`;
 
+  // wash should NOT be green when you’re on red side (and vice versa)
   const xPct = (t * 100).toFixed(2);
-
-  // Force same-side bias (no weird red + green mismatch)
-  const leftTone  = 0.06 + badAmt * 0.35;
-  const rightTone = 0.06 + goodAmt * 0.35;
-
   lmWash.style.background =
     `radial-gradient(circle at ${xPct}% 45%,
-      rgba(0,0,0,0.02) 0%,
-      rgba(0,0,0,0) 18%),
-     linear-gradient(90deg,
-      rgba(185,28,28,${leftTone}) 0%,
-      rgba(107,114,128,0.05) 50%,
-      rgba(22,163,74,${rightTone}) 100%
-     )`;
+      rgba(185,28,28,${0.10 + redA*0.45}) 0%,
+      rgba(107,114,128,${0.06 + neutralA*0.22}) 38%,
+      rgba(22,163,74,${0.10 + greenA*0.45}) 72%,
+      rgba(0,0,0,0) 82%
+    )`;
 }
 
-function setToScore(score){
-  lastScore = score;
-  setBallPx(tickX(score));
-  lmResult.textContent = `Score: ${score} / 10`;
-  lmMeta.textContent = metaForScore(score);
-  setColourFromT(score / 10);
-}
-
-/* daily lock */
+/* once per day */
 function todayKey(){
   const d = new Date();
   return `${d.getFullYear()}-${String(d.getMonth()+1).padStart(2,"0")}-${String(d.getDate()).padStart(2,"0")}`;
 }
 function lockIfAlreadySpun(){
   if (TEST_MODE) return false;
-  const saved = localStorage.getItem("LUCK_METER_SPUN_DATE");
-  if (saved === todayKey()){
+  if (localStorage.getItem("LUCK_METER_SPUN_DATE") === todayKey()){
     luckSpinBtn.disabled = true;
     luckSpinBtn.textContent = "Come back tomorrow";
     return true;
@@ -236,88 +235,71 @@ function resetSpun(){
   localStorage.removeItem("LUCK_METER_SPUN_DATE");
 }
 
-/* triangle wave + settle (no jump) */
-function tri01(p){
-  const x = p % 1;
-  return x < 0.5 ? x * 2 : 2 - x * 2;
-}
-function easeOutCubic(t){
-  return 1 - Math.pow(1 - t, 3);
-}
+/* Physics bounce (continuous, no teleport) */
+function animateLuckTo(targetScore){
+  const target = targetScore;     // 0..10
+  let pos = 5;                    // start neutral
+  let vel = (Math.random() < 0.5 ? -1 : 1) * (10.5 + Math.random()*3.5); // units/sec
+  let t0 = performance.now();
 
-function animateBounceTo(targetScore){
-  const w = trackWidth();
-  const targetT = targetScore / 10;
+  const totalMs = 6200;           // tension
+  const minVel = 0.04;            // stop threshold
 
-  const duration = 5600;
-  const bounces = 6;
-  const settleMs = 950;
+  function step(now){
+    const dt = Math.min(0.032, (now - t0) / 1000); // seconds
+    t0 = now;
 
-  const start = performance.now();
-  const startT = 0.5; // start at 5
-  const startDir = Math.random() < 0.5 ? -1 : 1;
-
-  function frame(now){
     const elapsed = now - start;
+    const p = clamp(elapsed / totalMs, 0, 1);
 
-    if (elapsed < duration){
-      const t = elapsed / duration;
-      const slow = easeOutCubic(t);
+    // damping increases over time
+    const damp = 1 - (0.010 + p*0.030);
+    vel *= damp;
 
-      const phase = bounces * slow;
-      let pos = tri01(phase);
-      if (startDir < 0) pos = 1 - pos;
+    // attraction to target increases over time
+    const attract = (0.25 + p*2.10);
+    vel += (target - pos) * attract * dt;
 
-      const blend = clamp(elapsed / 520, 0, 1);
-      const pos01 = (1 - blend) * startT + blend * pos;
+    // update
+    pos += vel * dt;
 
-      setBallPx(pos01 * w);
-      setColourFromT(pos01);
+    // hard bounce off walls
+    if (pos < 0){ pos = -pos; vel = -vel; }
+    if (pos > 10){ pos = 20 - pos; vel = -vel; }
 
-      requestAnimationFrame(frame);
+    // render
+    const t01 = pos / 10;
+    setBall01(t01);
+    setColourFromT(t01);
+
+    // finish when slow and close OR time is up
+    const close = Math.abs(pos - target) < 0.03;
+    const slow = Math.abs(vel) < minVel;
+
+    if ((p >= 1 && close) || (close && slow)){
+      setToScore(targetScore);
+      lmSpinning = false;
+      markSpun();
+      luckSpinBtn.disabled = true;
+      luckSpinBtn.textContent = "Come back tomorrow";
       return;
     }
 
-    const settleStart = performance.now();
-    const ballLeft = lmBall.getBoundingClientRect().left;
-    const trackLeft = lmTrack.getBoundingClientRect().left;
-    const currentX = clamp(ballLeft - trackLeft, 0, w);
-    const currentT = currentX / w;
-
-    function settleStep(n){
-      const e = n - settleStart;
-      const tt = clamp(e / settleMs, 0, 1);
-      const eased = easeOutCubic(tt);
-
-      const pos01 = currentT + (targetT - currentT) * eased;
-      setBallPx(pos01 * w);
-      setColourFromT(pos01);
-
-      if (tt < 1){
-        requestAnimationFrame(settleStep);
-      } else {
-        lmSpinning = false;
-        setToScore(targetScore);
-        markSpun();
-        luckSpinBtn.disabled = true;
-        luckSpinBtn.textContent = "Come back tomorrow";
-      }
-    }
-
-    requestAnimationFrame(settleStep);
+    requestAnimationFrame(step);
   }
 
-  requestAnimationFrame(frame);
+  const start = performance.now();
+  requestAnimationFrame(step);
 }
 
 function setNeutralStart(){
+  lastScore = 5;
   setToScore(5);
   lmMeta.textContent = "Neutral start. Tap the button.";
   luckSpinBtn.disabled = false;
   luckSpinBtn.textContent = "How lucky am I today?";
 }
 
-/* init */
 luckSpinBtn.addEventListener("click", () => {
   if (lmSpinning) return;
   if (lockIfAlreadySpun()) return;
@@ -329,9 +311,10 @@ luckSpinBtn.addEventListener("click", () => {
   lmMeta.textContent = "Consulting fate…";
 
   const score = rollLuckScore();
-  animateBounceTo(score);
+  animateLuckTo(score);
 });
 
+/* test UI */
 if (TEST_MODE){
   devRow.style.display = "flex";
   resetLuckBtn.addEventListener("click", () => {
@@ -348,7 +331,7 @@ window.addEventListener("load", () => {
 
 window.addEventListener("resize", () => {
   if (!lmSpinning){
-    setBallPx(tickX(lastScore));
+    setBall01(lastScore / 10);
     setColourFromT(lastScore / 10);
   }
 });
