@@ -324,83 +324,92 @@ if (luckSpinBtn && lmResult && lmMeta && lmTrack && lmBall && lmWash && lmBar) {
     localStorage.removeItem("LUCK_METER_SPUN_DATE");
   }
 
-  // Segment-based bounce path (no hover, no teleport)
-  function animateLuckTo(targetScore) {
-    const target = clamp(targetScore, 0, 10);
-    const w = trackWidth();
-    const now = () => performance.now();
+function animateLuckTo(targetScore) {
+  const target = clamp(targetScore, 0, 10);
+  const now = () => performance.now();
 
-    const baseMs = 300;
-    const growth = 1.16;
-    const extraSettleMs = 520;
+  const startValue = 5;
 
-    const finalWall = target >= 5 ? 0 : 10;
+  // --- tuning ---
+  const firstSegmentMs = 140;   // very fast start
+  const growth = 1.25;          // how much each bounce slows
+  const bounceCount = 12;       // more bounces = more drama
+  const settleExtra = 700;      // longer final fate moment
+  // -------------
 
-    const segments = [];
-    let pos = 5;
+  const segments = [];
+  let pos = startValue;
 
-    segments.push([pos, 0]);
-    pos = 0;
+  // First hit 0 hard
+  segments.push([pos, 0]);
+  pos = 0;
 
-    const bounceCount = 6;
-    for (let i = 0; i < bounceCount; i++) {
-      const next = (pos === 0) ? 10 : 0;
-      segments.push([pos, next]);
-      pos = next;
-    }
+  // Wall to wall bounces
+  for (let i = 0; i < bounceCount; i++) {
+    const next = pos === 0 ? 10 : 0;
+    segments.push([pos, next]);
+    pos = next;
+  }
 
-    if (pos !== finalWall) {
-      segments.push([pos, finalWall]);
-      pos = finalWall;
-    }
+  // Make sure we approach target from opposite side
+  const finalWall = target >= 5 ? 0 : 10;
+  if (pos !== finalWall) {
+    segments.push([pos, finalWall]);
+    pos = finalWall;
+  }
 
-    segments.push([pos, target]);
+  // Final settle
+  segments.push([pos, target]);
 
-    const durations = [];
-    let ms = baseMs;
-    for (let i = 0; i < segments.length; i++) {
-      durations.push(ms);
-      ms *= growth;
-    }
-    durations[durations.length - 1] += extraSettleMs;
+  // Build durations that slow down naturally
+  const durations = [];
+  let ms = firstSegmentMs;
 
-    let segIndex = 0;
-    let segStart = now();
+  for (let i = 0; i < segments.length; i++) {
+    durations.push(ms);
+    ms *= growth;
+  }
 
-    function render(value) {
-      const t01 = value / 10;
-      setBall01(t01);
-      setColourFromT(t01);
-    }
+  // Make last segment extra dramatic
+  durations[durations.length - 1] += settleExtra;
 
-    function step() {
-      const t = now();
-      const [a, b] = segments[segIndex];
-      const dur = durations[segIndex];
+  let segIndex = 0;
+  let segStart = now();
 
-      const p = clamp((t - segStart) / dur, 0, 1);
-      const value = a + (b - a) * p;
+  function render(value) {
+    const t01 = value / 10;
+    setBall01(t01);
+    setColourFromT(t01);
+  }
 
-      render(value);
+  function step() {
+    const t = now();
+    const [a, b] = segments[segIndex];
+    const dur = durations[segIndex];
 
-      if (p >= 1) {
-        segIndex++;
-        if (segIndex >= segments.length) {
-          setToScore(targetScore);
-          lmSpinning = false;
-          markSpun();
-          luckSpinBtn.disabled = true;
-          luckSpinBtn.textContent = "Come back tomorrow";
-          return;
-        }
-        segStart = t;
+    const p = clamp((t - segStart) / dur, 0, 1);
+    const value = a + (b - a) * p;
+
+    render(value);
+
+    if (p >= 1) {
+      segIndex++;
+      if (segIndex >= segments.length) {
+        setToScore(target);
+        lmSpinning = false;
+        markSpun();
+        luckSpinBtn.disabled = true;
+        luckSpinBtn.textContent = "Come back tomorrow";
+        return;
       }
-
-      requestAnimationFrame(step);
+      segStart = t;
     }
 
     requestAnimationFrame(step);
   }
+
+  requestAnimationFrame(step);
+}
 
   function setNeutralStart() {
     setToScore(5);
