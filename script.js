@@ -326,54 +326,101 @@ window.addEventListener("DOMContentLoaded", () => {
     }
 
     function animateLuckTo(targetScore){
-      const target = targetScore; // 0..10
-      let pos = 5;                // start at neutral
-      let vel = (Math.random() < 0.5 ? -1 : 1) * (10.5 + Math.random()*3.5);
-      let t0 = performance.now();
+  const target = clamp(targetScore, 0, 10);
+  const startT = performance.now();
 
-      const totalMs = 6200;
-      const minVel = 0.04;
-      const start = performance.now();
+  const totalMs = 6200;     // whole animation length
+  const bounces = 5;        // number of full wall bounces after first hit
+  const settleMs = 1100;    // final “fate decides” leg
 
-      function step(now){
-        const dt = Math.min(0.032, (now - t0) / 1000);
-        t0 = now;
+  const w = trackWidth();
 
-        const elapsed = now - start;
-        const p = clamp(elapsed / totalMs, 0, 1);
+  // Helpers
+  const lerp = (a,b,t)=> a + (b-a)*t;
+  const easeOutCubic = (t)=> 1 - Math.pow(1 - t, 3);
 
-        const damp = 1 - (0.010 + p*0.030);
-        vel *= damp;
+  // Triangle wave 0..1..0 for p 0..1
+  const tri01 = (p) => {
+    const x = p % 1;
+    return x < 0.5 ? x * 2 : 2 - x * 2;
+  };
 
-        const attract = (0.25 + p*2.10);
-        vel += (target - pos) * attract * dt;
+  // Phase plan:
+  // 1) quick move from 5 -> 0 (first wall hit)
+  // 2) do N bounces between walls (always hits 0/10)
+  // 3) final settle: from opposite wall -> target (no mid-air reversal)
+  const toFirstWallMs = 900; // 5 -> 0
+  const bounceMs = totalMs - toFirstWallMs - settleMs;
 
-        pos += vel * dt;
+  // Decide which wall to start with (0 first feels good since you asked for 5->0 bounce)
+  const firstWall = 0;
 
-        if (pos < 0){ pos = -pos; vel = -vel; }
-        if (pos > 10){ pos = 20 - pos; vel = -vel; }
+  // For final settle, come from the opposite side of the target so it “passes the wall”
+  const finalWall = target >= 5 ? 0 : 10;
 
-        const t01 = pos / 10;
-        setBall01(t01);
-        setColourFromT(t01);
+  function render(pos01){
+    setBall01(pos01);
+    setColourFromT(pos01);
+  }
 
-        const close = Math.abs(pos - target) < 0.03;
-        const slow = Math.abs(vel) < minVel;
+  function frame(now){
+    const elapsed = now - startT;
 
-        if ((p >= 1 && close) || (close && slow)){
-          setToScore(targetScore);
-          lmSpinning = false;
-          markSpun();
-          luckSpinBtn.disabled = true;
-          luckSpinBtn.textContent = "Come back tomorrow";
-          return;
-        }
-
-        requestAnimationFrame(step);
-      }
-
-      requestAnimationFrame(step);
+    // 1) 5 -> first wall (0)
+    if (elapsed <= toFirstWallMs){
+      const t = easeOutCubic(elapsed / toFirstWallMs);
+      const pos01 = lerp(0.5, firstWall / 10, t);
+      render(pos01);
+      requestAnimationFrame(frame);
+      return;
     }
+
+    // 2) Bounce wall-to-wall with slowing cadence (but still hitting walls)
+    const tBounce = elapsed - toFirstWallMs;
+
+    if (tBounce <= bounceMs){
+      // progress 0..1
+      const p = tBounce / bounceMs;
+
+      // slow the bounce rate over time by easing the phase
+      const eased = easeOutCubic(p);
+
+      // phase runs from 0..(bounces + 1) half-cycles
+      // start at wall 0, go to 10, back to 0, etc.
+      const phase = eased * (bounces + 1);
+
+      // tri gives 0..1..0, map to 0..1 position
+      const pos01 = tri01(phase);
+      render(pos01);
+      requestAnimationFrame(frame);
+      return;
+    }
+
+    // 3) Final settle: from finalWall -> target, easing in (no reversal)
+    const tSettle = elapsed - toFirstWallMs - bounceMs;
+    const tt = clamp(tSettle / settleMs, 0, 1);
+    const eased = easeOutCubic(tt);
+
+    const from01 = finalWall / 10;
+    const to01 = target / 10;
+    const pos01 = lerp(from01, to01, eased);
+    render(pos01);
+
+    if (tt < 1){
+      requestAnimationFrame(frame);
+      return;
+    }
+
+    // Finish
+    setToScore(targetScore);
+    lmSpinning = false;
+    markSpun();
+    luckSpinBtn.disabled = true;
+    luckSpinBtn.textContent = "Come back tomorrow";
+  }
+
+  requestAnimationFrame(frame);
+}
 
     function setNeutralStart(){
       setToScore(5);
