@@ -332,8 +332,8 @@ function animateLuckTo(targetScore) {
 
   // --- tuning ---
   const firstSegmentMs = 140;   // very fast start
-  const growth = 1.25;          // how much each bounce slows
-  const bounceCount = 12;       // more bounces = more drama
+  const growth = 1.2;          // how much each bounce slows
+  const bounceCount = 9;       // more bounces = more drama
   const settleExtra = 700;      // longer final fate moment
   // -------------
 
