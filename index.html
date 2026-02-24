@@ -25,20 +25,12 @@
     <main class="stack">
       <!-- LUCK METER -->
       <section class="card big" id="luck-card">
-        <div class="lmHead">
+        <div class="cardHead">
           <div>
-            <p class="lmKicker">Luck Meter</p>
-            <p class="lmCopy">
-              <strong>Your daily luck reading.</strong><br>
-              A quick vibe check.<br>
-              Use it irresponsibly.
-            </p>
+            <h2>Luck Meter</h2>
+            <p class="cardSub">One spin per day.</p>
           </div>
-
-          <div class="lmRight">
-            <div class="lmOnce" id="lmOnce">One spin per day.</div>
-            <button class="lmBtn" id="luckSpin" type="button">How lucky am I today?</button>
-          </div>
+          <button class="btn btnTop" id="luckSpin" type="button">How lucky am I today?</button>
         </div>
 
         <div class="lmPanel" id="lmPanel">
@@ -46,7 +38,7 @@
 
           <div class="lmStatus">
             <p class="lmResult" id="lmResult">Score: 5 / 10</p>
-            <p class="lmMeta" id="lmMeta">Neutral start. Tap the button.</p>
+            <p class="lmMeta" id="lmMeta"></p>
           </div>
 
           <div class="lmTrackWrap">
@@ -66,7 +58,7 @@
             </div>
 
             <div class="devRow" id="devRow">
-              <button class="lmBtn ghost" id="resetLuck" type="button">Reset (test)</button>
+              <button class="btn btnGhost btnTop" id="resetLuck" type="button">Reset (test)</button>
             </div>
           </div>
         </div>
@@ -75,49 +67,58 @@
       <!-- 4 mini tiles -->
       <section class="grid4" aria-label="Lucky extras">
         <article class="mini" id="miniNum">
-          <h3>Lucky Number</h3>
-          <div class="value" id="numVal">—</div>
-          <p class="oneLine">Use it for vibes.</p>
-          <div class="btnRow miniBtnRow">
-            <button class="btn btnSmall" id="num-btn" type="button">Reveal</button>
+          <div class="miniHead">
+            <h3>Lucky Number</h3>
+            <button class="btn btnSmall btnTop" id="num-btn" type="button">Reveal</button>
           </div>
+
+          <div class="miniBox slotAnim" id="numVal">—</div>
+          <p class="miniSub">Use it for vibes.</p>
         </article>
 
         <article class="mini" id="miniLetter">
-          <h3>Lucky Letter</h3>
-          <div class="value" id="letterVal">—</div>
-          <p class="oneLine">Notice it today.</p>
-          <div class="btnRow miniBtnRow">
-            <button class="btn btnSmall" id="letter-btn" type="button">Reveal</button>
+          <div class="miniHead">
+            <h3>Lucky Letter</h3>
+            <button class="btn btnSmall btnTop" id="letter-btn" type="button">Reveal</button>
           </div>
+
+          <div class="miniBox slotAnim" id="letterVal">—</div>
+          <p class="miniSub">Notice it today.</p>
         </article>
 
-        <article class="mini colorTile" id="miniColor">
-          <h3>Lucky Colour</h3>
-          <div class="colorSwatch" id="colorSwatch"></div>
-          <p class="oneLine" id="colorLine">Wear it if you want.</p>
-          <div class="btnRow miniBtnRow">
-            <button class="btn btnSmall" id="color-btn" type="button">Reveal</button>
+        <article class="mini" id="miniColor">
+          <div class="miniHead">
+            <h3>Lucky Colour</h3>
+            <button class="btn btnSmall btnTop" id="color-btn" type="button">Reveal</button>
           </div>
+
+          <div class="miniBox miniBoxColor">
+            <div class="colorSwatch" id="colorSwatch"></div>
+          </div>
+          <p class="miniSub slotAnim" id="colorLine">Wear it if you want.</p>
         </article>
 
         <article class="mini" id="miniEmoji">
-          <h3>Spirit Emoji</h3>
-          <div class="value" id="emojiVal">—</div>
-          <p class="oneLine">Is it you today?</p>
-          <div class="btnRow miniBtnRow">
-            <button class="btn btnSmall" id="emoji-btn" type="button">Reveal</button>
+          <div class="miniHead">
+            <h3>Spirit Emoji</h3>
+            <button class="btn btnSmall btnTop" id="emoji-btn" type="button">Reveal</button>
           </div>
+
+          <div class="miniBox slotAnim" id="emojiVal">—</div>
+          <p class="miniSub">Is it you today?</p>
         </article>
       </section>
 
       <!-- Watch + Eat -->
       <section class="twoCol" aria-label="Spinners">
         <!-- What to watch -->
-        <article class="card" aria-label="What should I watch">
+        <article class="card">
           <div class="cardHead">
-            <h2>What should I watch?</h2>
-            <p class="cardSub">Rerolls allowed.</p>
+            <div>
+              <h2>What should I watch?</h2>
+              <p class="cardSub">Rerolls allowed.</p>
+            </div>
+            <button class="btn btnTop" id="watch-spin" type="button">Spin</button>
           </div>
 
           <div class="slotWindow slotTall">
@@ -125,17 +126,16 @@
             <div class="slotTitle slotAnim" id="watch-title">Tap spin.</div>
             <div class="slotMeta slotAnim" id="watch-meta"></div>
           </div>
-
-          <div class="btnRow">
-            <button class="btn" id="watch-spin" type="button">Spin</button>
-          </div>
         </article>
 
         <!-- What to eat -->
-        <article class="card" aria-label="What should I eat">
+        <article class="card">
           <div class="cardHead">
-            <h2>What should I eat?</h2>
-            <p class="cardSub">Rerolls allowed.</p>
+            <div>
+              <h2>What should I eat?</h2>
+              <p class="cardSub">Rerolls allowed.</p>
+            </div>
+            <button class="btn btnTop" id="dinner-spin" type="button">Spin</button>
           </div>
 
           <div class="slotWindow slotTall">
@@ -143,33 +143,48 @@
             <div class="slotTitle slotAnim" id="dinner-title">Tap spin.</div>
             <div class="slotMeta slotAnim" id="dinner-note"></div>
           </div>
-
-          <div class="btnRow">
-            <button class="btn" id="dinner-spin" type="button">Spin</button>
-          </div>
         </article>
       </section>
 
-      <!-- Fortune cookie (full width, last) -->
-      <section class="card fortuneCard" aria-label="Fortune cookie">
-        <div class="fortuneHead">
-          <div>
-            <h2 class="fortuneTitle">Fortune Cookie</h2>
-            <p class="fortuneSub">Dessert comes last.</p>
+      <!-- Fortune + Ad (two column) -->
+      <section class="twoCol" aria-label="Fortune and sponsor">
+        <!-- Fortune cookie -->
+        <article class="card">
+          <div class="cardHead">
+            <div>
+              <h2>Fortune Cookie</h2>
+              <p class="cardSub">Dessert comes last.</p>
+            </div>
+            <button class="btn btnTop" id="fortune-btn" type="button">Reveal</button>
           </div>
-          <button class="btn" id="fortune-btn" type="button">Reveal</button>
-        </div>
 
-        <div class="fortuneBox fortuneStrip slotAnim" id="fortuneResult">
-          Your fortune awaits.
-        </div>
+          <div class="fortunePaper slotAnim" id="fortuneResult">
+            Your fortune awaits.
+          </div>
+        </article>
+
+        <!-- Ad spot -->
+        <article class="card adCard" aria-label="Sponsored">
+          <div class="cardHead">
+            <div>
+              <h2>Sponsored</h2>
+              <p class="cardSub">Greetings, Earthling</p>
+            </div>
+            <a class="btn btnTop adBtn" href="#" aria-label="Visit Greetings, Earthling">Visit</a>
+          </div>
+
+          <div class="adBody">
+            <p class="adLine"><strong>Daily newsletter.</strong> Small human observations.</p>
+            <p class="adLine">Poetic alien narrator. Earth treasures. Field reports.</p>
+          </div>
+        </article>
       </section>
 
       <footer>Luck Meter. Not science. Not advice.</footer>
     </main>
   </div>
 
-  <!-- Reference lists (keep these files) -->
+  <!-- Reference lists -->
   <script defer src="watchlist.js"></script>
   <script defer src="fortunes.js"></script>
   <script defer src="dinnerlist.js"></script>
