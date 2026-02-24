@@ -78,58 +78,53 @@ body{
 }
 .card.big{ padding:14px; }
 
-/* ---------- Luck Meter ---------- */
-.lmHead{
+/* shared heads */
+.cardHead{
   display:flex;
   align-items:flex-start;
   justify-content:space-between;
   gap:12px;
-  margin-bottom:12px;
+  margin-bottom:10px;
 }
-.lmKicker{
-  margin:0 0 4px;
-  font-size:13px;
+.cardHead h2{
+  margin:0;
+  font-size:16px;
   font-weight:800;
 }
-.lmCopy{
-  margin:0;
-  color:var(--muted);
-  line-height:1.35;
-  font-size:14px;
-}
-.lmCopy strong{ color:var(--ink); font-weight:800; }
-
-.lmRight{
-  display:flex;
-  flex-direction:column;
-  align-items:flex-end;
-  gap:8px;
-}
-.lmOnce{
-  font-size:12px;
+.cardSub{
+  margin:2px 0 0;
+  font-size:13px;
   color:var(--muted);
 }
 
-.lmBtn{
-  appearance:none;
+/* Buttons */
+.btn{
+  border-radius:14px;
   border:1px solid var(--accent);
   background:var(--accent);
   color:#fff;
-  border-radius:999px;
-  padding:10px 14px;
   font-weight:800;
+  font-size:14px;
   cursor:pointer;
+  padding:10px 16px;
   transition:.15s;
-  white-space:nowrap;
+  text-decoration:none;
+  display:inline-flex;
+  align-items:center;
+  justify-content:center;
 }
-.lmBtn:hover:not(:disabled){
+.btn:hover:not(:disabled){
   background:#6d4786;
   border-color:#6d4786;
   transform:translateY(-1px);
 }
-.lmBtn:disabled{ opacity:.65; cursor:default; transform:none; }
-.lmBtn.ghost{ background:transparent; color:var(--accent); }
+.btn:disabled{ opacity:.65; cursor:default; transform:none; }
 
+.btnTop{ padding:9px 14px; font-size:13px; border-radius:999px; }
+.btnSmall{ padding:8px 12px; font-size:12px; border-radius:999px; }
+.btnGhost{ background:transparent; color:var(--accent); }
+
+/* ---------- Luck Meter ---------- */
 .lmPanel{
   border-radius:var(--radiusIn);
   padding:14px;
@@ -163,6 +158,7 @@ body{
   color:var(--muted);
   font-size:13px;
 }
+.lmMeta:empty{ display:none; }
 
 .lmTrackWrap{ position:relative; z-index:1; }
 .lmTrack{
@@ -224,11 +220,7 @@ body{
 }
 .lmLegend b{ color:var(--ink); font-weight:800; }
 
-.devRow{
-  display:none;
-  gap:8px;
-  margin-top:10px;
-}
+.devRow{ display:none; gap:8px; margin-top:10px; }
 
 /* ---------- 4 tiles ---------- */
 .grid4{
@@ -243,76 +235,67 @@ body{
   border-radius:var(--radius);
   box-shadow:var(--shadow);
   padding:12px;
-  text-align:center;
-  min-height:152px;
+  min-height:154px;
   display:flex;
   flex-direction:column;
-  justify-content:flex-start;
-  align-items:center;
-  gap:8px;
+  gap:10px;
 }
+
+.miniHead{
+  display:flex;
+  align-items:center;
+  justify-content:space-between;
+  gap:10px;
+}
+
 .mini h3{
   margin:0;
   font-size:12px;
   letter-spacing:.08em;
   text-transform:uppercase;
-  color:var(--muted);
+  color:var(--ink);
   font-weight:800;
 }
-.mini .value{
-  font-size:36px;
+
+.miniBox{
+  border-radius:var(--radiusIn);
+  border:2px solid var(--stroke);
+  background:var(--soft);
+  min-height:54px;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  font-size:34px;
   font-weight:900;
   line-height:1;
-  margin-top:6px;
 }
-.oneLine{
+
+.miniBoxColor{
+  padding:10px;
+}
+.colorSwatch{
+  width:100%;
+  height:34px;
+  border-radius:12px;
+  background:#d1d5db;
+  border:1px solid rgba(0,0,0,.08);
+}
+
+.miniSub{
   margin:0;
   color:var(--muted);
   font-size:12px;
   line-height:1.25;
 }
 
-.mini.colorTile{ padding:12px; }
-.colorSwatch{
-  width:100%;
-  height:46px;
-  border-radius:12px;
-  background:#d1d5db;
-  border:1px solid rgba(0,0,0,.08);
-}
-
-.miniBtnRow{
-  margin-top:auto;
-  width:100%;
-  justify-content:center;
-}
-
-/* ---------- 2-column section (watch + eat) ---------- */
+/* ---------- 2 columns ---------- */
 .twoCol{
   display:grid;
   grid-template-columns:1fr 1fr;
   gap:12px;
 }
 
-/* ---------- Shared card heads + slots ---------- */
-.cardHead{
-  display:flex;
-  align-items:baseline;
-  justify-content:space-between;
-  gap:10px;
-  margin-bottom:10px;
-}
-.cardHead h2{
-  margin:0;
-  font-size:16px;
-  font-weight:800;
-}
-.cardSub{
-  margin:0;
-  font-size:13px;
-  color:var(--muted);
-}
-
+/* ---------- Slot windows ---------- */
 .slotWindow{
   border-radius:var(--radiusIn);
   border:2px solid var(--stroke);
@@ -320,9 +303,8 @@ body{
   padding:12px;
   min-height:92px;
 }
-.slotTall{
-  min-height:112px; /* more room for long titles */
-}
+.slotTall{ min-height:118px; }
+
 .slotLabel{
   font-size:11px;
   letter-spacing:.08em;
@@ -343,68 +325,44 @@ body{
   min-height:1.1em;
 }
 
-/* Buttons */
-.btnRow{
-  display:flex;
-  justify-content:flex-end;
-  margin-top:10px;
-}
-.btn{
-  border-radius:14px;
-  border:1px solid var(--accent);
-  background:var(--accent);
-  color:#fff;
-  font-weight:800;
-  font-size:14px;
-  cursor:pointer;
-  padding:10px 16px;
-  transition:.15s;
-}
-.btnSmall{
-  padding:9px 14px;
-  font-size:13px;
-}
-.btn:hover:not(:disabled){
-  background:#6d4786;
-  border-color:#6d4786;
-  transform:translateY(-1px);
-}
-.btn:disabled{ opacity:.65; cursor:default; transform:none; }
-
-/* Fortune */
-.fortuneCard{ padding:14px; }
-.fortuneHead{
-  display:flex;
-  align-items:baseline;
-  justify-content:space-between;
-  gap:12px;
-  margin-bottom:10px;
-}
-.fortuneTitle{
-  margin:0;
-  font-size:16px;
-  font-weight:800;
-}
-.fortuneSub{
-  margin:0;
-  font-size:13px;
-  color:var(--muted);
-}
-.fortuneBox{
-  border-radius:var(--radiusIn);
-  border:2px solid var(--stroke);
+/* Fortune slip */
+.fortunePaper{
+  border-radius:12px;
+  border:2px solid rgba(0,0,0,0.14);
   background:#fffdf4;
-  padding:18px;
-  min-height:98px;
+  padding:18px 16px;
+  min-height:118px;
+
   display:flex;
   align-items:center;
-  justify-content:flex-start; /* left aligned per your note */
-  font-size:18px;
-  font-weight:700;
+  justify-content:center;
+
   font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", "Courier New", monospace;
+  font-weight:500;
+  font-size:16px;
+  color:#111827;
+  text-align:center;
+
+  box-shadow: inset 0 0 0 1px rgba(0,0,0,0.04);
 }
 
-/* simple fade/slide */
+/* Ad */
+.adCard .adBody{
+  border-radius:var(--radiusIn);
+  border:2px solid var(--stroke);
+  background:var(--soft);
+  padding:12px;
+  min-height:118px;
+}
+.adLine{
+  margin:0 0 8px;
+  color:var(--muted);
+  font-size:13px;
+  line-height:1.35;
+}
+.adLine strong{ color:var(--ink); }
+
+/* fade/slide */
 .slotAnim{
   transition: opacity 180ms ease, transform 180ms ease;
 }
@@ -424,7 +382,4 @@ footer{
 @media (max-width:820px){
   .grid4{ grid-template-columns:repeat(2, 1fr); }
   .twoCol{ grid-template-columns:1fr; }
-  .lmHead{ flex-direction:column; }
-  .lmRight{ align-items:stretch; }
-  .lmBtn{ width:100%; }
 }
