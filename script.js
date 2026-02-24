@@ -343,83 +343,92 @@ window.addEventListener("DOMContentLoaded", () => {
   const tri01 = (p) => {
     const x = p % 1;
     return x < 0.5 ? x * 2 : 2 - x * 2;
-  };
+  };function animateLuckTo(targetScore){
+  const target = clamp(targetScore, 0, 10);
 
-  // Phase plan:
-  // 1) quick move from 5 -> 0 (first wall hit)
-  // 2) do N bounces between walls (always hits 0/10)
-  // 3) final settle: from opposite wall -> target (no mid-air reversal)
-  const toFirstWallMs = 900; // 5 -> 0
-  const bounceMs = totalMs - toFirstWallMs - settleMs;
+  const w = trackWidth();
+  const now = () => performance.now();
 
-  // Decide which wall to start with (0 first feels good since you asked for 5->0 bounce)
-  const firstWall = 0;
+  // Linear motion per segment = no hover at ends.
+  // We slow down by making later segments take longer.
+  const baseMs = 260;          // early segments are snappy
+  const growth = 1.18;         // each segment takes longer than the last
+  const extraSettleMs = 420;   // final settle feels intentional
 
-  // For final settle, come from the opposite side of the target so it “passes the wall”
+  // Decide final wall so we "arrive" at target from the other side
   const finalWall = target >= 5 ? 0 : 10;
 
-  function render(pos01){
-    setBall01(pos01);
-    setColourFromT(pos01);
+  // Build bounce path as segments (from -> to)
+  // Start at 5, go hit 0 once, then alternate walls a few times
+  const segments = [];
+  let pos = 5;
+
+  // First hit 0
+  segments.push([pos, 0]);
+  pos = 0;
+
+  // Bounce wall-to-wall a few times
+  const bounceCount = 6; // change this for more/less bounces
+  for (let i = 0; i < bounceCount; i++){
+    const next = (pos === 0) ? 10 : 0;
+    segments.push([pos, next]);
+    pos = next;
   }
 
-  function frame(now){
-    const elapsed = now - startT;
-
-    // 1) 5 -> first wall (0)
-    if (elapsed <= toFirstWallMs){
-      const t = easeOutCubic(elapsed / toFirstWallMs);
-      const pos01 = lerp(0.5, firstWall / 10, t);
-      render(pos01);
-      requestAnimationFrame(frame);
-      return;
-    }
-
-    // 2) Bounce wall-to-wall with slowing cadence (but still hitting walls)
-    const tBounce = elapsed - toFirstWallMs;
-
-    if (tBounce <= bounceMs){
-      // progress 0..1
-      const p = tBounce / bounceMs;
-
-      // slow the bounce rate over time by easing the phase
-      const eased = easeOutCubic(p);
-
-      // phase runs from 0..(bounces + 1) half-cycles
-      // start at wall 0, go to 10, back to 0, etc.
-      const phase = eased * (bounces + 1);
-
-      // tri gives 0..1..0, map to 0..1 position
-      const pos01 = tri01(phase);
-      render(pos01);
-      requestAnimationFrame(frame);
-      return;
-    }
-
-    // 3) Final settle: from finalWall -> target, easing in (no reversal)
-    const tSettle = elapsed - toFirstWallMs - bounceMs;
-    const tt = clamp(tSettle / settleMs, 0, 1);
-    const eased = easeOutCubic(tt);
-
-    const from01 = finalWall / 10;
-    const to01 = target / 10;
-    const pos01 = lerp(from01, to01, eased);
-    render(pos01);
-
-    if (tt < 1){
-      requestAnimationFrame(frame);
-      return;
-    }
-
-    // Finish
-    setToScore(targetScore);
-    lmSpinning = false;
-    markSpun();
-    luckSpinBtn.disabled = true;
-    luckSpinBtn.textContent = "Come back tomorrow";
+  // Ensure we hit finalWall before settling to target
+  if (pos !== finalWall){
+    segments.push([pos, finalWall]);
+    pos = finalWall;
   }
 
-  requestAnimationFrame(frame);
+  // Final settle to target
+  segments.push([pos, target]);
+
+  // Precompute durations (increasing each segment)
+  const durations = [];
+  let ms = baseMs;
+  for (let i = 0; i < segments.length; i++){
+    durations.push(ms);
+    ms *= growth;
+  }
+  durations[durations.length - 1] += extraSettleMs;
+
+  let segIndex = 0;
+  let segStart = now();
+
+  function render(value){
+    const t01 = value / 10;
+    setBall01(t01);
+    setColourFromT(t01);
+  }
+
+  function step(){
+    const t = now();
+    const [a, b] = segments[segIndex];
+    const dur = durations[segIndex];
+
+    const p = clamp((t - segStart) / dur, 0, 1);
+    const value = a + (b - a) * p;
+
+    render(value);
+
+    if (p >= 1){
+      segIndex++;
+      if (segIndex >= segments.length){
+        setToScore(targetScore);
+        lmSpinning = false;
+        markSpun();
+        luckSpinBtn.disabled = true;
+        luckSpinBtn.textContent = "Come back tomorrow";
+        return;
+      }
+      segStart = t;
+    }
+
+    requestAnimationFrame(step);
+  }
+
+  requestAnimationFrame(step);
 }
 
     function setNeutralStart(){
