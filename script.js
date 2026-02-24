@@ -213,262 +213,232 @@ window.addEventListener("DOMContentLoaded", () => {
     });
   }
 
-  // =========================
-  // LUCK METER (BOUNCE, NO JUMP)
-  // =========================
-  const luckSpinBtn = $("luckSpin");
-  const lmResult = $("lmResult");
-  const lmMeta = $("lmMeta");
-  const lmTrack = $("lmTrack");
-  const lmBall = $("lmBall");
-  const lmWash = $("lmWash");
-  const lmBar = $("lmBar");
-  const devRow = $("devRow");
-  const resetLuckBtn = $("resetLuck");
+// =========================
+// LUCK METER (BOUNCE PATH, NO JUMP)
+// =========================
+const luckSpinBtn = $("luckSpin");
+const lmResult = $("lmResult");
+const lmMeta = $("lmMeta");
+const lmTrack = $("lmTrack");
+const lmBall = $("lmBall");
+const lmWash = $("lmWash");
+const lmBar = $("lmBar");
+const devRow = $("devRow");
+const resetLuckBtn = $("resetLuck");
 
-  // If luck meter elements are missing, don't crash the rest of the site
-  if (luckSpinBtn && lmResult && lmMeta && lmTrack && lmBall && lmWash && lmBar) {
-    let lmSpinning = false;
-    let lastScore = 5;
+if (luckSpinBtn && lmResult && lmMeta && lmTrack && lmBall && lmWash && lmBar) {
+  let lmSpinning = false;
+  let lastScore = 5;
 
-    function trackWidth(){
-      return lmTrack.getBoundingClientRect().width;
-    }
-
-    function setBall01(t01){
-      const w = trackWidth();
-      lmBall.style.left = `${t01 * w}px`;
-    }
-
-    function messageForScore(s){
-      const map = {
-        0: "🧨 0/10. Do not test fate today.",
-        1: "🧯 1/10. Keep it small and safe.",
-        2: "🪨 2/10. Low luck. High caution.",
-        3: "🌧️ 3/10. Not great. You’ll survive.",
-        4: "⚖️ 4/10. Slightly off. Stay steady.",
-        5: "🧘 5/10. Neutral. You steer.",
-        6: "🍀 6/10. Slightly lucky. Take the easy win.",
-        7: "✨ 7/10. Good luck today. Momentum’s real.",
-        8: "🔥 8/10. Very lucky. Say yes to the good idea.",
-        9: "🚀 9/10. Big luck. Bold moves welcomed.",
-        10:"👑 10/10. Mega luck. Do the thing."
-      };
-      return map[s] || `${s}/10.`;
-    }
-
-    function setColourFromT(t){
-      const bias = (t - 0.5) * 2; // -1..1
-      const redA = clamp(-bias, 0, 1);
-      const greenA = clamp(bias, 0, 1);
-      const neutralA = 1 - Math.max(redA, greenA);
-
-      lmBar.style.background =
-        `linear-gradient(90deg,
-          rgba(185,28,28,${0.10 + redA*0.65}) 0%,
-          rgba(107,114,128,${0.08 + neutralA*0.40}) 50%,
-          rgba(22,163,74,${0.10 + greenA*0.65}) 100%
-        )`;
-
-      const xPct = (t * 100).toFixed(2);
-      lmWash.style.background =
-        `radial-gradient(circle at ${xPct}% 45%,
-          rgba(185,28,28,${0.10 + redA*0.45}) 0%,
-          rgba(107,114,128,${0.06 + neutralA*0.22}) 38%,
-          rgba(22,163,74,${0.10 + greenA*0.45}) 72%,
-          rgba(0,0,0,0) 82%
-        )`;
-    }
-
-    function setToScore(score){
-      lastScore = score;
-      const t01 = score / 10;
-      setBall01(t01);
-      lmResult.textContent = `Score: ${score} / 10`;
-      lmMeta.textContent = messageForScore(score);
-      setColourFromT(t01);
-    }
-
-    function randNormal(mean, sd){
-      let u=0, v=0;
-      while (u===0) u = Math.random();
-      while (v===0) v = Math.random();
-      const z = Math.sqrt(-2*Math.log(u)) * Math.cos(2*Math.PI*v);
-      return mean + z*sd;
-    }
-
-    function rollLuckScore(){
-      const raw = randNormal(5.8, 1.7);
-      return Math.round(clamp(raw, 0, 10));
-    }
-
-    function todayKey(){
-      const d = new Date();
-      return `${d.getFullYear()}-${String(d.getMonth()+1).padStart(2,"0")}-${String(d.getDate()).padStart(2,"0")}`;
-    }
-
-    function lockIfAlreadySpun(){
-      if (TEST_MODE) return false;
-      if (localStorage.getItem("LUCK_METER_SPUN_DATE") === todayKey()){
-        luckSpinBtn.disabled = true;
-        luckSpinBtn.textContent = "Come back tomorrow";
-        return true;
-      }
-      return false;
-    }
-
-    function markSpun(){
-      if (!TEST_MODE) localStorage.setItem("LUCK_METER_SPUN_DATE", todayKey());
-    }
-
-    function resetSpun(){
-      localStorage.removeItem("LUCK_METER_SPUN_DATE");
-    }
-
-    function animateLuckTo(targetScore){
-  const target = clamp(targetScore, 0, 10);
-  const startT = performance.now();
-
-  const totalMs = 6200;     // whole animation length
-  const bounces = 5;        // number of full wall bounces after first hit
-  const settleMs = 1100;    // final “fate decides” leg
-
-  const w = trackWidth();
-
-  // Helpers
-  const lerp = (a,b,t)=> a + (b-a)*t;
-  const easeOutCubic = (t)=> 1 - Math.pow(1 - t, 3);
-
-  // Triangle wave 0..1..0 for p 0..1
-  const tri01 = (p) => {
-    const x = p % 1;
-    return x < 0.5 ? x * 2 : 2 - x * 2;
-  };function animateLuckTo(targetScore){
-  const target = clamp(targetScore, 0, 10);
-
-  const w = trackWidth();
-  const now = () => performance.now();
-
-  // Linear motion per segment = no hover at ends.
-  // We slow down by making later segments take longer.
-  const baseMs = 260;          // early segments are snappy
-  const growth = 1.18;         // each segment takes longer than the last
-  const extraSettleMs = 420;   // final settle feels intentional
-
-  // Decide final wall so we "arrive" at target from the other side
-  const finalWall = target >= 5 ? 0 : 10;
-
-  // Build bounce path as segments (from -> to)
-  // Start at 5, go hit 0 once, then alternate walls a few times
-  const segments = [];
-  let pos = 5;
-
-  // First hit 0
-  segments.push([pos, 0]);
-  pos = 0;
-
-  // Bounce wall-to-wall a few times
-  const bounceCount = 6; // change this for more/less bounces
-  for (let i = 0; i < bounceCount; i++){
-    const next = (pos === 0) ? 10 : 0;
-    segments.push([pos, next]);
-    pos = next;
+  function trackWidth() {
+    return lmTrack.getBoundingClientRect().width;
   }
 
-  // Ensure we hit finalWall before settling to target
-  if (pos !== finalWall){
-    segments.push([pos, finalWall]);
-    pos = finalWall;
+  function setBall01(t01) {
+    const w = trackWidth();
+    lmBall.style.left = `${t01 * w}px`;
   }
 
-  // Final settle to target
-  segments.push([pos, target]);
-
-  // Precompute durations (increasing each segment)
-  const durations = [];
-  let ms = baseMs;
-  for (let i = 0; i < segments.length; i++){
-    durations.push(ms);
-    ms *= growth;
+  function messageForScore(s) {
+    const map = {
+      0: "🧨 0/10. Do not test fate today.",
+      1: "🧯 1/10. Keep it small and safe.",
+      2: "🪨 2/10. Low luck. High caution.",
+      3: "🌧️ 3/10. Not great. You’ll survive.",
+      4: "⚖️ 4/10. Slightly off. Stay steady.",
+      5: "🧘 5/10. Neutral. You steer.",
+      6: "🍀 6/10. Slightly lucky. Take the easy win.",
+      7: "✨ 7/10. Good luck today. Momentum’s real.",
+      8: "🔥 8/10. Very lucky. Say yes to the good idea.",
+      9: "🚀 9/10. Big luck. Bold moves welcomed.",
+      10: "👑 10/10. Mega luck. Do the thing."
+    };
+    return map[s] || `${s}/10.`;
   }
-  durations[durations.length - 1] += extraSettleMs;
 
-  let segIndex = 0;
-  let segStart = now();
+  function setColourFromT(t) {
+    const bias = (t - 0.5) * 2; // -1..1
+    const redA = clamp(-bias, 0, 1);
+    const greenA = clamp(bias, 0, 1);
+    const neutralA = 1 - Math.max(redA, greenA);
 
-  function render(value){
-    const t01 = value / 10;
+    lmBar.style.background =
+      `linear-gradient(90deg,
+        rgba(185,28,28,${0.12 + redA * 0.70}) 0%,
+        rgba(107,114,128,${0.08 + neutralA * 0.45}) 50%,
+        rgba(22,163,74,${0.12 + greenA * 0.70}) 100%
+      )`;
+
+    const xPct = (t * 100).toFixed(2);
+    lmWash.style.background =
+      `radial-gradient(circle at ${xPct}% 45%,
+        rgba(185,28,28,${0.12 + redA * 0.50}) 0%,
+        rgba(107,114,128,${0.06 + neutralA * 0.24}) 38%,
+        rgba(22,163,74,${0.12 + greenA * 0.50}) 72%,
+        rgba(0,0,0,0) 82%
+      )`;
+  }
+
+  function setToScore(score) {
+    lastScore = score;
+    const t01 = score / 10;
     setBall01(t01);
+    lmResult.textContent = `Score: ${score} / 10`;
+    lmMeta.textContent = messageForScore(score);
     setColourFromT(t01);
   }
 
-  function step(){
-    const t = now();
-    const [a, b] = segments[segIndex];
-    const dur = durations[segIndex];
+  function randNormal(mean, sd) {
+    let u = 0, v = 0;
+    while (u === 0) u = Math.random();
+    while (v === 0) v = Math.random();
+    const z = Math.sqrt(-2 * Math.log(u)) * Math.cos(2 * Math.PI * v);
+    return mean + z * sd;
+  }
 
-    const p = clamp((t - segStart) / dur, 0, 1);
-    const value = a + (b - a) * p;
+  function rollLuckScore() {
+    const raw = randNormal(5.8, 1.7);
+    return Math.round(clamp(raw, 0, 10));
+  }
 
-    render(value);
+  function todayKey() {
+    const d = new Date();
+    return `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, "0")}-${String(d.getDate()).padStart(2, "0")}`;
+  }
 
-    if (p >= 1){
-      segIndex++;
-      if (segIndex >= segments.length){
-        setToScore(targetScore);
-        lmSpinning = false;
-        markSpun();
-        luckSpinBtn.disabled = true;
-        luckSpinBtn.textContent = "Come back tomorrow";
-        return;
+  function lockIfAlreadySpun() {
+    if (TEST_MODE) return false;
+    if (localStorage.getItem("LUCK_METER_SPUN_DATE") === todayKey()) {
+      luckSpinBtn.disabled = true;
+      luckSpinBtn.textContent = "Come back tomorrow";
+      return true;
+    }
+    return false;
+  }
+
+  function markSpun() {
+    if (!TEST_MODE) localStorage.setItem("LUCK_METER_SPUN_DATE", todayKey());
+  }
+
+  function resetSpun() {
+    localStorage.removeItem("LUCK_METER_SPUN_DATE");
+  }
+
+  // Segment-based bounce path (no hover, no teleport)
+  function animateLuckTo(targetScore) {
+    const target = clamp(targetScore, 0, 10);
+    const w = trackWidth();
+    const now = () => performance.now();
+
+    const baseMs = 300;
+    const growth = 1.16;
+    const extraSettleMs = 520;
+
+    const finalWall = target >= 5 ? 0 : 10;
+
+    const segments = [];
+    let pos = 5;
+
+    segments.push([pos, 0]);
+    pos = 0;
+
+    const bounceCount = 6;
+    for (let i = 0; i < bounceCount; i++) {
+      const next = (pos === 0) ? 10 : 0;
+      segments.push([pos, next]);
+      pos = next;
+    }
+
+    if (pos !== finalWall) {
+      segments.push([pos, finalWall]);
+      pos = finalWall;
+    }
+
+    segments.push([pos, target]);
+
+    const durations = [];
+    let ms = baseMs;
+    for (let i = 0; i < segments.length; i++) {
+      durations.push(ms);
+      ms *= growth;
+    }
+    durations[durations.length - 1] += extraSettleMs;
+
+    let segIndex = 0;
+    let segStart = now();
+
+    function render(value) {
+      const t01 = value / 10;
+      setBall01(t01);
+      setColourFromT(t01);
+    }
+
+    function step() {
+      const t = now();
+      const [a, b] = segments[segIndex];
+      const dur = durations[segIndex];
+
+      const p = clamp((t - segStart) / dur, 0, 1);
+      const value = a + (b - a) * p;
+
+      render(value);
+
+      if (p >= 1) {
+        segIndex++;
+        if (segIndex >= segments.length) {
+          setToScore(targetScore);
+          lmSpinning = false;
+          markSpun();
+          luckSpinBtn.disabled = true;
+          luckSpinBtn.textContent = "Come back tomorrow";
+          return;
+        }
+        segStart = t;
       }
-      segStart = t;
+
+      requestAnimationFrame(step);
     }
 
     requestAnimationFrame(step);
   }
 
-  requestAnimationFrame(step);
-}
+  function setNeutralStart() {
+    setToScore(5);
+    lmMeta.textContent = "Neutral start. Tap the button.";
+    luckSpinBtn.disabled = false;
+    luckSpinBtn.textContent = "How lucky am I today?";
+  }
 
-    function setNeutralStart(){
-      setToScore(5);
-      lmMeta.textContent = "Neutral start. Tap the button.";
-      luckSpinBtn.disabled = false;
-      luckSpinBtn.textContent = "How lucky am I today?";
-    }
+  luckSpinBtn.addEventListener("click", () => {
+    if (lmSpinning) return;
+    if (lockIfAlreadySpun()) return;
 
-    luckSpinBtn.addEventListener("click", () => {
-      if (lmSpinning) return;
-      if (lockIfAlreadySpun()) return;
+    lmSpinning = true;
+    luckSpinBtn.disabled = true;
 
-      lmSpinning = true;
-      luckSpinBtn.disabled = true;
+    lmResult.textContent = "Score: deciding…";
+    lmMeta.textContent = "Consulting fate…";
 
-      lmResult.textContent = "Score: deciding…";
-      lmMeta.textContent = "Consulting fate…";
+    animateLuckTo(rollLuckScore());
+  });
 
-      const score = rollLuckScore();
-      animateLuckTo(score);
-    });
-
-    if (TEST_MODE && devRow && resetLuckBtn){
-      devRow.style.display = "flex";
-      resetLuckBtn.addEventListener("click", () => {
-        resetSpun();
-        setNeutralStart();
-        lmMeta.textContent = "Reset. Spin again.";
-      });
-    }
-
-    setNeutralStart();
-    lockIfAlreadySpun();
-
-    window.addEventListener("resize", () => {
-      if (!lmSpinning){
-        setBall01(lastScore / 10);
-        setColourFromT(lastScore / 10);
-      }
+  if (TEST_MODE && devRow && resetLuckBtn) {
+    devRow.style.display = "flex";
+    resetLuckBtn.addEventListener("click", () => {
+      resetSpun();
+      setNeutralStart();
+      lmMeta.textContent = "Reset. Spin again.";
     });
   }
+
+  setNeutralStart();
+  lockIfAlreadySpun();
+
+  window.addEventListener("resize", () => {
+    if (!lmSpinning) {
+      setBall01(lastScore / 10);
+      setColourFromT(lastScore / 10);
+    }
+  });
+}
 });
