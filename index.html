@@ -4,146 +4,172 @@
   <meta charset="UTF-8" />
   <title>Luck Meter</title>
   <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans:wght@400;600;800&display=swap" rel="stylesheet">
-  <link rel="stylesheet" href="styles.css">
+  <link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans:wght@400;600;800&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="styles.css" />
 </head>
 
 <body>
-  <main class="page">
-
+  <div class="page">
+    <!-- Header -->
     <header class="topCard">
       <div>
         <h1 class="h1">Luck Meter</h1>
         <p class="sub">Playful. Random. Absolutely not science.</p>
       </div>
-      <a class="sponsor" href="https://www.greetingsearthling.ca" target="_blank" rel="noopener">
+      <a class="sponsor" href="#" aria-label="Sponsored by Greetings, Earthling">
         Sponsored by <span>Greetings, Earthling</span>
       </a>
     </header>
 
-    <!-- LUCK METER (TOP / PRIORITY) -->
-    <section class="card big" id="luck-card">
-      <div class="rowTop">
-        <h2 class="rowTitle">Luck Meter</h2>
-        <p class="rowHint">One spin per day.</p>
-      </div>
-
-      <div class="lmHead">
-        <p class="lmCopy">
-          <strong>Your daily luck reading.</strong><br>
-          A quick vibe check.<br>
-          Use it irresponsibly.
-        </p>
-        <button class="btnSpin btnSpinBig" id="luckSpin" type="button">How lucky am I today?</button>
-      </div>
-
-      <div class="lmPanel" id="lmPanel">
-        <div class="lmWash" id="lmWash"></div>
-
-        <div class="lmStatus">
-          <p class="lmResult" id="lmResult">Score: 5 / 10</p>
-          <p class="lmMeta" id="lmMeta">Neutral start. Tap the button.</p>
-        </div>
-
-        <div class="lmTrackWrap">
-          <div class="lmTrack" id="lmTrack">
-            <div class="lmBar" id="lmBar"></div>
-            <div class="lmBall" id="lmBall" aria-hidden="true"></div>
+    <main class="stack">
+      <!-- LUCK METER -->
+      <section class="card big" id="luck-card">
+        <div class="lmHead">
+          <div>
+            <p class="lmKicker">Luck Meter</p>
+            <p class="lmCopy">
+              <strong>Your daily luck reading.</strong><br>
+              A quick vibe check.<br>
+              Use it irresponsibly.
+            </p>
           </div>
 
-          <div class="lmTicks" aria-hidden="true">
-            <span>0</span><span>1</span><span>2</span><span>3</span><span>4</span><span>5</span><span>6</span><span>7</span><span>8</span><span>9</span><span>10</span>
-          </div>
-
-          <div class="lmLegend" aria-hidden="true">
-            <span><b>Bad luck</b></span>
-            <span><b>Neutral</b></span>
-            <span><b>Good luck</b></span>
-          </div>
-
-          <!-- only shows in ?test=1 -->
-          <div class="devRow" id="devRow">
-            <button class="btnSpin ghost" id="resetLuck" type="button">Reset (test)</button>
+          <div class="lmRight">
+            <div class="lmOnce" id="lmOnce">One spin per day.</div>
+            <button class="lmBtn" id="luckSpin" type="button">How lucky am I today?</button>
           </div>
         </div>
-      </div>
-    </section>
 
-    <!-- 4 SMALLS (CLICK TO REVEAL, UNLIMITED) -->
-    <section class="grid4" aria-label="Quick luck bonuses">
-      <article class="mini" id="miniNum">
-        <h3>Lucky Number</h3>
-        <div class="value" id="num">—</div>
-        <p class="miniLines">Tap to reveal.<br>Use it for vibes.<br>Not for math.</p>
-      </article>
+        <div class="lmPanel" id="lmPanel">
+          <div class="lmWash" id="lmWash"></div>
 
-      <article class="mini" id="miniLetter">
-        <h3>Lucky Letter</h3>
-        <div class="value" id="letter">—</div>
-        <p class="miniLines">Tap to reveal.<br>Notice it today.<br>Coincidence? Sure.</p>
-      </article>
+          <div class="lmStatus">
+            <p class="lmResult" id="lmResult">Score: 5 / 10</p>
+            <p class="lmMeta" id="lmMeta">Neutral start. Tap the button.</p>
+          </div>
 
-      <article class="mini colorTile" id="miniColor">
-        <h3>Lucky Colour</h3>
-        <div class="colorSwatch" id="colorSwatch" aria-label="Lucky colour swatch"></div>
-        <div class="colorMeta" id="colorMeta">Tap to reveal</div>
-        <p class="miniLines">Tap to reveal.<br>Wear it if you want.<br>Fight about it later.</p>
-      </article>
+          <div class="lmTrackWrap">
+            <div class="lmTrack" id="lmTrack">
+              <div class="lmBar" id="lmBar"></div>
+              <div class="lmBall" id="lmBall" aria-hidden="true"></div>
+            </div>
 
-      <article class="mini" id="miniEmoji">
-        <h3>Spirit Emoji</h3>
-        <div class="value" id="emoji">—</div>
-        <p class="miniLines">Tap to reveal.<br>Is it you today?<br>Or is it fate trolling?</p>
-      </article>
-    </section>
+            <div class="lmTicks" aria-hidden="true">
+              <span>0</span><span>1</span><span>2</span><span>3</span><span>4</span><span>5</span><span>6</span><span>7</span><span>8</span><span>9</span><span>10</span>
+            </div>
 
-    <!-- WHAT TO WATCH (SPIN + REROLLS OK) -->
-    <section class="card">
-      <div class="rowTop">
-        <h2 class="rowTitle">What should I watch?</h2>
-        <p class="rowHint">Rerolls allowed.</p>
-      </div>
+            <div class="lmLegend" aria-hidden="true">
+              <span><b>Bad luck</b></span>
+              <span><b>Neutral</b></span>
+              <span><b>Good luck</b></span>
+            </div>
 
-      <div class="watchWindow" aria-live="polite">
-        <div class="watchLabel">Today’s pick</div>
-        <div class="watchTitle" id="watch-title">Tap spin.</div>
-        <div class="watchMeta" id="watch-meta"></div>
-        <div class="watchNote" id="watch-note"></div>
-      </div>
+            <div class="devRow" id="devRow">
+              <button class="lmBtn ghost" id="resetLuck" type="button">Reset (test)</button>
+            </div>
+          </div>
+        </div>
+      </section>
 
-      <div class="btnRow">
-        <button class="btnSpin" id="watch-spin" type="button">Spin</button>
-      </div>
-    </section>
+      <!-- 4 mini tiles -->
+      <section class="grid4">
+        <article class="mini" id="miniNum" role="button" tabindex="0">
+          <h3>Lucky Number</h3>
+          <div class="value" id="numVal">—</div>
+          <p class="miniLines">
+            Tap to reveal.<br>
+            Use it for vibes.<br>
+            Not for math.
+          </p>
+        </article>
 
-    <!-- MAGIC 8-BALL (CLICK ICON) -->
-    <section class="card wide">
-      <div class="leftPane">
-        <div class="bigIcon" id="eightBall" aria-label="Shake the 8-ball" title="Click to shake">🎱</div>
-        <p class="kicker">MAGIC 8-BALL</p>
-        <p class="instr">Think of a question.<br>Give the 8-ball a shake.<br>Hope it’s in a good mood.</p>
-      </div>
-      <div class="output" id="eightResult">The universe is listening…</div>
-    </section>
+        <article class="mini" id="miniLetter" role="button" tabindex="0">
+          <h3>Lucky Letter</h3>
+          <div class="value" id="letterVal">—</div>
+          <p class="miniLines">
+            Tap to reveal.<br>
+            Notice it today.<br>
+            Coincidence? Sure.
+          </p>
+        </article>
 
-    <!-- FORTUNE COOKIE (CLICK ICON) -->
-    <section class="card wide">
-      <div class="leftPane">
-        <div class="bigIcon" id="cookie" aria-label="Crack the cookie" title="Click to crack">🥠</div>
-        <p class="kicker">FORTUNE COOKIE</p>
-        <p class="instr">Crack the cookie.<br>Reveal your fortune.<br>Be hungry in one hour.</p>
-      </div>
-      <div class="output fortuneStrip" id="fortuneResult">Your fortune awaits.</div>
-    </section>
+        <article class="mini colorTile" id="miniColor" role="button" tabindex="0">
+          <h3>Lucky Colour</h3>
+          <div class="colorSwatch" id="colorSwatch"></div>
+          <p class="miniLines" id="colorLines">
+            Tap to reveal.<br>
+            Wear it if you want.<br>
+            Fight about it later.
+          </p>
+        </article>
 
-    <footer class="footer">Luck Meter. Not science. Not advice.</footer>
-  </main>
+        <article class="mini" id="miniEmoji" role="button" tabindex="0">
+          <h3>Spirit Emoji</h3>
+          <div class="value" id="emojiVal">—</div>
+          <p class="miniLines">
+            Tap to reveal.<br>
+            Is it you today?<br>
+            Or is it fate trolling?
+          </p>
+        </article>
+      </section>
 
-  <!-- Optional data files (recommended). Load BEFORE script.js -->
-  <!-- <script src="fortunes.js"></script> -->
-  <!-- <script src="foodlist.js"></script> -->
+      <!-- What to watch -->
+      <section class="card" aria-label="What should I watch">
+        <div class="cardHead">
+          <h2>What should I watch?</h2>
+          <p class="cardSub">Rerolls allowed.</p>
+        </div>
+
+        <div class="slotWindow">
+          <div class="slotLabel">Today’s pick</div>
+          <div class="slotTitle" id="watch-title">Tap spin.</div>
+          <div class="slotMeta" id="watch-meta"></div>
+        </div>
+
+        <div class="btnRow">
+          <button class="btn" id="watch-spin" type="button">Spin</button>
+        </div>
+      </section>
+
+      <!-- Magic 8-ball -->
+      <section class="card wide">
+        <div class="leftPane">
+          <div class="bigIcon" id="eightBall" aria-label="Shake the 8-ball">🎱</div>
+          <p class="kicker">Magic 8-Ball</p>
+          <p class="instr">
+            Think of a question.<br>
+            Give the 8-ball a shake.<br>
+            Luck not guaranteed.
+          </p>
+        </div>
+        <div class="output" id="eightResult">The universe is listening…</div>
+      </section>
+
+      <!-- Fortune cookie -->
+      <section class="card wide">
+        <div class="leftPane">
+          <div class="bigIcon" id="cookie" aria-label="Crack the fortune cookie">🥠</div>
+          <p class="kicker">Fortune Cookie</p>
+          <p class="instr">
+            Crack the cookie.<br>
+            Reveal your fortune.<br>
+            Be hungry in one hour.
+          </p>
+        </div>
+        <div class="output fortuneStrip" id="fortuneResult">Your fortune awaits.</div>
+      </section>
+
+      <footer>Luck Meter. Not science. Not advice.</footer>
+    </main>
+  </div>
+
+  <!-- Reference lists (keep these files) -->
   <script src="watchlist.js"></script>
+  <script src="fortunes.js"></script>
+  <script src="foodlist.js"></script>
 
+  <!-- Logic -->
   <script src="script.js"></script>
 </body>
 </html>
