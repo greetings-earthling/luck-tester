@@ -206,8 +206,8 @@ function setColourFromT(t01) {
 
   // Wash: no baked-in red/green
   const xPct = (t * 100).toFixed(2);
-  const washRed = bad * 0.55;
-  const washGreen = good * 0.55;
+  const washRed = bad * 0.7;
+  const washGreen = good * 0.7;
   const washMid = 0.10;
 
   lmWash.style.background =
@@ -221,17 +221,17 @@ function setColourFromT(t01) {
 
 function metaForScore(s){
   const msgs = [
-    "⚠️ 0/10. Absolutely cursed. Keep your receipts.",
-    "🧯 1/10. Bad luck. Move slow. Double-check everything.",
-    "🌀 2/10. Low luck. Say no to sketchy plans.",
-    "😐 3/10. Slightly off. Keep it simple and you’ll be fine.",
+    "⚠️ 0/10. Absolutely cursed! Keep your receipts today.",
+    "🧯 1/10. Bad luck. Move slow today. Double-check everything.",
+    "🌀 2/10. Low luck. Say no to sketchy plans today.",
+    "😐 3/10. Slightly off. Keep it simple and you’ll be fine today.",
     "😐 4/10. A little friction. Don’t force it today.",
-    "⚖️ 5/10. Neutral. You steer the day.",
-    "🍀 6/10. Slightly lucky. Small risks are rewarded.",
-    "🍀🍀 7/10. Good luck. Say yes to the easy win.",
-    "🍀🍀🍀 8/10. Very lucky. This is a “send it” day.",
-    "🍀🍀🍀🍀 9/10. Ridiculous luck. Go buy the fancy snack.",
-    "🍀🍀🍀🍀🍀 10/10. Mega luck. Be brave. The universe is basically clapping."
+    "⚖️ 5/10. Neutral. Make your own luck today.",
+    "🍀 6/10. Slightly lucky today. Small risks are rewarded.",
+    "🍀🍀 7/10. Good luck today! Enjoy the easy wins.",
+    "🍀🍀🍀 8/10. Very lucky day! Go treasure hunting.",
+    "🍀🍀🍀🍀 9/10. Ridiculous luck today! Let your confidence soar.",
+    "🍀🍀🍀🍀🍀 10/10. Mega luck day! The universe is basically cheering for you."
   ];
   return msgs[clamp(s,0,10)];
 }
