@@ -2,7 +2,9 @@
    - Uses window.WATCHLIST, window.FORTUNES, window.FOODLIST from separate files
    - Add ?test=1 to URL to show Reset + allow re-spin
 */
-
+window.addEventListener("DOMContentLoaded", () => {
+  console.log("script.js running");
+   
 const TEST_MODE = new URLSearchParams(location.search).get("test") === "1";
 
 const $ = (id) => document.getElementById(id);
@@ -334,4 +336,5 @@ window.addEventListener("resize", () => {
     setBall01(lastScore / 10);
     setColourFromT(lastScore / 10);
   }
+});
 });
