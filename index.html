@@ -1,122 +1,332 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8" />
-  <title>Alien Luck Tablet</title>
-  <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans:wght@400;600;800&display=swap" rel="stylesheet" />
-  <link rel="stylesheet" href="styles.css" />
+<meta charset="UTF-8">
+<title>Alien Luck Tablet</title>
+<meta name="viewport" content="width=device-width, initial-scale=1">
+
+<link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans:wght@400;600;800&display=swap" rel="stylesheet">
+
+<style>
+:root{
+  --bg:#e6dfeb;
+  --glass:rgba(255,255,255,0.75);
+  --border:rgba(0,0,0,0.08);
+  --ink:#1f1f2a;
+  --muted:rgba(31,31,42,0.6);
+}
+
+*{box-sizing:border-box}
+body{
+  margin:0;
+  font-family:"IBM Plex Sans",system-ui,-apple-system,Segoe UI,Roboto,Arial,sans-serif;
+  background:
+    radial-gradient(800px 500px at 20% 10%, rgba(135,93,166,0.2), transparent),
+    radial-gradient(600px 400px at 80% 20%, rgba(46,233,166,0.15), transparent),
+    var(--bg);
+  color:var(--ink);
+}
+
+.page{
+  max-width:980px;
+  margin:0 auto;
+  padding:28px 16px 40px;
+}
+
+.tablet{
+  background:linear-gradient(180deg,rgba(255,255,255,0.65),rgba(255,255,255,0.55));
+  backdrop-filter:blur(10px);
+  border:1px solid var(--border);
+  border-radius:24px;
+  box-shadow:0 20px 50px rgba(31,31,42,0.15);
+  padding:18px;
+  display:grid;
+  gap:18px;
+}
+
+/* HUB */
+.hub{
+  text-align:center;
+  padding:16px;
+}
+
+.hubOrb{
+  width:80px;
+  height:80px;
+  margin:0 auto 12px;
+  border-radius:50%;
+  background:radial-gradient(circle at 30% 30%,#7c5cff,#4c1d95);
+  box-shadow:0 0 30px rgba(124,92,255,0.6);
+}
+
+.hubTitle{
+  margin:0;
+  font-size:26px;
+  font-weight:800;
+}
+
+.hubSub{
+  margin:4px 0 0;
+  font-size:14px;
+  color:var(--muted);
+}
+
+/* GRID */
+.grid{
+  display:grid;
+  gap:16px;
+}
+.grid2{
+  grid-template-columns:repeat(2,1fr);
+}
+
+/* WIDGET */
+.widget{
+  background:var(--glass);
+  border:1px solid var(--border);
+  border-radius:20px;
+  padding:14px;
+  display:flex;
+  flex-direction:column;
+  gap:12px;
+}
+
+.wHead{
+  display:flex;
+  justify-content:space-between;
+  align-items:flex-start;
+  gap:10px;
+}
+
+.wTitle{
+  margin:0;
+  font-size:15px;
+  font-weight:800;
+}
+
+.wSub{
+  margin:4px 0 0;
+  font-size:12px;
+  color:var(--muted);
+}
+
+.wBtn{
+  width:30px;
+  height:30px;
+  border-radius:8px;
+  border:1px solid rgba(0,0,0,0.2);
+  background:#fff;
+  cursor:pointer;
+  position:relative;
+  box-shadow:inset 0 0 6px rgba(0,0,0,0.15);
+  transition:transform .12s ease;
+}
+.wBtn:active{ transform:translateY(2px); }
+
+.wBtn::after{
+  content:"";
+  position:absolute;
+  inset:4px;
+  border-radius:6px;
+  background:radial-gradient(circle at 30% 30%,#7c5cff,transparent 70%);
+  opacity:.85;
+}
+
+.wBtn:disabled::after{
+  opacity:.15;
+}
+
+.wBody{
+  border-radius:14px;
+  border:1px solid rgba(0,0,0,0.06);
+  background:rgba(255,255,255,0.6);
+  padding:14px;
+  min-height:70px;
+  display:flex;
+  flex-direction:column;
+  justify-content:center;
+  gap:8px;
+}
+
+.wValue{
+  font-weight:800;
+}
+.wBig{
+  font-size:32px;
+}
+.wText{
+  font-size:16px;
+}
+
+.wMeta{
+  font-size:13px;
+  color:var(--muted);
+}
+
+.colourChip{
+  height:30px;
+  border-radius:10px;
+  border:1px solid rgba(0,0,0,0.08);
+  background:#ddd;
+}
+
+@media(max-width:780px){
+  .grid2{grid-template-columns:1fr}
+}
+</style>
 </head>
 
 <body>
-  <div class="page">
+<div class="page">
+<main class="tablet">
 
-    <main class="tablet" aria-label="Alien tablet dashboard">
-      <!-- Row 1 -->
-      <section class="grid row1">
-        <article class="widget" id="w-wisdom">
-          <div class="wHead">
-            <h2 class="wTitle">Cosmic Wisdom</h2>
-            <p class="wSub" id="sub-wisdom">Tap to receive a directive.</p>
-            <button class="wBtn" id="btn-wisdom" type="button" aria-label="Reveal cosmic wisdom"></button>
-          </div>
-          <div class="wBody">
-            <div class="wResult mono" id="res-wisdom" aria-live="polite"></div>
-          </div>
-        </article>
+<section class="hub">
+  <div class="hubOrb"></div>
+  <h1 class="hubTitle">Alien Luck Tablet</h1>
+  <p class="hubSub">Daily directive for blending in.</p>
+</section>
 
-        <article class="widget" id="w-aura">
-          <div class="wHead">
-            <h2 class="wTitle">Luck Aura</h2>
-            <p class="wSub" id="sub-wisdom">Tap to receive a directive.</p>
-            <button class="wBtn" id="btn-aura" type="button" aria-label="Reveal luck aura"></button>
-          </div>
-          <div class="wBody">
-            <div class="wResult" id="res-aura" aria-live="polite"></div>
-            <div class="auraBar" aria-hidden="true">
-              <div class="auraFill" id="auraFill"></div>
-            </div>
-          </div>
-        </article>
-      </section>
+<section class="grid grid2">
+  <article class="widget">
+    <div class="wHead">
+      <div>
+        <h2 class="wTitle">Cosmic Wisdom</h2>
+        <p class="wSub" id="sub-wisdom">Tap to receive.</p>
+      </div>
+      <button class="wBtn" id="btn-wisdom"></button>
+    </div>
+    <div class="wBody">
+      <div class="wValue wText" id="out-wisdom">—</div>
+    </div>
+  </article>
 
-      <!-- Row 2 -->
-      <section class="grid row2">
-        <article class="widget small" id="w-colour">
-          <div class="wHead">
-            <h2 class="wTitle">Lucky Colour</h2>
-            <p class="wSub" id="sub-wisdom">Tap to receive a directive.</p>
-            <button class="wBtn" id="btn-colour" type="button" aria-label="Reveal lucky colour"></button>
-          </div>
-          <div class="wBody">
-            <div class="wResult" id="res-colour" aria-live="polite"></div>
-            <div class="swatch" id="swatch" aria-hidden="true"></div>
-          </div>
-        </article>
+  <article class="widget">
+    <div class="wHead">
+      <div>
+        <h2 class="wTitle">Luck Aura</h2>
+        <p class="wSub" id="sub-aura">Tap to scan.</p>
+      </div>
+      <button class="wBtn" id="btn-aura"></button>
+    </div>
+    <div class="wBody">
+      <div class="wValue wBig" id="out-aura">—</div>
+      <div class="wMeta" id="meta-aura"></div>
+    </div>
+  </article>
+</section>
 
-                <article class="hub" aria-label="Device hub">
-          <div class="hubGlow" aria-hidden="true"></div>
-          <div class="hubMark" aria-hidden="true"></div>
-          <div class="hubText">
-            <div class="hubName">NEILA UNIT</div>
-            <div class="hubId">Directive Console</div>
-          </div>
-        </article>
-      </section>
-      
-        <article class="widget small" id="w-number">
-          <div class="wHead">
-            <h2 class="wTitle">Lucky Number</h2>
-            <p class="wSub" id="sub-wisdom">Tap to receive a directive.</p>
-            <button class="wBtn" id="btn-number" type="button" aria-label="Reveal lucky number"></button>
-          </div>
-          <div class="wBody">
-            <div class="wResult big" id="res-number" aria-live="polite"></div>
-          </div>
-        </article>
+<section class="grid grid2">
+  <article class="widget">
+    <div class="wHead">
+      <div>
+        <h2 class="wTitle">Lucky Colour</h2>
+        <p class="wSub" id="sub-colour">Tap to calibrate.</p>
+      </div>
+      <button class="wBtn" id="btn-colour"></button>
+    </div>
+    <div class="wBody">
+      <div class="colourChip" id="chip-colour"></div>
+      <div class="wValue wText" id="out-colour">—</div>
+    </div>
+  </article>
 
-      <!-- Row 3 -->
-      <section class="grid row3">
-        <article class="widget" id="w-meal">
-          <div class="wHead">
-            <h2 class="wTitle">Earth Meal</h2>
-            <p class="wSub" id="sub-wisdom">Tap to receive a directive.</p>
-            <button class="wBtn" id="btn-meal" type="button" aria-label="Reveal earth meal"></button>
-          </div>
-          <div class="wBody">
-            <div class="wResult" id="res-meal" aria-live="polite"></div>
-          </div>
-        </article>
+  <article class="widget">
+    <div class="wHead">
+      <div>
+        <h2 class="wTitle">Lucky Number</h2>
+        <p class="wSub" id="sub-number">Tap to receive.</p>
+      </div>
+      <button class="wBtn" id="btn-number"></button>
+    </div>
+    <div class="wBody">
+      <div class="wValue wBig" id="out-number">—</div>
+      <div class="wMeta" id="meta-number"></div>
+    </div>
+  </article>
+</section>
 
-        <article class="widget" id="w-watch">
-          <div class="wHead">
-            <h2 class="wTitle">Earth Entertainment</h2>
-            <p class="wSub" id="sub-wisdom">Tap to receive a directive.</p>
-            <button class="wBtn" id="btn-watch" type="button" aria-label="Reveal earth entertainment"></button>
-          </div>
-          <div class="wBody">
-            <div class="wResult" id="res-watch" aria-live="polite"></div>
-            <div class="wMeta" id="meta-watch"></div>
-          </div>
-        </article>
-      </section>
-    </main>
-  </div>
+</main>
+</div>
 
-  <!-- Lists -->
-  <script defer src="watchlist.js"></script>
-  <script defer src="dinnerlist.js"></script>
-  <script defer src="wisdomlist.js"></script>
+<script>
+const letters="ABCDEFGHIJKLMNOPQRSTUVWXYZ";
 
-  <!-- Core -->
-  <script defer src="script.js"></script>
+function flicker(el, duration, final){
+  const start=performance.now();
+  function step(t){
+    if(t-start<duration){
+      el.textContent=letters[Math.floor(Math.random()*letters.length)];
+      requestAnimationFrame(step);
+    }else{
+      el.textContent=final;
+    }
+  }
+  requestAnimationFrame(step);
+}
 
-  <!-- Widgets (one file per widget) -->
-  <script defer src="widgets/cosmicWisdom.js"></script>
-  <script defer src="widgets/luckAura.js"></script>
-  <script defer src="widgets/luckyColour.js"></script>
-  <script defer src="widgets/luckyNumber.js"></script>
-  <script defer src="widgets/earthMeal.js"></script>
-  <script defer src="widgets/earthEntertainment.js"></script>
+function once(btn, action){
+  btn.addEventListener("click",()=>{
+    if(btn.disabled) return;
+    btn.disabled=true;
+    action();
+  });
+}
+
+/* DATA */
+const wisdomList=[
+  "Proceed gently.",
+  "Observe more. Speak less.",
+  "Choose the smaller risk.",
+  "Today rewards patience.",
+  "Move toward curiosity."
+];
+
+const colours=[
+  {name:"Ultraviolet",hex:"#7c5cff"},
+  {name:"Solar Amber",hex:"#ffb000"},
+  {name:"Deep Coral",hex:"#fb7185"},
+  {name:"Sky Signal",hex:"#60a5fa"},
+  {name:"Mint Field",hex:"#2ee9a6"}
+];
+
+/* WISDOM */
+once(btn_wisdom,()=>{
+  const final=wisdomList[Math.floor(Math.random()*wisdomList.length)];
+  flicker(out_wisdom,800,final);
+  sub_wisdom.textContent="Directive locked until refresh.";
+});
+
+/* AURA */
+once(btn_aura,()=>{
+  const val=Math.round(Math.random()*40+60); // 60-100
+  flicker(out_aura,800,val+"%");
+  meta_aura.textContent=val<70?"Luck levels low. Proceed with caution.":"Field stable. Moderate luck.";
+  sub_aura.textContent="Scan complete.";
+});
+
+/* COLOUR */
+once(btn_colour,()=>{
+  let i=0;
+  const interval=setInterval(()=>{
+    const c=colours[Math.floor(Math.random()*colours.length)];
+    chip_colour.style.background=c.hex;
+    out_colour.textContent=c.name;
+    i++;
+    if(i>15){
+      clearInterval(interval);
+      sub_colour.textContent="Colour locked.";
+    }
+  },60);
+});
+
+/* NUMBER */
+once(btn_number,()=>{
+  const num=Math.floor(Math.random()*100);
+  flicker(out_number,800,num);
+  meta_number.textContent="Notice this number today.";
+  sub_number.textContent="Number received.";
+});
+</script>
+
 </body>
 </html>
