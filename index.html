@@ -2,156 +2,365 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8" />
-  <title>Alien Luck Tablet</title>
+  <title>Luck Meter</title>
   <meta name="viewport" content="width=device-width, initial-scale=1" />
-
   <link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans:wght@400;600;800&display=swap" rel="stylesheet">
-
-  <!-- If you already have styles.css, keep this.
-       If not, remove this line and paste your CSS into a <style> block. -->
   <link rel="stylesheet" href="styles.css" />
 </head>
 
 <body>
+  <div class="page">
+    <main class="stack">
 
-  <!-- TABLET ONLY (no top header) -->
-  <main class="tablet" aria-label="Alien Luck Tablet">
-    <div class="tabletInner">
+      <!-- WISDOM -->
+      <section class="widgetRow" data-widget="wisdom">
+        <div class="widgetCard" data-lock="once">
+          <div class="iconBlock" style="--accent:#7C3AED;" aria-hidden="true">
+            <span class="iconMark">✦</span>
+          </div>
 
-      <!-- ROW 1 (2) -->
-      <div class="row row2">
+          <div class="cardBody">
+            <div class="cardTop">
+              <div class="titleWrap">
+                <h2 class="cardTitle">Cosmic Wisdom</h2>
+                <p class="cardSub">A short directive for your day.</p>
+              </div>
 
-        <!-- Cosmic Wisdom -->
-        <section class="widget" id="w-wisdom">
-          <div class="wTop">
-            <div class="wText">
-              <h2 class="wTitle">Cosmic Wisdom</h2>
-              <p class="wSub" id="sub-wisdom">Tap to receive.</p>
+              <button class="actionBtn" type="button" data-action="reveal" aria-label="Reveal cosmic wisdom" style="--accent:#7C3AED;">
+                <span class="btnDot" aria-hidden="true"></span>
+              </button>
             </div>
-            <button class="wBtn" id="btn-wisdom" type="button" aria-label="Reveal cosmic wisdom"
-              style="--c1:#7c3aed;--c2:#22c55e"></button>
+
+            <div class="revealBox" data-field="reveal">Tap reveal.</div>
+          </div>
+        </div>
+
+        <aside class="sponsorBox">
+          <a class="sponsorLink" href="#" aria-label="Sponsor slot">Sponsored by <b>Your Sponsor</b></a>
+        </aside>
+
+        <p class="afterLine" data-field="after" hidden></p>
+        <div class="divider"></div>
+      </section>
+
+      <!-- AURA -->
+      <section class="widgetRow" data-widget="aura">
+        <div class="widgetCard" data-lock="once">
+          <div class="iconBlock" style="--accent:#0EA5E9;" aria-hidden="true">
+            <span class="iconMark">◎</span>
           </div>
 
-          <div class="wBody">
-            <div class="wOutput mono" id="out-wisdom">—</div>
-          </div>
-        </section>
+          <div class="cardBody">
+            <div class="cardTop">
+              <div class="titleWrap">
+                <h2 class="cardTitle">Luck Aura</h2>
+                <p class="cardSub">A quick reading. Low luck means caution.</p>
+              </div>
 
-        <!-- Luck Aura -->
-        <section class="widget" id="w-aura">
-          <div class="wTop">
-            <div class="wText">
-              <h2 class="wTitle">Luck Aura</h2>
-              <p class="wSub" id="sub-aura">Tap to scan.</p>
+              <button class="actionBtn" type="button" data-action="reveal" aria-label="Reveal luck aura" style="--accent:#0EA5E9;">
+                <span class="btnDot" aria-hidden="true"></span>
+              </button>
             </div>
-            <button class="wBtn" id="btn-aura" type="button" aria-label="Scan luck aura"
-              style="--c1:#06b6d4;--c2:#7c3aed"></button>
+
+            <div class="revealBox big" data-field="reveal">Tap reveal.</div>
+          </div>
+        </div>
+
+        <aside class="sponsorBox">
+          <a class="sponsorLink" href="#" aria-label="Sponsor slot">Sponsored by <b>Your Sponsor</b></a>
+        </aside>
+
+        <p class="afterLine" data-field="after" hidden></p>
+        <div class="divider"></div>
+      </section>
+
+      <!-- LUCKY COLOURS (PAIR) -->
+      <section class="widgetRow" data-widget="colors">
+        <div class="widgetCard" data-lock="once">
+          <div class="iconBlock" style="--accent:#F97316;" aria-hidden="true">
+            <span class="iconMark">▦</span>
           </div>
 
-          <div class="wBody">
-            <div class="wOutput mono" id="out-aura">—</div>
-          </div>
-        </section>
+          <div class="cardBody">
+            <div class="cardTop">
+              <div class="titleWrap">
+                <h2 class="cardTitle">Lucky Colours</h2>
+                <p class="cardSub">Two colours. Use them for choices today.</p>
+              </div>
 
-      </div>
-
-
-      <!-- ROW 2 (3 with hub centered) -->
-      <div class="row row3">
-
-        <!-- Lucky Colour -->
-        <section class="widget" id="w-colour">
-          <div class="wTop">
-            <div class="wText">
-              <h2 class="wTitle">Lucky Colour</h2>
-              <p class="wSub" id="sub-colour">Tap to calibrate.</p>
+              <button class="actionBtn" type="button" data-action="reveal" aria-label="Reveal lucky colours" style="--accent:#F97316;">
+                <span class="btnDot" aria-hidden="true"></span>
+              </button>
             </div>
-            <button class="wBtn" id="btn-colour" type="button" aria-label="Reveal lucky colour"
-              style="--c1:#f59e0b;--c2:#22c55e"></button>
+
+            <div class="revealBox color" data-field="reveal">Tap reveal.</div>
+          </div>
+        </div>
+
+        <aside class="sponsorBox">
+          <a class="sponsorLink" href="#" aria-label="Sponsor slot">Sponsored by <b>Your Sponsor</b></a>
+        </aside>
+
+        <p class="afterLine" data-field="after" hidden></p>
+        <div class="divider"></div>
+      </section>
+
+      <!-- LUCKY NUMBERS -->
+      <section class="widgetRow" data-widget="numbers">
+        <div class="widgetCard" data-lock="once">
+          <div class="iconBlock" style="--accent:#22C55E;" aria-hidden="true">
+            <span class="iconMark">#</span>
           </div>
 
-          <div class="wBody">
-            <div class="wSwatch" id="swatch-colour" aria-hidden="true"></div>
-            <div class="wOutput mono" id="out-colour">—</div>
-          </div>
-        </section>
+          <div class="cardBody">
+            <div class="cardTop">
+              <div class="titleWrap">
+                <h2 class="cardTitle">Lucky Numbers</h2>
+                <p class="cardSub">One small number, plus six lotto numbers.</p>
+              </div>
 
-        <!-- HUB (CENTER) -->
-        <section class="widget hub" aria-label="Tablet hub">
-          <div class="hubMark" aria-hidden="true">👽</div>
-          <h1 class="hubTitle">Alien Luck Tablet</h1>
-          <p class="hubSub">Daily directive for blending in.</p>
-          <p class="hubHint">Refresh to reboot.</p>
-        </section>
-
-        <!-- Lucky Number -->
-        <section class="widget" id="w-number">
-          <div class="wTop">
-            <div class="wText">
-              <h2 class="wTitle">Lucky Number</h2>
-              <p class="wSub" id="sub-number">Tap to receive.</p>
+              <button class="actionBtn" type="button" data-action="reveal" aria-label="Reveal lucky numbers" style="--accent:#22C55E;">
+                <span class="btnDot" aria-hidden="true"></span>
+              </button>
             </div>
-            <button class="wBtn" id="btn-number" type="button" aria-label="Reveal lucky number"
-              style="--c1:#fb7185;--c2:#60a5fa"></button>
+
+            <div class="revealBox" data-field="reveal">Tap reveal.</div>
+          </div>
+        </div>
+
+        <aside class="sponsorBox">
+          <a class="sponsorLink" href="#" aria-label="Sponsor slot">Sponsored by <b>Your Sponsor</b></a>
+        </aside>
+
+        <p class="afterLine" data-field="after" hidden></p>
+        <div class="divider"></div>
+      </section>
+
+      <!-- DINNER (REROLL) -->
+      <section class="widgetRow" data-widget="dinner">
+        <div class="widgetCard" data-lock="reroll">
+          <div class="iconBlock" style="--accent:#EF4444;" aria-hidden="true">
+            <span class="iconMark">☄</span>
           </div>
 
-          <div class="wBody">
-            <div class="wOutput mono" id="out-number">—</div>
-          </div>
-        </section>
+          <div class="cardBody">
+            <div class="cardTop">
+              <div class="titleWrap">
+                <h2 class="cardTitle">What should I have for dinner?</h2>
+                <p class="cardSub">Decision-ending. Rerolls allowed.</p>
+              </div>
 
-      </div>
-
-
-      <!-- ROW 3 (2) -->
-      <div class="row row2">
-
-        <!-- Earth Meal -->
-        <section class="widget" id="w-meal">
-          <div class="wTop">
-            <div class="wText">
-              <h2 class="wTitle">Earth Meal</h2>
-              <p class="wSub" id="sub-meal">Tap to decide.</p>
+              <button class="actionBtn" type="button" data-action="reveal" aria-label="Reveal dinner idea" style="--accent:#EF4444;">
+                <span class="btnDot" aria-hidden="true"></span>
+              </button>
             </div>
-            <button class="wBtn" id="btn-meal" type="button" aria-label="Reveal earth meal"
-              style="--c1:#22c55e;--c2:#a78bfa"></button>
+
+            <div class="revealBox" data-field="reveal">Tap reveal.</div>
+          </div>
+        </div>
+
+        <aside class="sponsorBox">
+          <a class="sponsorLink" href="#" aria-label="Sponsor slot">Sponsored by <b>Your Sponsor</b></a>
+        </aside>
+
+        <p class="afterLine" data-field="after" hidden></p>
+        <div class="divider"></div>
+      </section>
+
+      <!-- WATCH (REROLL) -->
+      <section class="widgetRow" data-widget="watch">
+        <div class="widgetCard" data-lock="reroll">
+          <div class="iconBlock" style="--accent:#111827;" aria-hidden="true">
+            <span class="iconMark">▣</span>
           </div>
 
-          <div class="wBody tall">
-            <div class="wOutput mono" id="out-meal">—</div>
-          </div>
-        </section>
+          <div class="cardBody">
+            <div class="cardTop">
+              <div class="titleWrap">
+                <h2 class="cardTitle">What should I watch?</h2>
+                <p class="cardSub">Pick one and commit. Rerolls allowed.</p>
+              </div>
 
-        <!-- Earth Entertainment -->
-        <section class="widget" id="w-ent">
-          <div class="wTop">
-            <div class="wText">
-              <h2 class="wTitle">Earth Entertainment</h2>
-              <p class="wSub" id="sub-ent">Tap to observe.</p>
+              <button class="actionBtn" type="button" data-action="reveal" aria-label="Reveal watch pick" style="--accent:#111827;">
+                <span class="btnDot" aria-hidden="true"></span>
+              </button>
             </div>
-            <button class="wBtn" id="btn-ent" type="button" aria-label="Reveal earth entertainment"
-              style="--c1:#60a5fa;--c2:#f59e0b"></button>
+
+            <div class="revealBox" data-field="reveal">Tap reveal.</div>
+          </div>
+        </div>
+
+        <aside class="sponsorBox">
+          <a class="sponsorLink" href="#" aria-label="Sponsor slot">Sponsored by <b>Your Sponsor</b></a>
+        </aside>
+
+        <p class="afterLine" data-field="after" hidden></p>
+        <div class="divider"></div>
+      </section>
+
+      <!-- JOKE -->
+      <section class="widgetRow" data-widget="joke">
+        <div class="widgetCard" data-lock="once">
+          <div class="iconBlock" style="--accent:#A855F7;" aria-hidden="true">
+            <span class="iconMark">☺</span>
           </div>
 
-          <div class="wBody tall">
-            <div class="wOutput mono" id="out-ent">—</div>
-            <div class="wMeta" id="meta-ent"></div>
+          <div class="cardBody">
+            <div class="cardTop">
+              <div class="titleWrap">
+                <h2 class="cardTitle">Joke of the Day</h2>
+                <p class="cardSub">Low stakes. High potential cringe.</p>
+              </div>
+
+              <button class="actionBtn" type="button" data-action="reveal" aria-label="Reveal joke" style="--accent:#A855F7;">
+                <span class="btnDot" aria-hidden="true"></span>
+              </button>
+            </div>
+
+            <div class="revealBox" data-field="reveal">Tap reveal.</div>
           </div>
-        </section>
+        </div>
 
-      </div>
+        <aside class="sponsorBox">
+          <a class="sponsorLink" href="#" aria-label="Sponsor slot">Sponsored by <b>Your Sponsor</b></a>
+        </aside>
 
-    </div>
-  </main>
+        <p class="afterLine" data-field="after" hidden></p>
+        <div class="divider"></div>
+      </section>
 
+      <!-- FACT -->
+      <section class="widgetRow" data-widget="fact">
+        <div class="widgetCard" data-lock="once">
+          <div class="iconBlock" style="--accent:#14B8A6;" aria-hidden="true">
+            <span class="iconMark">i</span>
+          </div>
+
+          <div class="cardBody">
+            <div class="cardTop">
+              <div class="titleWrap">
+                <h2 class="cardTitle">Fact of the Day</h2>
+                <p class="cardSub">Something true-ish to carry around.</p>
+              </div>
+
+              <button class="actionBtn" type="button" data-action="reveal" aria-label="Reveal fact" style="--accent:#14B8A6;">
+                <span class="btnDot" aria-hidden="true"></span>
+              </button>
+            </div>
+
+            <div class="revealBox" data-field="reveal">Tap reveal.</div>
+          </div>
+        </div>
+
+        <aside class="sponsorBox">
+          <a class="sponsorLink" href="#" aria-label="Sponsor slot">Sponsored by <b>Your Sponsor</b></a>
+        </aside>
+
+        <p class="afterLine" data-field="after" hidden></p>
+        <div class="divider"></div>
+      </section>
+
+      <!-- PLACE -->
+      <section class="widgetRow" data-widget="place">
+        <div class="widgetCard" data-lock="once">
+          <div class="iconBlock" style="--accent:#F59E0B;" aria-hidden="true">
+            <span class="iconMark">⌂</span>
+          </div>
+
+          <div class="cardBody">
+            <div class="cardTop">
+              <div class="titleWrap">
+                <h2 class="cardTitle">Place of the Day</h2>
+                <p class="cardSub">A random place to daydream about.</p>
+              </div>
+
+              <button class="actionBtn" type="button" data-action="reveal" aria-label="Reveal place" style="--accent:#F59E0B;">
+                <span class="btnDot" aria-hidden="true"></span>
+              </button>
+            </div>
+
+            <div class="revealBox" data-field="reveal">Tap reveal.</div>
+          </div>
+        </div>
+
+        <aside class="sponsorBox">
+          <a class="sponsorLink" href="#" aria-label="Sponsor slot">Sponsored by <b>Your Sponsor</b></a>
+        </aside>
+
+        <p class="afterLine" data-field="after" hidden></p>
+        <div class="divider"></div>
+      </section>
+
+      <!-- WORD -->
+      <section class="widgetRow" data-widget="word">
+        <div class="widgetCard" data-lock="once">
+          <div class="iconBlock" style="--accent:#6366F1;" aria-hidden="true">
+            <span class="iconMark">Aa</span>
+          </div>
+
+          <div class="cardBody">
+            <div class="cardTop">
+              <div class="titleWrap">
+                <h2 class="cardTitle">Word of the Day</h2>
+                <p class="cardSub">A word to notice in the wild.</p>
+              </div>
+
+              <button class="actionBtn" type="button" data-action="reveal" aria-label="Reveal word" style="--accent:#6366F1;">
+                <span class="btnDot" aria-hidden="true"></span>
+              </button>
+            </div>
+
+            <div class="revealBox" data-field="reveal">Tap reveal.</div>
+          </div>
+        </div>
+
+        <aside class="sponsorBox">
+          <a class="sponsorLink" href="#" aria-label="Sponsor slot">Sponsored by <b>Your Sponsor</b></a>
+        </aside>
+
+        <p class="afterLine" data-field="after" hidden></p>
+        <div class="divider"></div>
+      </section>
+
+      <!-- TAROT -->
+      <section class="widgetRow" data-widget="tarot">
+        <div class="widgetCard" data-lock="once">
+          <div class="iconBlock" style="--accent:#8B5CF6;" aria-hidden="true">
+            <span class="iconMark">⟐</span>
+          </div>
+
+          <div class="cardBody">
+            <div class="cardTop">
+              <div class="titleWrap">
+                <h2 class="cardTitle">Tarot Card</h2>
+                <p class="cardSub">Not a reading. Just a card.</p>
+              </div>
+
+              <button class="actionBtn" type="button" data-action="reveal" aria-label="Reveal tarot card" style="--accent:#8B5CF6;">
+                <span class="btnDot" aria-hidden="true"></span>
+              </button>
+            </div>
+
+            <div class="revealBox" data-field="reveal">Tap reveal.</div>
+          </div>
+        </div>
+
+        <aside class="sponsorBox">
+          <a class="sponsorLink" href="#" aria-label="Sponsor slot">Sponsored by <b>Your Sponsor</b></a>
+        </aside>
+
+        <p class="afterLine" data-field="after" hidden></p>
+        <div class="divider"></div>
+      </section>
+
+    </main>
+  </div>
 
   <!-- Reference lists -->
   <script defer src="watchlist.js"></script>
-  <script defer src="fortunes.js"></script>
   <script defer src="dinnerlist.js"></script>
 
   <!-- Logic -->
   <script defer src="script.js"></script>
-
 </body>
 </html>
