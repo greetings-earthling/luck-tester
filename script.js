@@ -1,202 +1,349 @@
-/* Alien Luck Tablet logic
-   - one use per widget per refresh (no storage)
-   - no eval, no Function, no string setTimeout
+/* Clean widget logic (CSP-safe)
+   - Reveal once per widget until refresh
+   - Reroll allowed for Dinner + Watch only
+   - Uses window.WATCHLIST and window.DINNERLIST (or window.FOODLIST)
 */
 
 window.addEventListener("DOMContentLoaded", () => {
-  const $ = (id) => document.getElementById(id);
-
+  const $all = (sel) => Array.from(document.querySelectorAll(sel));
   const pick = (arr) => arr[Math.floor(Math.random() * arr.length)];
   const clamp = (n, a, b) => Math.max(a, Math.min(b, n));
 
-  // scramble animation (latin-ish)
-  const GLYPHS = "ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789";
-  function scramble(el, ms = 520, finalText = "") {
-    if (!el) return Promise.resolve();
-    const start = performance.now();
-    const len = Math.max(6, Math.min(24, finalText.length || 10));
+  // -----------------------------
+  // Reference lists
+  // -----------------------------
+  const WATCH = Array.isArray(window.WATCHLIST) ? window.WATCHLIST : [];
+  const DINNER = Array.isArray(window.DINNERLIST)
+    ? window.DINNERLIST
+    : (Array.isArray(window.FOODLIST) ? window.FOODLIST : []);
 
-    return new Promise((resolve) => {
-      function frame(now) {
-        const p = clamp((now - start) / ms, 0, 1);
-        const churn = Math.floor((1 - p) * 10) + 2;
-
-        let s = "";
-        for (let i = 0; i < len; i++) {
-          s += GLYPHS[(Math.random() * GLYPHS.length) | 0];
-        }
-        el.textContent = s;
-
-        if (p >= 1) {
-          el.textContent = finalText || "—";
-          el.classList.remove("pop");
-          void el.offsetWidth;
-          el.classList.add("pop");
-          resolve();
-          return;
-        }
-        for (let k = 0; k < churn; k++) {}
-        requestAnimationFrame(frame);
-      }
-      requestAnimationFrame(frame);
-    });
-  }
-
-  // lock a widget button after use (until refresh)
-  function oneShot(btn, subEl, usedText = "Directive received.") {
-    if (!btn) return;
-    btn.disabled = true;
-    if (subEl) subEl.textContent = usedText;
-  }
-
-  // ------------------------
-  // Cosmic Wisdom (uses fortunes list if present, otherwise fallback)
-  // ------------------------
-  const wisdomBtn = $("btn-wisdom");
-  const wisdomOut = $("out-wisdom");
-  const wisdomSub = $("sub-wisdom");
-
-  const fallbackWisdom = [
-    "Proceed. But do not rush the outcome.",
-    "Minimize noise. Maximize signal.",
-    "Your next decision is smaller than it feels.",
-    "Observe first. Act second.",
-    "Do the easy win. Skip the hero move."
+  // -----------------------------
+  // Built-in content (placeholders, expand anytime)
+  // -----------------------------
+  const WISDOM = [
+    "Proceed gently. Let the day come to you.",
+    "Choose one thing. Do it cleanly.",
+    "Take the small win. Ignore the noise.",
+    "If it’s messy, it’s alive. Keep going.",
+    "Say yes to the easy kindness.",
+    "You’re allowed to simplify."
   ];
 
-  wisdomBtn?.addEventListener("click", async () => {
-    const list = window.FORTUNES || fallbackWisdom;
-    const msg = pick(list);
-    await scramble(wisdomOut, 560, msg);
-    oneShot(wisdomBtn, wisdomSub, "Directive received.");
-  });
+  const JOKES = [
+    "I’m not superstitious. I’m just… efficiently cautious.",
+    "Today’s forecast: 70% chance of vibes.",
+    "If luck calls, I’m sending it to voicemail."
+  ];
 
-  // ------------------------
-  // Luck Aura (0–100, biased toward ~70)
-  // ------------------------
-  const auraBtn = $("btn-aura");
-  const auraOut = $("out-aura");
-  const auraSub = $("sub-aura");
+  const FACTS = [
+    "Honey never spoils. (Archaeologists have found edible honey in ancient tombs.)",
+    "Octopuses have three hearts.",
+    "Bananas are berries. Strawberries aren’t."
+  ];
 
-  function randNormal(mean, sd) {
-    let u = 0, v = 0;
-    while (u === 0) u = Math.random();
-    while (v === 0) v = Math.random();
-    const z = Math.sqrt(-2 * Math.log(u)) * Math.cos(2 * Math.PI * v);
-    return mean + z * sd;
+  const PLACES = [
+    "Reykjavík, Iceland",
+    "Kyoto, Japan",
+    "Lisbon, Portugal",
+    "Marrakesh, Morocco",
+    "Banff, Alberta",
+    "Hanoi, Vietnam"
+  ];
+
+  const WORDS = [
+    { word: "serendipity", def: "finding something good without looking for it" },
+    { word: "sonder", def: "realizing others have lives as vivid as yours" },
+    { word: "lilt", def: "a light, cheerful rhythm or lift" }
+  ];
+
+  const TAROT = [
+    "The Fool",
+    "The Magician",
+    "The High Priestess",
+    "The Empress",
+    "The Wheel of Fortune",
+    "The Star",
+    "The Moon"
+  ];
+
+  // -----------------------------
+  // Colour generator (HSL -> HEX) + ensure difference
+  // -----------------------------
+  function randLuckyHex() {
+    const h = Math.floor(Math.random() * 360);
+    const s = 70 + Math.floor(Math.random() * 20);  // 70–89
+    const l = 45 + Math.floor(Math.random() * 15);  // 45–59
+    return hslToHex(h, s, l);
   }
-  function rollAura() {
-    const raw = randNormal(70, 14);
+
+  function hslToHex(h, s, l) {
+    s /= 100;
+    l /= 100;
+
+    const c = (1 - Math.abs(2 * l - 1)) * s;
+    const x = c * (1 - Math.abs(((h / 60) % 2) - 1));
+    const m = l - c / 2;
+
+    let r = 0, g = 0, b = 0;
+
+    if (h < 60)       { r = c; g = x; b = 0; }
+    else if (h < 120) { r = x; g = c; b = 0; }
+    else if (h < 180) { r = 0; g = c; b = x; }
+    else if (h < 240) { r = 0; g = x; b = c; }
+    else if (h < 300) { r = x; g = 0; b = c; }
+    else              { r = c; g = 0; b = x; }
+
+    const toHex = (v) => Math.round((v + m) * 255).toString(16).padStart(2, "0").toUpperCase();
+    return `#${toHex(r)}${toHex(g)}${toHex(b)}`;
+  }
+
+  function hexToRgb(hex){
+    const h = hex.replace("#","");
+    return { r: parseInt(h.slice(0,2),16), g: parseInt(h.slice(2,4),16), b: parseInt(h.slice(4,6),16) };
+  }
+
+  function colorDistance(a,b){
+    const A = hexToRgb(a), B = hexToRgb(b);
+    return Math.abs(A.r-B.r) + Math.abs(A.g-B.g) + Math.abs(A.b-B.b);
+  }
+
+  function pickTwoLuckyHexColors(){
+    let c1 = randLuckyHex();
+    let c2 = randLuckyHex();
+    let tries = 0;
+    while (colorDistance(c1, c2) < 140 && tries < 12){
+      c2 = randLuckyHex();
+      tries++;
+    }
+    return [c1, c2];
+  }
+
+  // -----------------------------
+  // Aura score: 0–100 (usually closer to 70)
+  // -----------------------------
+  function randNormal(mean, sd){
+    let u=0, v=0;
+    while (u===0) u = Math.random();
+    while (v===0) v = Math.random();
+    const z = Math.sqrt(-2*Math.log(u)) * Math.cos(2*Math.PI*v);
+    return mean + z*sd;
+  }
+
+  function rollAura(){
+    const raw = randNormal(70, 14); // skewed "usually closer to 70"
     return Math.round(clamp(raw, 0, 100));
   }
-  function auraLine(pct) {
-    if (pct >= 85) return `${pct}% — Luck is highly favourable.`;
-    if (pct >= 70) return `${pct}% — Luck is favourable.`;
-    if (pct >= 55) return `${pct}% — Luck is stable.`;
-    if (pct >= 40) return `${pct}% — Luck levels low. Proceed with caution.`;
-    return `${pct}% — Luck levels critical. Avoid gambles.`;
+
+  function auraAfter(score){
+    if (score < 30) return "Low luck. Keep it simple and proceed with caution.";
+    if (score < 50) return "Luck is quiet today. Move deliberately.";
+    if (score < 70) return "Steady luck. You’ll do fine if you don’t force it.";
+    if (score < 85) return "Nice luck. The universe is cooperating.";
+    return "Big luck. This is a ‘say yes’ kind of day.";
   }
 
-  auraBtn?.addEventListener("click", async () => {
-    const pct = rollAura();
-    await scramble(auraOut, 520, auraLine(pct));
-    oneShot(auraBtn, auraSub, "Scan complete.");
-  });
-
-  // ------------------------
-  // Lucky Colour (flash then settle)
-  // ------------------------
-  const colourBtn = $("btn-colour");
-  const colourOut = $("out-colour");
-  const colourSub = $("sub-colour");
-  const swatch = $("swatch-colour");
-
-  const colours = [
-    { name:"Solar Gold", hex:"#f59e0b" },
-    { name:"Void Violet", hex:"#7c3aed" },
-    { name:"Nebula Mint", hex:"#22c55e" },
-    { name:"Signal Sky", hex:"#60a5fa" },
-    { name:"Cosmic Coral", hex:"#fb7185" },
-    { name:"Ion Indigo", hex:"#6366f1" },
-    { name:"Aurora Teal", hex:"#06b6d4" }
-  ];
-
-  function flashColour(ms = 520) {
-    return new Promise((resolve) => {
-      const start = performance.now();
-      function frame(now) {
-        const p = clamp((now - start) / ms, 0, 1);
-        const c = pick(colours);
-        if (swatch) swatch.style.background = c.hex;
-        if (p >= 1) return resolve();
-        requestAnimationFrame(frame);
-      }
-      requestAnimationFrame(frame);
-    });
-  }
-
-  colourBtn?.addEventListener("click", async () => {
-    await flashColour(520);
-    const c = pick(colours);
-    if (swatch) swatch.style.background = c.hex;
-    await scramble(colourOut, 420, c.name);
-    oneShot(colourBtn, colourSub, "Calibration complete.");
-  });
-
-  // ------------------------
-  // Lucky Number (0–9 for “notice today”)
-  // ------------------------
-  const numberBtn = $("btn-number");
-  const numberOut = $("out-number");
-  const numberSub = $("sub-number");
-
-  numberBtn?.addEventListener("click", async () => {
-    const n = String(Math.floor(Math.random() * 10));
-    await scramble(numberOut, 420, n);
-    oneShot(numberBtn, numberSub, "Number received.");
-  });
-
-  // ------------------------
-  // Earth Meal (uses dinnerlist.js if present)
-  // ------------------------
-  const mealBtn = $("btn-meal");
-  const mealOut = $("out-meal");
-  const mealSub = $("sub-meal");
-
-  mealBtn?.addEventListener("click", async () => {
-    const list = window.DINNERLIST || window.FOODLIST || [];
-    const item = list.length ? pick(list) : "Add dinnerlist.js (window.DINNERLIST).";
-    await scramble(mealOut, 520, item);
-    oneShot(mealBtn, mealSub, "Decision complete.");
-  });
-
-  // ------------------------
-  // Earth Entertainment (uses watchlist.js if present)
-  // ------------------------
-  const entBtn = $("btn-ent");
-  const entOut = $("out-ent");
-  const entMeta = $("meta-ent");
-  const entSub = $("sub-ent");
-
-  function fmtMeta(item){
-    if (!item || typeof item !== "object") return "";
-    const t = item.type || "";
-    const y = item.year || "";
-    return [t, y].filter(Boolean).join(" • ");
-  }
-
-  entBtn?.addEventListener("click", async () => {
-    const list = window.WATCHLIST || [];
-    if (!list.length){
-      if (entMeta) entMeta.textContent = "";
-      await scramble(entOut, 520, "Add watchlist.js (window.WATCHLIST).");
-      oneShot(entBtn, entSub, "Observer offline.");
-      return;
+  // -----------------------------
+  // Lucky numbers
+  // -----------------------------
+  function uniqueInts(count, min, max){
+    const set = new Set();
+    while (set.size < count){
+      const n = min + Math.floor(Math.random() * (max - min + 1));
+      set.add(n);
     }
+    return Array.from(set);
+  }
 
-    const item = pick(list);
-    if (entMeta) entMeta.textContent = fmtMeta(item);
-    await scramble(entOut, 520, item.title || "—");
-    oneShot(entBtn, entSub, "Observation locked.");
+  // -----------------------------
+  // Watch formatting
+  // -----------------------------
+  function fmtWatch(item){
+    if (!item) return "Add watchlist.js (window.WATCHLIST).";
+    if (typeof item === "string") return item;
+    const title = item.title || "Untitled";
+    const metaParts = [];
+    if (item.type) metaParts.push(item.type);
+    if (item.year) metaParts.push(item.year);
+    return metaParts.length ? `${title}  •  ${metaParts.join(" • ")}` : title;
+  }
+
+  // -----------------------------
+  // Reveal animation helper
+  // -----------------------------
+  function doReveal(cardEl, revealEl, afterEl, accent, computeResult){
+    cardEl.classList.add("isRevealing");
+
+    // Pre-message changes while "revealing"
+    revealEl.textContent = "Decoding…";
+
+    // Fade-out to match button colour (subtle): tint the reveal box briefly
+    const prevBg = revealEl.style.background;
+    const prevColor = revealEl.style.color;
+
+    revealEl.style.background = `linear-gradient(90deg, rgba(255,255,255,0.0), ${accent}33, rgba(255,255,255,0.0))`;
+
+    window.setTimeout(() => {
+      const res = computeResult();
+
+      // Allow widget-specific styling
+      if (res && typeof res === "object"){
+        revealEl.textContent = res.text ?? "";
+        if (res.bg !== undefined) revealEl.style.background = res.bg;
+        if (res.fg !== undefined) revealEl.style.color = res.fg;
+        if (res.after !== undefined){
+          afterEl.textContent = res.after;
+          afterEl.hidden = false;
+        }
+      } else {
+        revealEl.textContent = String(res ?? "");
+      }
+
+      // Clean up reveal state
+      cardEl.classList.remove("isRevealing");
+
+      // If widget didn’t override, restore basics after reveal
+      if (!res || typeof res !== "object" || res.bg === undefined){
+        revealEl.style.background = prevBg;
+      }
+      if (!res || typeof res !== "object" || res.fg === undefined){
+        revealEl.style.color = prevColor;
+      }
+    }, 560);
+  }
+
+  // -----------------------------
+  // Wiring widgets
+  // -----------------------------
+  const rows = $all(".widgetRow");
+
+  rows.forEach((row) => {
+    const card = row.querySelector(".widgetCard");
+    const btn = row.querySelector('[data-action="reveal"]');
+    const revealEl = row.querySelector('[data-field="reveal"]');
+    const afterEl = row.querySelector('[data-field="after"]');
+
+    if (!card || !btn || !revealEl || !afterEl) return;
+
+    const lockMode = card.getAttribute("data-lock") || "once";
+    let used = false;
+
+    const accent = getComputedStyle(btn).getPropertyValue("--accent").trim() || "#111827";
+
+    btn.addEventListener("click", () => {
+      if (lockMode === "once" && used) return;
+
+      const widget = row.getAttribute("data-widget");
+
+      // For once-only widgets, disable until refresh
+      if (lockMode === "once"){
+        used = true;
+        btn.disabled = true;
+      }
+
+      // For reroll widgets, keep enabled
+      if (lockMode === "reroll"){
+        btn.disabled = true; // disable during animation only
+      }
+
+      const finish = () => {
+        if (lockMode === "reroll"){
+          btn.disabled = false;
+        }
+      };
+
+      doReveal(card, revealEl, afterEl, accent, () => {
+        // Default reveal + after
+        let out = { text: "", after: "" };
+
+        if (widget === "wisdom"){
+          const text = pick(WISDOM);
+          out.text = text;
+          out.after = "Keep it simple. One good move is enough.";
+          return out;
+        }
+
+        if (widget === "aura"){
+          const score = rollAura();
+          out.text = `${score}%`;
+          out.after = auraAfter(score);
+          return out;
+        }
+
+        if (widget === "colors"){
+          const [c1, c2] = pickTwoLuckyHexColors();
+          out.text = " ";
+          out.bg = `linear-gradient(90deg, ${c1}, ${c2})`;
+          out.fg = "transparent";
+          out.after = `${c1} & ${c2}`;
+          return out;
+        }
+
+        if (widget === "numbers"){
+          const small = 1 + Math.floor(Math.random() * 10);
+          const lotto = uniqueInts(6, 1, 49).sort((a,b)=>a-b);
+          out.text = `${small}  •  ${lotto.join(", ")}`;
+          out.after = "Notice the small number. Use the rest only if you must.";
+          return out;
+        }
+
+        if (widget === "dinner"){
+          const list = DINNER;
+          const pickItem = list.length ? pick(list) : "Add dinnerlist.js (window.DINNERLIST).";
+          out.text = typeof pickItem === "string" ? pickItem : (pickItem.title || "—");
+          out.after = "Commit for tonight. Reroll only if you’re truly stuck.";
+          window.setTimeout(finish, 0);
+          return out;
+        }
+
+        if (widget === "watch"){
+          const list = WATCH;
+          const pickItem = list.length ? pick(list) : null;
+          out.text = pickItem ? fmtWatch(pickItem) : "Add watchlist.js (window.WATCHLIST).";
+          out.after = "Pick one. Start it. No browsing.";
+          window.setTimeout(finish, 0);
+          return out;
+        }
+
+        if (widget === "joke"){
+          out.text = pick(JOKES);
+          out.after = "If it’s bad, blame the machine.";
+          return out;
+        }
+
+        if (widget === "fact"){
+          out.text = pick(FACTS);
+          out.after = "Use this knowledge irresponsibly.";
+          return out;
+        }
+
+        if (widget === "place"){
+          out.text = pick(PLACES);
+          out.after = "Look it up later. Or just daydream.";
+          return out;
+        }
+
+        if (widget === "word"){
+          const w = pick(WORDS);
+          out.text = `${w.word}: ${w.def}`;
+          out.after = "Try to spot it today. Or slip it into a sentence.";
+          return out;
+        }
+
+        if (widget === "tarot"){
+          out.text = pick(TAROT);
+          out.after = "No interpretation provided. That’s your job.";
+          return out;
+        }
+
+        return out;
+      });
+
+      // Re-enable reroll after animation delay
+      if (lockMode === "reroll"){
+        window.setTimeout(() => {
+          btn.disabled = false;
+        }, 620);
+      }
+    });
   });
 });
