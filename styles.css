@@ -55,8 +55,8 @@ body{
   border:1px solid var(--line);
   border-radius:var(--radius);
   display:grid;
-  grid-template-columns: 1fr 2fr; /* 1/3 text, 2/3 reveal */
-  min-height:130px; /* fixed height, never moves */
+  grid-template-columns: 1fr 1fr; /* 50/50 */
+  min-height:130px;
   overflow:hidden;
 }
 
@@ -102,10 +102,12 @@ body{
 
   font-family:"IBM Plex Mono", monospace;
   font-weight:600;
-  font-size:12px;              /* smaller “tap to reveal” */
+
+  font-size:12px;
   letter-spacing:.10em;
   text-transform:uppercase;
 
+  color: rgba(11,13,18,.85);   /* was too light */
   padding:12px;
   text-align:center;
 }
@@ -119,11 +121,30 @@ body{
   cursor:default;
   background:#0b0d12;
   color:#ffffff;
-  opacity:1;
   text-transform:none;
   letter-spacing:.02em;
   font-weight:700;
-  font-size:22px;              /* big output after reveal */
+
+  /* Apply this class in JS for long outputs (joke/fact/wisdom/watch/dinner sometimes) */
+.reveal.isDone.isLong{
+  font-size:14px;
+  font-weight:600;
+  letter-spacing:0;
+  line-height:1.45;
+}
+
+/* Optional: nice max width so paragraphs don't look like a billboard */
+.reveal.isDone .revealInner{
+  max-width:44ch;
+}
+  
+  /* default (short outputs like a number/letter) */
+  font-size:22px;
+  line-height:1.25;
+
+  /* keep long stuff readable */
+  padding:16px;
+  text-align:left;
 }
 
 /* Lucky Colours special layout (full split) */
