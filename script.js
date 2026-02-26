@@ -11,6 +11,55 @@ window.addEventListener("DOMContentLoaded", () => {
     const steps = 14;
     let i=0;
 
+function isLongText(t){
+  const s = String(t || "");
+  // long if it has spaces or is longer than a short label
+  return s.length > 18 || /\s/.test(s);
+}
+
+function setRevealContent(btn, text){
+  const t = String(text);
+  // wrap for nicer max-width in CSS (revealInner)
+  btn.innerHTML = `<span class="revealInner"></span>`;
+  btn.querySelector(".revealInner").textContent = t;
+
+  // mark long
+  if (isLongText(t)) btn.classList.add("isLong");
+  else btn.classList.remove("isLong");
+}
+
+function scrambleTo(el, finalText, ms=420){
+  const target = String(finalText);
+  const len = clamp(target.length, 4, 40);
+  const steps = 14;
+  let i=0;
+
+  // ensure wrapper exists
+  if (!el.querySelector(".revealInner")) {
+    el.innerHTML = `<span class="revealInner"></span>`;
+  }
+  const inner = el.querySelector(".revealInner");
+
+  // tag long/short up front so sizing is stable during scramble
+  if (isLongText(target)) el.classList.add("isLong");
+  else el.classList.remove("isLong");
+
+  const timer = setInterval(()=>{
+    i++;
+    const lock = Math.floor((i/steps)*len);
+    let out="";
+    for(let k=0;k<len;k++){
+      out += (k<lock) ? (target[k]||"") : GLYPHS[Math.floor(Math.random()*GLYPHS.length)];
+    }
+    inner.textContent = out;
+
+    if(i>=steps){
+      clearInterval(timer);
+      inner.textContent = target;
+    }
+  }, ms/steps);
+}
+    
     const timer = setInterval(()=>{
       i++;
       const lock = Math.floor((i/steps)*len);
@@ -26,10 +75,10 @@ window.addEventListener("DOMContentLoaded", () => {
     }, ms/steps);
   }
 
-  function markDone(btn){
-    btn.classList.add("isDone");
-    btn.disabled = true;
-  }
+function markDone(btn){
+  btn.classList.add("isDone");
+  btn.disabled = true;
+}
 
   function bind(id, mode, run){
     const btn = document.getElementById(id);
@@ -165,22 +214,28 @@ window.addEventListener("DOMContentLoaded", () => {
     document.getElementById("after-tarot").textContent=msg;
   });
 
-  bind("reveal-dinner","reroll",(btn)=>{
-    const list=window.DINNERLIST||[];
-    btn.textContent=list.length?pick(list):"Add dinnerlist.js";
-  });
+bind("reveal-dinner","reroll",(btn)=>{
+  const list = window.DINNERLIST || [];
+  const text = list.length ? pick(list) : "Add dinnerlist.js";
+  setRevealContent(btn, text);
+  btn.classList.add("isDone");     // style it as revealed
+  btn.disabled = false;            // but keep rerolls
+});
 
-  bind("reveal-watch","reroll",(btn)=>{
-    const list=window.WATCHLIST||[];
-    btn.textContent=list.length?pick(list).title:"Add watchlist.js";
-  });
+bind("reveal-watch","reroll",(btn)=>{
+  const list = window.WATCHLIST || [];
+  const text = list.length ? (pick(list).title || "—") : "Add watchlist.js";
+  setRevealContent(btn, text);
+  btn.classList.add("isDone");
+  btn.disabled = false;
+});
 
-  bind("reveal-fact","oneshot",(btn)=>{
-    scrambleTo(btn,pick(FACTS));
-  });
+bind("reveal-fact","oneshot",(btn)=>{
+  scrambleTo(btn, pick(FACTS));
+});
 
-  bind("reveal-joke","oneshot",(btn)=>{
-    scrambleTo(btn,pick(JOKES));
-  });
+bind("reveal-joke","oneshot",(btn)=>{
+  scrambleTo(btn, pick(JOKES));
+});
 
 });
