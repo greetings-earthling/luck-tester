@@ -69,6 +69,12 @@ window.addEventListener("DOMContentLoaded", () => {
     });
   }
 
+function startRevealFX(btn){
+  btn.classList.add("isRevealing");
+  // remove the class after the animation finishes
+  setTimeout(() => btn.classList.remove("isRevealing"), 560);
+}
+  
   // -----------------------------
   // DATA
   // -----------------------------
@@ -177,11 +183,13 @@ window.addEventListener("DOMContentLoaded", () => {
   // -----------------------------
 
   bind("reveal-meter","oneshot",(btn)=>{
+    startRevealFX(btn);
     const pickOne = weightedPick(METER).t;
     scrambleTo(btn, pickOne);
   });
 
   bind("reveal-colour","oneshot",(btn)=>{
+    startRevealFX(btn);
     const hex = rollNiceHex();
 
     btn.classList.add("isDone","isColour");
@@ -207,24 +215,29 @@ window.addEventListener("DOMContentLoaded", () => {
   });
 
   bind("reveal-wisdom","oneshot",(btn)=>{
+    startRevealFX(btn);
     scrambleTo(btn, pick(WISDOM));
   });
 
   bind("reveal-number","oneshot",(btn)=>{
+    startRevealFX(btn);
     const n = 1 + Math.floor(Math.random() * 10);
     scrambleTo(btn, n);
   });
 
   bind("reveal-joke","oneshot",(btn)=>{
+    startRevealFX(btn);
     scrambleTo(btn, pick(JOKES));
   });
 
   bind("reveal-tarot","oneshot",(btn)=>{
+    startRevealFX(btn);
     const [card, msg] = pick(TAROT);
     scrambleTo(btn, `${card} — ${msg}`);
   });
 
   bind("reveal-dinner","reroll",(btn)=>{
+    startRevealFX(btn);
     const list = window.DINNERLIST || [];
     const text = list.length ? pick(list) : "Add dinnerlist.js";
     btn.classList.add("isDone");
@@ -233,6 +246,7 @@ window.addEventListener("DOMContentLoaded", () => {
   });
 
   bind("reveal-watch","reroll",(btn)=>{
+    startRevealFX(btn);
     const list = window.WATCHLIST || [];
     let text = "Add watchlist.js";
     if (list.length){
@@ -245,6 +259,7 @@ window.addEventListener("DOMContentLoaded", () => {
   });
 
   bind("reveal-fact","oneshot",(btn)=>{
+    startRevealFX(btn);
     scrambleTo(btn, pick(FACTS));
   });
 });
