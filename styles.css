@@ -264,3 +264,26 @@ body{
   .grid{ grid-template-columns:1fr; }
   .card.isWide{ grid-column:auto; }
 }
+
+/* --- HEADER ALIGN + SIZE TWEAKS (override) --- */
+
+/* Make header content align with card edges */
+.mast{
+  margin-left:-14px;
+  margin-right:-14px;
+  padding-left:14px;
+  padding-right:14px;
+}
+
+/* Make the icon match the title height */
+.mastIcon{
+  width:auto;
+  height:56px;     /* try 56–62 if you want it taller */
+  margin-top:2px;
+}
+
+/* Tighten title/subtitle spacing */
+.siteSub{
+  margin-top:2px;  /* was 6px */
+  line-height:1.2;
+}
