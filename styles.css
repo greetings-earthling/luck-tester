@@ -277,9 +277,10 @@ body{
 
 /* Make the icon match the title height */
 .mastIcon{
+  height:70px;
   width:auto;
-  height:56px;     /* try 56–62 if you want it taller */
-  margin-top:2px;
+  transform: scale(1.15);
+  transform-origin: left center;
 }
 
 /* Tighten title/subtitle spacing */
