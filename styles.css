@@ -87,7 +87,10 @@ body{
   color:var(--muted);
 }
 
-/* REVEAL AREA */
+/* =========================
+   REVEAL AREA (REPLACE ALL)
+========================= */
+
 .reveal{
   border:0;
   background:#fff;
@@ -111,29 +114,13 @@ body{
   padding:12px;
 }
 
-/* Text always visible */
-.revealInner{
-  position:relative;
-  z-index:3;
-  opacity:0;
-  transition:opacity 1200ms ease;
-}
-
-.reveal.isRevealing .revealInner{
+/* keep disabled from greying out text */
+.reveal:disabled{
   opacity:1;
+  -webkit-text-fill-color: currentColor;
 }
 
-/* Large for short outputs */
-.reveal.isRevealing:not(.isLong){
-  font-size:34px;
-}
-
-/* Normal for long outputs */
-.reveal.isRevealing.isLong{
-  font-size:16px;
-}
-
-/* VIDEO */
+/* smoke video layer */
 .fxVideo{
   position:absolute;
   inset:0;
@@ -145,22 +132,54 @@ body{
   opacity:0;
 }
 
-/* TINT */
+/* tint layer */
 .fxTint{
   position:absolute;
   inset:0;
   z-index:2;
   pointer-events:none;
-  mix-blend-mode:overlay;
+  opacity:0;
+  mix-blend-mode:screen; /* subtle colour lift */
+}
+
+/* text layer */
+.revealInner{
+  position:relative;
+  z-index:3;
+  opacity:1;               /* TAP TO REVEAL visible by default */
+  transition:none;
+  color:inherit;
+}
+
+/* hide tap text during smoke */
+.reveal.isBusy .revealInner{
   opacity:0;
 }
 
-/* show video+tint during reveal window */
-.reveal.isRevealing .fxVideo{
-  opacity:1;
+/* final state */
+.reveal.isDone{
+  background:#0b0d12;
+  color:#fff;
+  text-transform:none;
+  letter-spacing:.02em;
+  font-weight:700;
 }
-.reveal.isRevealing .fxTint{
-  opacity:.45;
+
+/* force inner text white in final state */
+.reveal.isDone .revealInner{
+  color:#fff;
+}
+
+/* sizes */
+.reveal.isDone:not(.isLong){
+  font-size:34px;
+}
+
+.reveal.isDone.isLong{
+  font-size:16px;
+  letter-spacing:0;
+  line-height:1.45;
+  text-transform:none;
 }
 
 /* Footer */
