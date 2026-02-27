@@ -115,11 +115,11 @@ body{
   position:relative;
   z-index:3;
   opacity:0;
-  transition:opacity 1400ms ease;
+  transition:opacity 1200ms ease;
 }
 
 /* text visible only after reveal completes */
-.reveal.isDone .revealInner{
+.reveal.isRevealing .revealInner{
   opacity:1;
 }
 
