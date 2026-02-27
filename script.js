@@ -60,11 +60,17 @@ window.addEventListener("DOMContentLoaded", () => {
     }, ms / steps);
   }
 
-  function startRevealFX(btn) {
-    // triggers the swirly dissolve CSS you added
-    btn.classList.add("isRevealing");
-    setTimeout(() => btn.classList.remove("isRevealing"), 560);
-  }
+function startRevealFX(btn){
+  // restart animation cleanly if clicked again (rerolls)
+  btn.classList.remove("isRevealing");
+  // force reflow so the animation restarts
+  void btn.offsetWidth;
+  btn.classList.add("isRevealing");
+
+  setTimeout(() => {
+    btn.classList.remove("isRevealing");
+  }, 580);
+}
 
   function markDone(btn) {
     btn.classList.add("isDone");
