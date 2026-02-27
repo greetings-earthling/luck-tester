@@ -58,6 +58,8 @@ function scrambleTo(btn, finalText, ms=1800){
   const steps = 24;
   let i = 0;
 
+  inner.style.opacity = "0";
+
   const timer = setInterval(()=>{
     i++;
 
@@ -72,9 +74,13 @@ function scrambleTo(btn, finalText, ms=1800){
 
     inner.textContent = out;
 
+    // Gradual fade-in during scramble
+    inner.style.opacity = Math.min(i/steps, 1);
+
     if(i >= steps){
       clearInterval(timer);
-      inner.textContent = target;   // FINAL LOCK
+      inner.textContent = target;
+      inner.style.opacity = "1";
     }
 
   }, ms/steps);
@@ -86,6 +92,9 @@ function scrambleTo(btn, finalText, ms=1800){
   ensureInner(btn);
 
   btn.classList.add("isRevealing");
+   const inner = ensureInner(btn);
+inner.textContent = "";   // remove TAP TO REVEAL immediately
+inner.style.opacity = "0";
 
   // Immediately go black under smoke
   btn.style.background = "#0b0d12";
@@ -104,7 +113,7 @@ function scrambleTo(btn, finalText, ms=1800){
   // Start scramble while smoke still visible
   setTimeout(()=>{
     revealLogic();
-  }, 1200);
+  }, 1400);
 
   // Fade smoke + tint
   setTimeout(()=>{
