@@ -1,3 +1,4 @@
+<!-- index.html -->
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -7,131 +8,122 @@
 
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=IBM+Plex+Sans:wght@400;600;800&family=IBM+Plex+Mono:wght@400;600;700&display=swap" rel="stylesheet" />
+  <link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=IBM+Plex+Sans:wght@400;600;800&family=IBM+Plex+Mono:wght@400;600&display=swap" rel="stylesheet" />
 
   <link rel="stylesheet" href="styles.css" />
 </head>
 
 <body>
   <main class="page">
-  <header class="mast">
-  <h1 class="siteTitle">The Daily Oracle</h1>
-  <p class="siteSub">Let the universe guide you today.</p>
-</header>
+    <header class="mast">
+      <h1 class="siteTitle">The Daily Oracle</h1>
+      <p class="siteSub">Let the universe guide you today.</p>
+    </header>
 
-<section class="grid" aria-label="Luck widgets">
+    <section class="grid" aria-label="Luck widgets">
 
-  <!-- 1) Luck Aura | Colour -->
-  <article class="card" data-mode="oneshot">
-    <div class="cardText">
-      <div class="kicker">Luck Aura</div>
-      <div class="copy pre">A quick scan. Low luck means proceed with caution. High luck means take the easy wins.</div>
-    </div>
-    <button class="reveal" id="reveal-aura" type="button" aria-label="Reveal luck aura">
-      <span class="revealInner">Tap to reveal</span>
-    </button>
-  </article>
+      <!-- Luck Meter (FULL WIDTH, TOP) -->
+      <article class="card isWide" data-mode="oneshot">
+        <div class="cardText">
+          <div class="kicker">Luck Meter</div>
+          <div class="copy">How are your fortune levels today?</div>
+        </div>
+        <button class="reveal" id="reveal-aura" type="button" aria-label="Reveal luck meter">
+          TAP TO REVEAL
+        </button>
+      </article>
 
-  <article class="card" data-mode="oneshot">
-    <div class="cardText">
-      <div class="kicker">Lucky Colours</div>
-      <div class="copy pre">Two colours for the day. Use them to choose, to wear, or to break a tie.</div>
-    </div>
-    <button class="reveal" id="reveal-colours" type="button" aria-label="Reveal lucky colours">
-      <span class="revealInner">Tap to reveal</span>
-    </button>
-  </article>
+      <!-- Lucky Colours -->
+      <article class="card" data-mode="oneshot">
+        <div class="cardText">
+          <div class="kicker">Lucky Colours</div>
+          <div class="copy">Two colours for the day. Use them to choose, to wear, or to break a tie.</div>
+        </div>
+        <button class="reveal" id="reveal-colours" type="button" aria-label="Reveal lucky colours">
+          TAP TO REVEAL
+        </button>
+      </article>
 
-  <!-- 2) Wisdom (FULL WIDTH) -->
-  <article class="card full" data-mode="oneshot">
-    <div class="cardText">
-      <div class="kicker">Cosmic Wisdom</div>
-      <div class="copy pre">A short directive. Not advice. Just a clean sentence to carry.</div>
-    </div>
-    <button class="reveal" id="reveal-wisdom" type="button" aria-label="Reveal cosmic wisdom">
-      <span class="revealInner">Tap to reveal</span>
-    </button>
-  </article>
+      <!-- Cosmic Wisdom (FULL WIDTH) -->
+      <article class="card isWide" data-mode="oneshot">
+        <div class="cardText">
+          <div class="kicker">Cosmic Wisdom</div>
+          <div class="copy">A short directive. Not advice. Just a clean sentence to carry.</div>
+        </div>
+        <button class="reveal" id="reveal-wisdom" type="button" aria-label="Reveal cosmic wisdom">
+          TAP TO REVEAL
+        </button>
+      </article>
 
-  <!-- 3) Number | Letter -->
-  <article class="card" data-mode="oneshot">
-    <div class="cardText">
-      <div class="kicker">Lucky Number</div>
-      <div class="copy pre">Today’s lucky digit. For when you must choose. Fate likes confidence.</div>
-    </div>
-    <button class="reveal" id="reveal-number" type="button" aria-label="Reveal lucky number">
-      <span class="revealInner">Tap to reveal</span>
-    </button>
-  </article>
+      <!-- Lucky Number -->
+      <article class="card" data-mode="oneshot">
+        <div class="cardText">
+          <div class="kicker">Lucky Number</div>
+          <div class="copy">Today’s lucky digit. For when you must choose.</div>
+        </div>
+        <button class="reveal" id="reveal-number" type="button" aria-label="Reveal lucky number">
+          TAP TO REVEAL
+        </button>
+      </article>
 
-  <article class="card" data-mode="oneshot">
-    <div class="cardText">
-      <div class="kicker">Lucky Letter</div>
-      <div class="copy pre">Keep this letter in mind. Names. Signs. Messages. Notice when it shows up.</div>
-    </div>
-    <button class="reveal" id="reveal-letter" type="button" aria-label="Reveal lucky letter">
-      <span class="revealInner">Tap to reveal</span>
-    </button>
-  </article>
+      <!-- Joke (FULL WIDTH) -->
+      <article class="card isWide" data-mode="oneshot">
+        <div class="cardText">
+          <div class="kicker">Joke</div>
+          <div class="copy">A terrible one. You’ve been warned.</div>
+        </div>
+        <button class="reveal" id="reveal-joke" type="button" aria-label="Reveal joke">
+          TAP TO REVEAL
+        </button>
+      </article>
 
-  <!-- 4) Joke (FULL WIDTH) -->
-  <article class="card full" data-mode="oneshot">
-    <div class="cardText">
-      <div class="kicker">Joke</div>
-      <div class="copy pre">A terrible one. You’ve been warned.</div>
-    </div>
-    <button class="reveal" id="reveal-joke" type="button" aria-label="Reveal joke">
-      <span class="revealInner">Tap to reveal</span>
-    </button>
-  </article>
+      <!-- Tarot (FULL WIDTH) -->
+      <article class="card isWide" data-mode="oneshot">
+        <div class="cardText">
+          <div class="kicker">Tarot</div>
+          <div class="copy">One card. One nudge. Treat it like a prompt, not a prophecy.</div>
+        </div>
+        <button class="reveal" id="reveal-tarot" type="button" aria-label="Reveal tarot card">
+          TAP TO REVEAL
+        </button>
+      </article>
 
-  <!-- 5) Tarot (FULL WIDTH) -->
-  <article class="card full" data-mode="oneshot">
-    <div class="cardText">
-      <div class="kicker">Tarot</div>
-      <div class="copy pre">One card. One nudge. Treat it like a prompt, not a prophecy.</div>
-    </div>
-    <button class="reveal" id="reveal-tarot" type="button" aria-label="Reveal tarot card">
-      <span class="revealInner">Tap to reveal</span>
-    </button>
-  </article>
+      <!-- Dinner (FULL WIDTH, reroll) -->
+      <article class="card isWide" data-mode="reroll">
+        <div class="cardText">
+          <div class="kicker">Dinner</div>
+          <div class="copy">Tap to decide. Rerolls allowed.</div>
+        </div>
+        <button class="reveal" id="reveal-dinner" type="button" aria-label="Reveal dinner pick">
+          TAP TO SPIN
+        </button>
+      </article>
 
-  <!-- 6) Dinner (FULL WIDTH) -->
-  <article class="card full" data-mode="reroll">
-    <div class="cardText">
-      <div class="kicker">Dinner</div>
-      <div class="copy pre">Tap to decide. Rerolls allowed.</div>
-    </div>
-    <button class="reveal" id="reveal-dinner" type="button" aria-label="Reveal dinner pick">
-      <span class="revealInner">Tap to spin</span>
-    </button>
-  </article>
+      <!-- Watch (FULL WIDTH, reroll) -->
+      <article class="card isWide" data-mode="reroll">
+        <div class="cardText">
+          <div class="kicker">Watch</div>
+          <div class="copy">Tap to pick something to watch. Rerolls allowed.</div>
+        </div>
+        <button class="reveal" id="reveal-watch" type="button" aria-label="Reveal watch pick">
+          TAP TO SPIN
+        </button>
+      </article>
 
-  <!-- 7) Watch (FULL WIDTH) -->
-  <article class="card full" data-mode="reroll">
-    <div class="cardText">
-      <div class="kicker">Watch</div>
-      <div class="copy pre">Tap to pick something to watch. Rerolls allowed.</div>
-    </div>
-    <button class="reveal" id="reveal-watch" type="button" aria-label="Reveal watch pick">
-      <span class="revealInner">Tap to spin</span>
-    </button>
-  </article>
+      <!-- Fact (FULL WIDTH) -->
+      <article class="card isWide" data-mode="oneshot">
+        <div class="cardText">
+          <div class="kicker">Fact</div>
+          <div class="copy">A small true thing. Do nothing with it. Just keep it.</div>
+        </div>
+        <button class="reveal" id="reveal-fact" type="button" aria-label="Reveal fact">
+          TAP TO REVEAL
+        </button>
+      </article>
 
-  <!-- 8) Fact (FULL WIDTH) -->
-  <article class="card full" data-mode="oneshot">
-    <div class="cardText">
-      <div class="kicker">Fact</div>
-      <div class="copy pre">A small true thing. Do nothing with it. Just keep it.</div>
-    </div>
-    <button class="reveal" id="reveal-fact" type="button" aria-label="Reveal fact">
-      <span class="revealInner">Tap to reveal</span>
-    </button>
-  </article>
+    </section>
 
-</section>
-
-    <footer class="foot">Luck Meter. Not science. Not advice.</footer>
+    <footer class="foot">Not science. Not advice.</footer>
   </main>
 
   <script defer src="watchlist.js"></script>
