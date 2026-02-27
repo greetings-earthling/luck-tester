@@ -115,16 +115,12 @@ body{
 .revealInner{
   position:relative;
   z-index:3;
-  opacity:1;
+  opacity:0;
+  transition:opacity 1200ms ease;
 }
 
-/* During reveal (black state) */
-.reveal.isRevealing{
-  background:#0b0d12;
-  color:#ffffff;
-  text-transform:none;
-  letter-spacing:.02em;
-  font-weight:700;
+.reveal.isRevealing .revealInner{
+  opacity:1;
 }
 
 /* Large for short outputs */
