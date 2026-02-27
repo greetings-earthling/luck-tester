@@ -26,7 +26,8 @@ body{
 .mast{
   border-bottom:1px solid var(--line);
   padding-bottom:14px;
-  margin-bottom:18px;
+  margin:0 0 18px;
+  width:100%;
 }
 
 .siteTitle{
@@ -59,6 +60,10 @@ body{
   min-height:130px;
   overflow:hidden;
   background:#fff;
+}
+
+.card.full{
+  grid-column:1 / -1;
 }
 
 /* LEFT TEXT SIDE */
