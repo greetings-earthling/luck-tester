@@ -7,7 +7,7 @@ window.addEventListener("DOMContentLoaded", () => {
   const GLYPHS = "ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789⌁⟡⟢⌬⟣⟠⟟⟞⌇";
 
   // Put your FX file here (you said it's in /ads)
-  const FX_SRC = "ads/crystal.mp4";
+  const FX_SRC = "ads/Smoke.mp4";
   const FX_DURATION_MS = 1600;  // visible window
   const FX_FADE_MS = 400;       // fade time
 
