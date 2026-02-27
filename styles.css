@@ -89,18 +89,6 @@ body{
   color:var(--muted);
 }
 
-/* Post line: reserve space so cards never jump */
-.afterLine{
-  margin-top:10px;
-  min-height:1.2em;      /* reserves one line always */
-  opacity:0;             /* hidden by default */
-  transition:opacity .18s ease;
-}
-
-.afterLine.isOn{
-  opacity:1;
-}
-
 .copy.post{
   font-family:"IBM Plex Mono", monospace;
   font-weight:600;
