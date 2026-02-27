@@ -64,7 +64,7 @@ body{
 
   display:grid;
   grid-template-columns: var(--textCol) 1fr; /* fixed left col */
-  min-height:92px; /* tighter */
+  min-height:84px; /* tighter */
 }
 
 /* full width cards */
@@ -74,7 +74,7 @@ body{
 
 /* LEFT SIDE */
 .cardText{
-  padding:12px;
+  padding:10px 12px;          /* tighter, even top/bottom feel */
   display:flex;
   flex-direction:column;
   gap:6px;
@@ -92,7 +92,7 @@ body{
 
 .copy{
   font-size:13px;
-  line-height:1.35;
+  line-height:1.3;
   color:var(--muted);
 }
 
@@ -145,14 +145,14 @@ body{
   letter-spacing:.02em;
   font-weight:700;
 
-  padding:16px;
-  line-height:1.3;
+  padding:14px;               /* slightly less than before */
+  line-height:1.35;
 
   justify-content:center;
   text-align:center;
 }
 
-/* Short outputs (single digit) */
+/* Short outputs (single digit / short label) */
 .reveal.isDone:not(.isLong){
   font-size:34px;
   letter-spacing:.04em;
@@ -165,12 +165,14 @@ body{
   letter-spacing:0;
   line-height:1.45;
 
-  justify-content:flex-start;
-  text-align:left;
+  /* keep it centered like your screenshot, not left aligned */
+  justify-content:center;
+  text-align:center;
 }
 
+/* Wider readable line length so “down.” is less likely to wrap */
 .reveal.isDone .revealInner{
-  max-width:58ch;
+  max-width:64ch;
   margin:0 auto;
 }
 
