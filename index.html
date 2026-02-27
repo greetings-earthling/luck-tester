@@ -7,7 +7,7 @@
 
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=IBM+Plex+Sans:wght@400;600;800&family=IBM+Plex+Mono:wght@400;600&display=swap" rel="stylesheet" />
+  <link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=IBM+Plex+Sans:wght@400;600;800&family=IBM+Plex+Mono:wght@400;600;700&display=swap" rel="stylesheet" />
 
   <link rel="stylesheet" href="styles.css" />
 </head>
@@ -26,10 +26,10 @@
         <div class="cardText">
           <div class="kicker">Lucky Number</div>
           <div class="copy pre">Today’s lucky digit. For when you must choose. Fate likes confidence.</div>
-          <div class="copy post" hidden id="after-number"></div>
+          <div class="copy post afterLine" id="after-number"></div>
         </div>
         <button class="reveal" id="reveal-number" type="button" aria-label="Reveal lucky number">
-          TAP TO REVEAL
+          <span class="revealInner">Tap to reveal</span>
         </button>
       </article>
 
@@ -38,10 +38,10 @@
         <div class="cardText">
           <div class="kicker">Lucky Letter</div>
           <div class="copy pre">Keep this letter in mind. Names. Signs. Messages. Notice when it shows up.</div>
-          <div class="copy post" hidden id="after-letter"></div>
+          <div class="copy post afterLine" id="after-letter"></div>
         </div>
         <button class="reveal" id="reveal-letter" type="button" aria-label="Reveal lucky letter">
-          TAP TO REVEAL
+          <span class="revealInner">Tap to reveal</span>
         </button>
       </article>
 
@@ -50,10 +50,10 @@
         <div class="cardText">
           <div class="kicker">Lucky Colours</div>
           <div class="copy pre">Two colours for the day. Use them to choose, to wear, or to break a tie.</div>
-          <div class="copy post" hidden id="after-colours"></div>
+          <div class="copy post afterLine" id="after-colours"></div>
         </div>
         <button class="reveal" id="reveal-colours" type="button" aria-label="Reveal lucky colours">
-          TAP TO REVEAL
+          <span class="revealInner">Tap to reveal</span>
         </button>
       </article>
 
@@ -62,10 +62,10 @@
         <div class="cardText">
           <div class="kicker">Luck Aura</div>
           <div class="copy pre">A quick scan. Low luck means proceed with caution. High luck means take the easy wins.</div>
-          <div class="copy post" hidden id="after-aura"></div>
+          <div class="copy post afterLine" id="after-aura"></div>
         </div>
         <button class="reveal" id="reveal-aura" type="button" aria-label="Reveal luck aura">
-          TAP TO REVEAL
+          <span class="revealInner">Tap to reveal</span>
         </button>
       </article>
 
@@ -74,10 +74,10 @@
         <div class="cardText">
           <div class="kicker">Cosmic Wisdom</div>
           <div class="copy pre">A short directive. Not advice. Just a clean sentence to carry.</div>
-          <div class="copy post" hidden id="after-wisdom"></div>
+          <div class="copy post afterLine" id="after-wisdom"></div>
         </div>
         <button class="reveal" id="reveal-wisdom" type="button" aria-label="Reveal cosmic wisdom">
-          TAP TO REVEAL
+          <span class="revealInner">Tap to reveal</span>
         </button>
       </article>
 
@@ -86,10 +86,10 @@
         <div class="cardText">
           <div class="kicker">Tarot</div>
           <div class="copy pre">One card. One nudge. Treat it like a prompt, not a prophecy.</div>
-          <div class="copy post" hidden id="after-tarot"></div>
+          <div class="copy post afterLine" id="after-tarot"></div>
         </div>
         <button class="reveal" id="reveal-tarot" type="button" aria-label="Reveal tarot card">
-          TAP TO REVEAL
+          <span class="revealInner">Tap to reveal</span>
         </button>
       </article>
 
@@ -98,10 +98,10 @@
         <div class="cardText">
           <div class="kicker">Dinner</div>
           <div class="copy pre">Tap to decide. Rerolls allowed.</div>
-          <div class="copy post" hidden id="after-dinner"></div>
+          <div class="copy post afterLine" id="after-dinner"></div>
         </div>
         <button class="reveal" id="reveal-dinner" type="button" aria-label="Reveal dinner pick">
-          TAP TO SPIN
+          <span class="revealInner">Tap to spin</span>
         </button>
       </article>
 
@@ -110,10 +110,10 @@
         <div class="cardText">
           <div class="kicker">Watch</div>
           <div class="copy pre">Tap to pick something to watch. Rerolls allowed.</div>
-          <div class="copy post" hidden id="after-watch"></div>
+          <div class="copy post afterLine" id="after-watch"></div>
         </div>
         <button class="reveal" id="reveal-watch" type="button" aria-label="Reveal watch pick">
-          TAP TO SPIN
+          <span class="revealInner">Tap to spin</span>
         </button>
       </article>
 
@@ -122,10 +122,10 @@
         <div class="cardText">
           <div class="kicker">Fact</div>
           <div class="copy pre">A small true thing. Do nothing with it. Just keep it.</div>
-          <div class="copy post" hidden id="after-fact"></div>
+          <div class="copy post afterLine" id="after-fact"></div>
         </div>
         <button class="reveal" id="reveal-fact" type="button" aria-label="Reveal fact">
-          TAP TO REVEAL
+          <span class="revealInner">Tap to reveal</span>
         </button>
       </article>
 
@@ -134,10 +134,10 @@
         <div class="cardText">
           <div class="kicker">Joke</div>
           <div class="copy pre">A terrible one. You’ve been warned.</div>
-          <div class="copy post" hidden id="after-joke"></div>
+          <div class="copy post afterLine" id="after-joke"></div>
         </div>
         <button class="reveal" id="reveal-joke" type="button" aria-label="Reveal joke">
-          TAP TO REVEAL
+          <span class="revealInner">Tap to reveal</span>
         </button>
       </article>
 
