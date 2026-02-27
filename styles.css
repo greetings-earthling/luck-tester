@@ -114,13 +114,8 @@ body{
 .revealInner{
   position:relative;
   z-index:3;
-  opacity:0;
-  transition:opacity 1200ms ease;
-}
-
-/* text visible only after reveal completes */
-.reveal.isRevealing .revealInner{
   opacity:1;
+  transition:none;
 }
 
 /* black final state */
