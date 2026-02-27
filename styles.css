@@ -182,6 +182,60 @@ body{
   text-transform:none;
 }
 
+/* === FX LAYERS (smoke + tint) === */
+/* Put this under your existing .reveal / .revealInner rules */
+
+.fxVideo,
+.fxTint{
+  position:absolute;
+  inset:0;
+  width:100%;
+  height:100%;
+  pointer-events:none;
+}
+
+.fxVideo{
+  z-index:1;
+  object-fit:cover;
+  opacity:0;
+}
+
+.fxTint{
+  z-index:2;
+  opacity:0;
+  mix-blend-mode:screen;
+}
+
+/* Text layer always on top */
+.revealInner{
+  position:relative;
+  z-index:3;
+}
+
+/* Fade logic */
+.reveal.isRevealing .revealInner{
+  opacity:0;               /* TAP text disappears as smoke starts */
+}
+
+.reveal.showText .revealInner{
+  opacity:1;               /* revealed text fades in */
+}
+
+/* Make sure revealed text is readable */
+.reveal.isDone{
+  background:#0b0d12;
+  color:#fff;
+}
+.reveal.isDone .revealInner{
+  color:#fff;
+}
+
+/* If you want a slightly slower smoke fade globally */
+.fxVideo,
+.fxTint{
+  transition:opacity 900ms ease;
+}
+
 /* Footer */
 .foot{
   margin-top:24px;
