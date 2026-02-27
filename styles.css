@@ -171,6 +171,7 @@ body{
 
 .reveal.isDone .revealInner{
   max-width:58ch;
+  margin:0 auto;
 }
 
 /* Lucky Colour special: fill whole reveal */
