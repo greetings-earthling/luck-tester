@@ -3,17 +3,13 @@ window.addEventListener("DOMContentLoaded", () => {
   const FX_SRC = "./ads/Smoke.mp4";
 
   // Timing
-  const SMOKE_ONLY_MS = 1500;   // 0–1.5s smoke only
-  const SMOKE_FADE_MS = 800;    // fade duration
-  const TEXT_FADE_MS  = 1400;   // text fade in
-  const TEXT_START_MS = 2000;   // start fading in text
-  const DONE_MS       = 3500;   // lock end
+  const SMOKE_ONLY_MS = 1500;   // smoke only
+  const SMOKE_FADE_MS = 900;    // fade smoke/tint
+  const TEXT_START_MS = 2000;   // start text fade in
+  const TEXT_FADE_MS  = 1400;   // text fade in duration
+  const DONE_MS       = 3500;   // total sequence end
 
   const pick = (arr) => arr[Math.floor(Math.random() * arr.length)];
-
-  // -----------------------------
-  // Helpers
-  // -----------------------------
 
   function ensureInner(btn) {
     let inner = btn.querySelector(".revealInner");
@@ -21,11 +17,12 @@ window.addEventListener("DOMContentLoaded", () => {
       btn.innerHTML = `<span class="revealInner">TAP TO REVEAL</span>`;
       inner = btn.querySelector(".revealInner");
     }
+    // if empty for any reason, restore
+    if (!inner.textContent.trim()) inner.textContent = "TAP TO REVEAL";
     return inner;
   }
 
   function ensureFX(btn) {
-    // video
     let video = btn.querySelector(".fxVideo");
     if (!video) {
       video = document.createElement("video");
@@ -37,7 +34,6 @@ window.addEventListener("DOMContentLoaded", () => {
       btn.insertBefore(video, btn.firstChild);
     }
 
-    // tint overlay
     let tint = btn.querySelector(".fxTint");
     if (!tint) {
       tint = document.createElement("div");
@@ -50,76 +46,74 @@ window.addEventListener("DOMContentLoaded", () => {
 
   function randomSubtleTint() {
     const h = Math.floor(Math.random() * 360);
-    return `hsl(${h}, 45%, 55%)`;
+    return `hsl(${h}, 55%, 60%)`;
   }
 
   function isLongText(t) {
-    const s = String(t || "");
-    return s.length > 18;
+    return String(t || "").length > 18;
   }
 
-  function setText(btn, text) {
+  function setFinalText(btn, text) {
+    const t = String(text);
     const inner = ensureInner(btn);
-    inner.textContent = String(text);
+    inner.textContent = t;
 
-    if (isLongText(text)) btn.classList.add("isLong");
+    if (isLongText(t)) btn.classList.add("isLong");
     else btn.classList.remove("isLong");
   }
 
-  function markDone(btn) {
-    btn.classList.add("isDone");
-    btn.disabled = true;
-  }
-
-  function startSequence(btn, getFinalText) {
-    const inner = ensureInner(btn);
-    const { video, tint } = ensureFX(btn);
-
-    // prevent double-click during sequence
+  function startSequence(btn, getFinalText, mode) {
     if (btn.classList.contains("isBusy")) return;
     btn.classList.add("isBusy");
 
-    // hide "tap to reveal" immediately
-    inner.style.opacity = "0";
-    inner.style.transition = "none";
+    const { video, tint } = ensureFX(btn);
+    ensureInner(btn);
 
-    // go black under smoke
-    btn.style.background = "#0b0d12";
+    // Immediately go black under smoke
+    btn.classList.add("isDone");
 
-    // reset video/tint
+    // Reset layers
     video.pause();
     video.currentTime = 0;
-    video.style.opacity = "1";
     video.style.transition = "none";
+    video.style.opacity = "1";
 
     tint.style.background = randomSubtleTint();
-    tint.style.opacity = "0.35";
     tint.style.transition = "none";
+    tint.style.opacity = "0.35";
 
-    // start smoke
+    // Show smoke immediately
+    video.style.opacity = "1";
+    tint.style.opacity = "0.35";
     video.play().catch(() => {});
 
-    // set the final text while smoke is up (still hidden)
-    const finalText = getFinalText();
-    setText(btn, finalText);
+    // Compute final text while smoke runs (still hidden because .isBusy)
+    setFinalText(btn, getFinalText(btn));
 
-    // fade smoke and tint out
+    // Fade smoke/tint out
     setTimeout(() => {
       video.style.transition = `opacity ${SMOKE_FADE_MS}ms ease`;
-      tint.style.transition = `opacity ${SMOKE_FADE_MS}ms ease`;
+      tint.style.transition  = `opacity ${SMOKE_FADE_MS}ms ease`;
       video.style.opacity = "0";
-      tint.style.opacity = "0";
+      tint.style.opacity  = "0";
     }, SMOKE_ONLY_MS);
 
-    // fade text in
+    // Fade text in by removing isBusy
     setTimeout(() => {
-      inner.style.transition = `opacity ${TEXT_FADE_MS}ms ease`;
-      inner.style.opacity = "1";
+      const inner = btn.querySelector(".revealInner");
+      if (inner) {
+        inner.style.transition = `opacity ${TEXT_FADE_MS}ms ease`;
+      }
+      btn.classList.remove("isBusy");
     }, TEXT_START_MS);
 
-    // finish
+    // Lock oneshot after done
     setTimeout(() => {
-      btn.classList.remove("isBusy");
+      if (mode === "oneshot") {
+        btn.disabled = true;
+      } else {
+        btn.disabled = false;
+      }
     }, DONE_MS);
   }
 
@@ -131,27 +125,12 @@ window.addEventListener("DOMContentLoaded", () => {
     ensureFX(btn);
 
     btn.addEventListener("click", () => {
-      if (mode === "oneshot" && btn.classList.contains("isDone")) return;
-
-      startSequence(btn, () => getFinalText(btn));
-
-      // lock oneshot after click
-      if (mode === "oneshot") {
-        // lock visually immediately, but keep smoke running
-        btn.classList.add("isDone");
-        markDone(btn);
-      } else {
-        // reroll stays clickable
-        btn.classList.add("isDone");
-        btn.disabled = false;
-      }
+      if (mode === "oneshot" && btn.disabled) return;
+      startSequence(btn, getFinalText, mode);
     });
   }
 
-  // -----------------------------
-  // Data
-  // -----------------------------
-
+  // DATA
   const WISDOM = [
     "Proceed. But do not rush.",
     "Choose the calm option.",
@@ -198,22 +177,19 @@ window.addEventListener("DOMContentLoaded", () => {
     return items[items.length - 1].t;
   }
 
-  // colour (single)
   function hslToHex(h, s, l) {
     s /= 100; l /= 100;
-    const c = (1 - Math.abs(2 * l - 1)) * s;
-    const x = c * (1 - Math.abs((h / 60) % 2 - 1));
-    const m = l - c / 2;
-    let r = 0, g = 0, b = 0;
-
-    if (h < 60)      { r = c; g = x; b = 0; }
-    else if (h < 120){ r = x; g = c; b = 0; }
-    else if (h < 180){ r = 0; g = c; b = x; }
-    else if (h < 240){ r = 0; g = x; b = c; }
-    else if (h < 300){ r = x; g = 0; b = c; }
-    else             { r = c; g = 0; b = x; }
-
-    const toHex = (v) => Math.round((v + m) * 255).toString(16).padStart(2, "0");
+    const c = (1 - Math.abs(2*l - 1)) * s;
+    const x = c * (1 - Math.abs((h/60) % 2 - 1));
+    const m = l - c/2;
+    let r=0,g=0,b=0;
+    if (h < 60) { r=c; g=x; }
+    else if (h < 120) { r=x; g=c; }
+    else if (h < 180) { g=c; b=x; }
+    else if (h < 240) { g=x; b=c; }
+    else if (h < 300) { r=x; b=c; }
+    else { r=c; b=x; }
+    const toHex = (v) => Math.round((v+m)*255).toString(16).padStart(2,"0");
     return (`#${toHex(r)}${toHex(g)}${toHex(b)}`).toUpperCase();
   }
 
@@ -222,41 +198,34 @@ window.addEventListener("DOMContentLoaded", () => {
     return hslToHex(h, 72, 52);
   }
 
-  // -----------------------------
-  // Binds
-  // -----------------------------
-
+  // BINDS
   bind("reveal-meter", "oneshot", () => weightedPick(METER));
-
-  bind("reveal-colour", "oneshot", (btn) => {
-    const hex = rollNiceHex();
-    btn.classList.add("isColour");
-    btn.style.background = hex;
-    return hex;
-  });
-
   bind("reveal-wisdom", "oneshot", () => pick(WISDOM));
-
   bind("reveal-number", "oneshot", () => String(1 + Math.floor(Math.random() * 10)));
-
   bind("reveal-joke", "oneshot", () => pick(JOKES));
-
   bind("reveal-tarot", "oneshot", () => {
     const [card, msg] = pick(TAROT);
     return `${card}. ${msg}`;
   });
-
   bind("reveal-dinner", "reroll", () => {
     const list = window.DINNERLIST || [];
     return list.length ? pick(list) : "Add dinnerlist.js";
   });
-
   bind("reveal-watch", "reroll", () => {
     const list = window.WATCHLIST || [];
     if (!list.length) return "Add watchlist.js";
     const item = pick(list);
     return (typeof item === "string") ? item : (item.title || "—");
   });
-
   bind("reveal-fact", "oneshot", () => pick(FACTS));
+
+  // Colour (if you still have this widget id)
+  const colourBtn = document.getElementById("reveal-colour");
+  if (colourBtn) {
+    bind("reveal-colour", "oneshot", (btn) => {
+      const hex = rollNiceHex();
+      btn.style.background = hex;
+      return hex;
+    });
+  }
 });
