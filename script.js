@@ -18,13 +18,6 @@ window.addEventListener("DOMContentLoaded", () => {
     return inner;
   }
 
-  function setAfter(id, text){
-    const el = document.getElementById(id);
-    if(!el) return;
-    el.textContent = text || "";
-    el.classList.add("isOn");
-  }
-
   function setRevealContent(btn, text){
     const t = String(text ?? "");
     const inner = ensureInner(btn);
