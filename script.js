@@ -369,7 +369,7 @@ bind("reveal-dinner", "reroll", () => {
 });
 
 // Watch (Movie/Show + starts with letter + vibe)
-const WATCH_TYPE = ["Movie", "Show"];
+const WATCH_TYPE = ["Movie", "Movie, "Movie, "Movie, "Series", "Series, "Documentary];
 
   const LETTER_POOL = [
 
