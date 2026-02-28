@@ -369,7 +369,7 @@ bind("reveal-dinner", "reroll", () => {
 });
 
 // Watch (Movie/Show + starts with letter + vibe)
-const WATCH_TYPE = ["Movie", "Movie, "Movie, "Movie, "Series", "Series, "Documentary];
+const WATCH_TYPE = ["Movie", "Movie", "Movie", "Movie", "Series", "Series, "Documentary];
 
   const LETTER_POOL = [
 
@@ -393,13 +393,13 @@ const WATCH_TYPE = ["Movie", "Movie, "Movie, "Movie, "Series", "Series, "Documen
   "K","K","K",
   "N","N","N",
   "O","O","O",
-  "Y","Y","Y"
+  "Y","Y","Y",
 
   // rare (x2)
   "E","E",
-  "I", "I",
+  "I","I",
   "V","V",
-  "U", "U",
+  "U","U",
 
   // very rare (x1 total, keep but don’t spam)
   "Q","X","Z"
