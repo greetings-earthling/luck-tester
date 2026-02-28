@@ -10,6 +10,8 @@ window.addEventListener("DOMContentLoaded", () => {
   const TEXT_START_MS     = 2000;
   const TEXT_FADE_MS      = 1500;
   const TOTAL_MS          = 3500;
+  const STEP_GAP_MS       = 520;  
+  const STEP_FADE_MS      = 220;  
 
   const pick = (arr) => arr[Math.floor(Math.random() * arr.length)];
 
@@ -185,7 +187,10 @@ window.addEventListener("DOMContentLoaded", () => {
     inner.style.opacity = "0";
     inner.textContent = "";
 
-    const text = String(finalText);
+    const isSteps = finalText && typeof finalText === "object" && Array.isArray(finalText.steps);
+    const steps = isSteps ? finalText.steps.map(s => String(s)) : null;
+
+    const text = isSteps ? steps.join(" - ") : String(finalText);
     const long = isLongText(text);
     if (long) btn.classList.add("isLong");
 
@@ -232,12 +237,30 @@ window.addEventListener("DOMContentLoaded", () => {
 
     }, SMOKE_FADE_START);
 
+  function stepSwap(inner, nextText){
+    // fade out quick
+    inner.style.transition = `opacity ${STEP_FADE_MS}ms ease`;
+    inner.style.opacity = "0";
+
+    setTimeout(() => {
+      inner.textContent = nextText;
+      // fade in
+      requestAnimationFrame(() => {
+        inner.style.transition = `opacity ${STEP_FADE_MS}ms ease`;
+        inner.style.opacity = "1";
+      });
+    }, STEP_FADE_MS);
+  }
+    
     // TEXT START: apply FINAL FORM first, then fade it in
     setTimeout(() => {
       // make it final styled BEFORE visible
       btn.classList.add("isDone");
       btn.classList.remove("isRevealing");
+    const isSteps = finalText && typeof finalText === "object" && Array.isArray(finalText.steps);
+    const steps = isSteps ? finalText.steps.map(s => String(s)) : null;
 
+    const text = isSteps ? steps.join(" - ") : String(finalText);
       // colour special: fade in the label, and transition bg to the colour
       if (btn.dataset.kind === "colour" && btn.dataset.hex){
         const hex = btn.dataset.hex;
@@ -261,11 +284,30 @@ window.addEventListener("DOMContentLoaded", () => {
         label.style.transition = `opacity ${TEXT_FADE_MS}ms ease`;
         requestAnimationFrame(() => { label.style.opacity = "1"; });
 
-      } else {
-        // normal text
-        inner.textContent = text;
+           } else {
+        // normal text OR step-by-step
         inner.style.transition = `opacity ${TEXT_FADE_MS}ms ease`;
-        inner.style.opacity = "1";
+        inner.style.opacity = "0";
+        inner.textContent = "";
+
+        // fade in first in final styling
+        requestAnimationFrame(() => {
+          inner.style.transition = `opacity ${TEXT_FADE_MS}ms ease`;
+          inner.style.opacity = "1";
+        });
+
+        if (steps){
+          // reveal one at a time in the same box
+          inner.textContent = steps[0];
+
+          for (let i = 1; i < steps.length; i++){
+            setTimeout(() => {
+              stepSwap(inner, steps.slice(0, i + 1).join(" - "));
+            }, i * STEP_GAP_MS);
+          }
+        } else {
+          inner.textContent = text;
+        }
       }
     }, TEXT_START_MS);
 
@@ -324,11 +366,18 @@ window.addEventListener("DOMContentLoaded", () => {
     return list.length ? pick(list) : "Add dinnerlist.js";
   });
 
+  // Watch Vibe (Format -> Era -> Mood -> Genre), revealed one at a time
+  const WATCH_FORMAT = ["Movie", "Series", "Documentary", "Animated"];
+  const WATCH_ERA    = ["Classic", "80s", "90s", "2000s", "Recent", "New"];
+  const WATCH_MOOD   = ["Cozy", "Light", "Feel-good", "Smart", "Weird", "Intense", "Dark"];
+  const WATCH_GENRE  = ["Comedy", "Drama", "Thriller", "Action", "Crime", "Sci-fi", "Adventure", "Romance"];
+
   bind("reveal-watch", "reroll", () => {
-    const list = window.WATCHLIST || [];
-    if (!list.length) return "Add watchlist.js";
-    const item = pick(list);
-    return (typeof item === "string") ? item : (item.title || "—");
+    const format = pick(WATCH_FORMAT);
+    const era    = pick(WATCH_ERA);
+    const mood   = pick(WATCH_MOOD);
+    const genre  = pick(WATCH_GENRE);
+    return { steps: [format, era, mood, genre] };
   });
 
   bind("reveal-fact", "oneshot", () => pick(FACTS));
