@@ -29,7 +29,7 @@ body{
 
 .mast{
   border-bottom:1px solid var(--line);
-  padding-bottom:14px;
+  padding-bottom:8px;
   margin-bottom:18px;
 }
 
@@ -279,8 +279,6 @@ body{
 .mastIcon{
   height:75px;
   width:auto;
-  position: relative;
-  top: -2px;
   transform: scale(1.15);
   transform-origin: left center;
 }
