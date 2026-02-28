@@ -361,24 +361,34 @@ window.addEventListener("DOMContentLoaded", () => {
     return `${card} — ${msg}`;
   });
 
-  bind("reveal-dinner", "reroll", () => {
-    const list = window.DINNERLIST || [];
-    return list.length ? pick(list) : "Add dinnerlist.js";
-  });
+bind("reveal-dinner", "reroll", () => {
+  const list = window.DINNERLIST || [];
+  if (!list.length) return "Add dinnerlist.js";
+  const item = pick(list);
+  return (typeof item === "string") ? item : (item.title || item.name || "Dinner idea");
+});
 
-  // Watch Vibe (Format -> Era -> Mood -> Genre), revealed one at a time
-  const WATCH_FORMAT = ["Movie", "Series", "Documentary", "Animated"];
-  const WATCH_ERA    = ["Classic", "80s", "90s", "2000s", "Recent", "New"];
-  const WATCH_MOOD   = ["Cozy", "Light", "Feel-good", "Smart", "Weird", "Intense", "Dark"];
-  const WATCH_GENRE  = ["Comedy", "Drama", "Thriller", "Action", "Crime", "Sci-fi", "Adventure", "Romance"];
+ // Watch Vibe (Format, Era, Mood, Genre, starts with 'X')
+const WATCH_FORMAT = ["Movie", "Series", "Documentary", "Animated"];
+const WATCH_ERA    = ["Classic", "80s", "90s", "2000s", "Recent", "New"];
+const WATCH_MOOD   = ["Cozy", "Light", "Feel-good", "Smart", "Weird", "Intense", "Dark"];
+const WATCH_GENRE  = ["Comedy", "Drama", "Thriller", "Action", "Crime", "Sci-fi", "Adventure", "Romance"];
 
-  bind("reveal-watch", "reroll", () => {
-    const format = pick(WATCH_FORMAT);
-    const era    = pick(WATCH_ERA);
-    const mood   = pick(WATCH_MOOD);
-    const genre  = pick(WATCH_GENRE);
-    return { steps: [format, era, mood, genre] };
-  });
+function randomLetter(){
+  const A = "A".charCodeAt(0);
+  return String.fromCharCode(A + Math.floor(Math.random() * 26));
+}
+
+function buildWatchPrompt(){
+  const format = pick(WATCH_FORMAT);
+  const era    = pick(WATCH_ERA);
+  const mood   = pick(WATCH_MOOD);
+  const genre  = pick(WATCH_GENRE);
+  const letter = randomLetter();
+  return `${format}, ${era}, ${mood}, ${genre}, starts with '${letter}'`;
+}
+
+bind("reveal-watch", "reroll", () => buildWatchPrompt());
 
   bind("reveal-fact", "oneshot", () => pick(FACTS));
 });
