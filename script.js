@@ -371,6 +371,44 @@ bind("reveal-dinner", "reroll", () => {
 // Watch (Movie/Show + starts with letter + vibe)
 const WATCH_TYPE = ["Movie", "Show"];
 
+  const LETTER_POOL = [
+
+  // usable (4-5x)
+  "B","B","B","B",
+  "D","D","D","D",
+  "G","G","G","G",
+  "L","L","L","L",
+  "M","M","M","M",
+  "P","P","P","P",
+  "R","R","R","R","R",
+  "S","S","S","S","S",
+  "T","T","T","T","T",
+  "W","W","W","W",
+
+  // sometimes (x3)
+  "C","C","C",
+  "F","F","F",
+  "H","H","H",
+  "J","J","J",
+  "K","K","K",
+  "N","N","N",
+  "O","O","O",
+  "Y","Y","Y"
+
+  // rare (x2)
+  "E","E",
+  "I", "I",
+  "V","V",
+  "U", "U",
+
+  // very rare (x1 total, keep but don’t spam)
+  "Q","X","Z"
+];
+
+function randomLetter(){
+  return pick(LETTER_POOL);
+}
+  
 const WATCH_VIBE = [
   "Fun",
   "Exciting",
