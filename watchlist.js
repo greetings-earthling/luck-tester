@@ -1,6 +1,3 @@
-// watchlist.js
-// Feeds the “What should I watch?” spinner
-
 window.WATCHLIST = [
   { title: "1917", type: "Movie", year: "2019" },
   { title: "A Beautiful Mind", type: "Movie", year: "2001" },
