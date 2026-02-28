@@ -338,25 +338,25 @@ window.addEventListener("DOMContentLoaded", () => {
     });
   }
 
-  bind("reveal-meter", "oneshot", () => weightedPick(METER).t);
+bind("reveal-meter", "oneshot", () => weightedPick(METER).t);
 
-  bind("reveal-colour", "oneshot", (btn) => {
+bind("reveal-colour", "oneshot", (btn) => {
     const hex = rollNiceHex();
     btn.dataset.kind = "colour";
     btn.dataset.hex = hex;
     return hex; // used for label
   });
 
-  bind("reveal-wisdom", "oneshot", () => pick(WISDOM));
+bind("reveal-wisdom", "oneshot", () => pick(WISDOM));
 
-  bind("reveal-number", "oneshot", () => String(1 + Math.floor(Math.random()*10)));
+bind("reveal-number", "oneshot", () => String(1 + Math.floor(Math.random()*10)));
 
-  bind("reveal-joke", "oneshot", () => {
+bind("reveal-joke", "oneshot", () => {
   const list = window.JOKES || [];
   return list.length ? pick(list) : "Add jokes.js";
 });
 
-  bind("reveal-tarot", "oneshot", () => {
+bind("reveal-tarot", "oneshot", () => {
     const [card, msg] = pick(TAROT);
     return `${card} — ${msg}`;
   });
@@ -369,11 +369,10 @@ bind("reveal-dinner", "reroll", () => {
 });
 
 // Watch (Movie/Show + starts with letter + vibe)
-const WATCH_TYPE = ["Movie", "Movie", "Movie", "Movie", "Series", "Series, "Documentary];
+const WATCH_TYPE = ["Movie", "Show"];
 
-  const LETTER_POOL = [
-
-  // usable (4-5x)
+const LETTER_POOL = [
+  // common-ish
   "B","B","B","B",
   "D","D","D","D",
   "G","G","G","G",
@@ -385,7 +384,7 @@ const WATCH_TYPE = ["Movie", "Movie", "Movie", "Movie", "Series", "Series, "Docu
   "T","T","T","T","T",
   "W","W","W","W",
 
-  // sometimes (x3)
+  // sometimes
   "C","C","C",
   "F","F","F",
   "H","H","H",
@@ -395,20 +394,16 @@ const WATCH_TYPE = ["Movie", "Movie", "Movie", "Movie", "Series", "Series, "Docu
   "O","O","O",
   "Y","Y","Y",
 
-  // rare (x2)
+  // rare
   "E","E",
   "I","I",
   "V","V",
   "U","U",
 
-  // very rare (x1 total, keep but don’t spam)
+  // very rare
   "Q","X","Z"
 ];
 
-function randomLetter(){
-  return pick(LETTER_POOL);
-}
-  
 const WATCH_VIBE = [
   "Fun",
   "Exciting",
@@ -432,19 +427,18 @@ const WATCH_VIBE = [
   "Comfort"
 ];
 
-function randomLetter(){
-  const A = "A".charCodeAt(0);
-  return String.fromCharCode(A + Math.floor(Math.random() * 26));
+function randomWatchLetter(){
+  return pick(LETTER_POOL);
 }
 
 function buildWatchPrompt(){
   const type = pick(WATCH_TYPE);
   const vibe = pick(WATCH_VIBE);
-  const letter = randomLetter();
+  const letter = randomWatchLetter();
   return `${type}, starts with '${letter}', ${vibe}`;
 }
 
 bind("reveal-watch", "reroll", () => buildWatchPrompt());
 
-  bind("reveal-fact", "oneshot", () => pick(FACTS));
+bind("reveal-fact", "oneshot", () => pick(FACTS));
 });
