@@ -277,7 +277,7 @@ body{
 
 /* Make the icon match the title height */
 .mastIcon{
-  height:70px;
+  height:75px;
   width:auto;
   position: relative;
   top: -2px;
