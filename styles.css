@@ -44,14 +44,10 @@ body::before{
   max-width:var(--wrapMax);
   margin:0 auto;
   min-height:100vh;
+  position:relative;
 
-  /* very light purple wash, top->bottom */
-  background: linear-gradient(
-    to bottom,
-    rgba(106,71,157,.10) 0%,
-    rgba(255,255,255,.98) 45%,
-    rgba(255,255,255,1) 100%
-  );
+  /* flat subtle tint */
+  background: rgba(106,71,157,.10);
 }
 
 /* MAIN CONTENT */
