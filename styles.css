@@ -40,7 +40,7 @@ body::after{
   background-image:url("./ads/wallpaper.png");
   background-repeat:repeat;
   background-size:300px;
-  opacity:.25;  /* subtle texture */
+  opacity:.5;  /* subtle texture */
   pointer-events:none;
   z-index:-1;   /* texture on top */
 }
