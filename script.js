@@ -94,13 +94,18 @@ function ensureFX(btn){
   };
 
   // data
-  const WISDOM = [
-    "Proceed. But do not rush.",
-    "Choose the calm option.",
-    "One useful move is enough.",
-    "Take the obvious win.",
-    "Quiet beats loud today.",
-  ];
+const WISDOM = [
+  "Earthlings are: Breathe in. Be present. Let go.",
+  "Earthlings wonder: Stay curious. Get lost. Learn forever.",
+  "Earthlings care: Be gentle. Stay brave. Lead with love.",
+  "Earthlings dare: Be bold. Be true. Be whole.",
+  "Earthlings create: Make beauty. Share truth. Leave traces.",
+  "Earthlings grow: Let go. Adapt. Begin again.",
+  "Earthlings belong: Welcome others. Make space. Stay open.",
+  "Earthlings tend: Share. Be the person you once needed.",
+  "Earthlings laugh: Spread joy. Don’t take things so seriously.",
+  "Earthlings marvel: Let wonder guide you. Be grateful."
+];
 
   const FACTS = [
     "Honey never spoils.",
