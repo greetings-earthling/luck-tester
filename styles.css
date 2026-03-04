@@ -33,6 +33,36 @@ body{
   margin-bottom:18px;
 }
 
+.mastInner{
+  display:flex;
+  justify-content:space-between;
+  align-items:center;
+}
+
+.mastLeft{
+  display:flex;
+  align-items:center;
+  gap:12px;
+}
+
+.mastRight{
+  display:flex;
+  align-items:center;
+  gap:8px;
+  opacity:.8;
+}
+
+.powered{
+  font-size:.7rem;
+  letter-spacing:.08em;
+  text-transform:uppercase;
+}
+
+.geLogo{
+  height:18px;
+  display:block;
+}
+
 .siteTitle{
   margin:0;
   font-family:"Bebas Neue", sans-serif;
