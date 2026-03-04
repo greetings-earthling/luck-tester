@@ -60,15 +60,18 @@ body::after{
 }
 
 .mast{
-  border-bottom:1px solid var(--line);
-  padding-bottom:8px;
-  margin-bottom:18px;
+  border-bottom:2px solid #d9d9d9;
+  padding-bottom:18px;
+  margin-bottom:28px;
+  max-width:960px;
+  margin: 0 auto 28px auto;
 }
 
 .mastInner{
   display:flex;
   justify-content:space-between;
   align-items:center;
+  padding-top:16px;
 }
 
 .mastLeft{
