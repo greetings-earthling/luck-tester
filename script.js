@@ -121,18 +121,27 @@ function ensureFX(btn){
     ["The Star","Stay steady. Keep going."]
   ];
 
-  const METER = [
-    { t: "Luck levels are low today. Proceed with caution.", w: 7 },
-    { t: "Low luck reading. Keep it simple. No big swings.", w: 9 },
-    { t: "Slightly low. Double-check details before you commit.", w: 12 },
-    { t: "A little off. Go steady. Choose the sure thing.", w: 14 },
-    { t: "Normal luck. It’s a make your own luck kind of day.", w: 20 },
-    { t: "Normal luck reading. Consistency wins today.", w: 20 },
-    { t: "A bit luckier than usual. Take the easy wins.", w: 16 },
-    { t: "Good luck reading. Momentum is real. Use it.", w: 12 },
-    { t: "Very lucky. Push the good idea forward.", w: 7 },
-    { t: "Big luck. Bold moves are oddly welcome.", w: 3 }
-  ];
+const METER = [
+  { t: "Luck is low today. Move slowly and choose carefully.", w: 7 },
+  { t: "Luck is quiet. Patience will serve you well.", w: 9 },
+  { t: "Luck is soft today. Small steps are wiser than big ones.", w: 12 },
+  { t: "Luck is uncertain. Stay steady and trust simple choices.", w: 14 },
+  { t: "Luck is balanced today. Your choices shape the outcome.", w: 20 },
+  { t: "Luck is steady. Consistent effort will carry you forward.", w: 20 },
+  { t: "Luck is leaning your way today. Try the good idea.", w: 16 },
+  { t: "Luck is strong. Progress comes easier today.", w: 12 },
+  { t: "Luck is very strong today. Trust your instincts.", w: 7 },
+  { t: "Luck is powerful today. A bold step may be rewarded.", w: 3 },
+  { t: "Luck is overflowing today. Doors may open where none stood before.", w: 1 },
+  { t: "The universe is strangely aligned today. A rare stroke of luck may appear.", w: 1 },
+  { t: "Cosmic glitch detected. Luck levels are behaving unpredictably.", w: 2 },
+  { t: "The universe shrugged today. Anything could happen.", w: 2 },
+  { t: "Luck is gathering around you. Pay attention to small opportunities.", w: 5 },
+{ t: "Luck moves quietly today. The right choice may be subtle.", w: 6 },
+{ t: "Luck favors the curious today. Follow an interesting path.", w: 5 },
+{ t: "Luck is turning in your direction. A good moment may arrive.", w: 4 },
+{ t: "A gentle current of luck is present today. Go with the flow.", w: 5 }
+];
 
   function weightedPick(items){
     const total = items.reduce((sum, x) => sum + x.w, 0);
