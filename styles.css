@@ -28,7 +28,7 @@ body::before{
   background-image:url("./ads/wallpaper.png");
   background-repeat:repeat;
   background-size:300px;
-  opacity:.07;
+  opacity:.11;
   pointer-events:none;
   z-index:-1;
 }
@@ -59,20 +59,20 @@ body::before{
 
 .mastRight{
   display:flex;
-  align-items:center;
-  gap:8px;
-  opacity:.8;
+  flex-direction:column;
+  align-items:flex-end;
+  gap:4px;
 }
 
 .powered{
-  font-size:.65rem;
-  letter-spacing:.08em;
+  font-size:.55rem;
+  letter-spacing:.12em;
   text-transform:lowercase;
-  opacity:.7;
+  opacity:.65;
 }
 
 .geLogo{
-  height:48px;
+  height:80px;
   display:block;
 }
 
