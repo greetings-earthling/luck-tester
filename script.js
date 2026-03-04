@@ -400,3 +400,4 @@ bind("reveal-fact", "oneshot", () => {
   const list = window.FUNFACTS || [];
   return list.length ? pick(list) : "Add funfacts.js";
 });
+});
