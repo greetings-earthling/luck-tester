@@ -186,5 +186,5 @@ window.FUNFACTS = [
 "Some fish can change gender.",
 "Your body heat can power a small light bulb.",
 "The average person has about 100,000 hairs on their head.",
-"The Earth travels around the Sun at about 67,000 miles per hour.",
+"The Earth travels around the Sun at about 67,000 miles per hour."
 ];
