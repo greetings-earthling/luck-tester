@@ -25,9 +25,9 @@ body::before{
   content:"";
   position:fixed;
   inset:0;
-  background-image:url("./ads/wallpaper.png");
+  background-image:url("./ads/wallpaper2.jpg");
   background-repeat:repeat;
-  background-size:300px;
+  background-size:100%;
   opacity:.8;
   pointer-events:none;
   z-index:-1;
@@ -37,10 +37,10 @@ body::after{
   content:"";
   position:fixed;
   inset:0;
-  background-image:url("./ads/wallpaper2.jpg");
+  background-image:url("./ads/wallpaper.png");
   background-repeat:repeat;
-  background-size:100%;
-  opacity:.7;
+  background-size:300px;
+  opacity:.3;
   pointer-events:none;
   z-index:-1;
 }
