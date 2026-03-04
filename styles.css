@@ -14,24 +14,22 @@
 
 body{
   margin:0;
-  color:var(--ink);
   font-family:"IBM Plex Sans", system-ui, sans-serif;
+  color:var(--ink);
 
-  background-image:
-    url("./ads/wallpaper.png"),   /* texture */
-    url("./ads/wallpaper2.jpg");  /* space */
+  /* SPACE (sides) */
+  background: url("./ads/wallpaper2.jpg") center / cover no-repeat fixed;
+}
 
-  background-repeat:
-    repeat,
-    no-repeat;
-
-  background-size:
-    300px,
-    cover;
-
-  background-position:
-    0 0,
-    center;
+/* TEXTURE (over EVERYTHING, including the white center) */
+body::before{
+  content:"";
+  position:fixed;
+  inset:0;
+  background: url("./ads/wallpaper.png") 0 0 / 300px repeat;
+  opacity:.18;            /* adjust */
+  pointer-events:none;
+  z-index:10;
 }
 
 .page{
@@ -45,11 +43,8 @@ body{
 }
 
 .pageWrap{
-  max-width:1000px;
-  margin:0 auto;
+  background:#fff;
   min-height:100vh;
-
-  background:rgba(255,255,255,0.97);
 }
 
 .mast{
@@ -296,7 +291,7 @@ body{
   justify-content:center;
   font-size:.75rem;
   color:#666;
-  border-top:1px solid var(--line);
+
 }
 
 /* Mobile */
