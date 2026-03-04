@@ -11,10 +11,12 @@
 
   --wrapMax:1000px;
   --padX:14px;
+
+  /* brand tint */
+  --brand:#6a479d;
 }
 
 *{ box-sizing:border-box; }
-
 html, body{ height:100%; }
 
 body{
@@ -22,56 +24,34 @@ body{
   font-family:"IBM Plex Sans", system-ui, sans-serif;
   color:var(--ink);
 
-  /* SPACE (base) */
+  /* space bg */
   background: url("./ads/wallpaper2.jpg") center / cover no-repeat fixed;
   position:relative;
 }
 
-/* TEXTURE (top of everything, but we will mask it off the white content area) */
-body::after{
+/* purple tint over the space bg */
+body::before{
   content:"";
   position:fixed;
   inset:0;
-  background: url("./ads/wallpaper.png") 0 0 / 300px repeat;
-
-  /* beef up linework without washing the space bg */
-  opacity:.22;
-  filter: contrast(190%) brightness(125%);
-  mix-blend-mode: multiply;
-
+  background: rgba(106,71,157,.22); /* tweak 0.15–0.30 */
   pointer-events:none;
   z-index:-1;
 }
 
-/* WHITE CENTER STRIP (covers the texture + space behind content) */
+/* CENTER AREA */
 .pageWrap{
   max-width:var(--wrapMax);
   margin:0 auto;
   min-height:100vh;
 
-  background:rgba(255,255,255,.98);
-
-  position:relative;
-}
-
-.pageWrap::before{
-  content:"";
-  position:absolute;
-  inset:0;
-
-  background: url("./ads/wallpaper.png") 0 0 / 300px repeat;
-
-  opacity:.3;                     /* was too low */
-  filter: contrast(220%) brightness(135%);
-  mix-blend-mode: multiply;
-
-  pointer-events:none;
-  z-index:0;
-}
-
-.pageWrap > *{
-  position:relative;
-  z-index:1;
+  /* very light purple wash, top->bottom */
+  background: linear-gradient(
+    to bottom,
+    rgba(106,71,157,.10) 0%,
+    rgba(255,255,255,.98) 45%,
+    rgba(255,255,255,1) 100%
+  );
 }
 
 /* MAIN CONTENT */
@@ -87,7 +67,7 @@ body::after{
   padding:8px 0 16px;
   margin:0 0 18px;
 
-  /* force exact same width as widgets (matches .page max-width + padding) */
+  /* same width as widgets */
   max-width:var(--max);
   margin-left:auto;
   margin-right:auto;
@@ -124,8 +104,6 @@ body::after{
   font-family:"Bebas Neue", sans-serif;
   font-size:48px;
   line-height:1;
-
-  /* tighter and bolder-looking */
   letter-spacing:-0.02em;
   -webkit-text-stroke:0.45px currentColor;
 }
@@ -186,6 +164,7 @@ body::after{
   gap:6px;
   justify-content:center;
   border-right:1px solid var(--line);
+  background:#fff; /* keep widgets white */
 }
 
 .kicker{
