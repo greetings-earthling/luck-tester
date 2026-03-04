@@ -24,12 +24,9 @@ body::before{
   content:"";
   position:fixed;
   inset:0;
-
   background:url("./ads/wallpaper.png") 0 0 / 300px repeat;
-
-  opacity:.3;
+  opacity:.18;
   pointer-events:none;
-
   z-index:-1;
 }
 
@@ -47,9 +44,23 @@ body::before{
   max-width:1000px;
   margin:0 auto;
   min-height:100vh;
-
   background:#ffffff;
+  position:relative;
+}
 
+.pageWrap::before{
+  content:"";
+  position:absolute;
+  inset:0;
+
+  background:url("./ads/wallpaper.png") 0 0 / 300px repeat;
+
+  opacity:.10;
+  pointer-events:none;
+  z-index:0;
+}
+
+.pageWrap > *{
   position:relative;
   z-index:1;
 }
