@@ -87,7 +87,6 @@ function ensureFX(btn){
     "reveal-number": [35,  15,  300],
     "reveal-colour": null,              // greyscale smoke
     "reveal-joke":   [320, 285, 205],
-    "reveal-tarot":  [190, 165, 275],
     "reveal-dinner": [24,  10,  300],
     "reveal-watch":  [210, 235, 190],
     "reveal-fact":   [265, 285, 160],
@@ -113,17 +112,6 @@ const WISDOM = [
     "Bananas are berries.",
     "A day on Venus is longer than a year on Venus.",
     "Some turtles can breathe through their butts."
-  ];
-
-  const TAROT = [
-    ["The Fool","Start. Learn by moving."],
-    ["The Sun","Say yes to what is simple."],
-    ["The Magician","Use what you have."],
-    ["Wheel of Fortune","Timing matters."],
-    ["The Hermit","Less noise. More signal."],
-    ["Justice","Choose what is fair, not fast."],
-    ["Strength","Soft control wins."],
-    ["The Star","Stay steady. Keep going."]
   ];
 
 const METER = [
@@ -383,11 +371,6 @@ bind("reveal-joke", "oneshot", () => {
   const list = window.JOKES || [];
   return list.length ? pick(list) : "Add jokes.js";
 });
-
-bind("reveal-tarot", "oneshot", () => {
-    const [card, msg] = pick(TAROT);
-    return `${card} — ${msg}`;
-  });
 
 bind("reveal-dinner", "reroll", () => {
   const list = window.DINNERLIST || [];
