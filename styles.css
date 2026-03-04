@@ -39,6 +39,14 @@ body::before{
   padding:22px 14px 40px;
 }
 
+.pageWrap{
+  background:#fff;
+  max-width:980px;
+  margin:0 auto;
+  min-height:100vh;
+  padding-bottom:40px;
+}
+
 .mast{
   border-bottom:1px solid var(--line);
   padding-bottom:8px;
