@@ -61,10 +61,9 @@ body::after{
 
 .mast{
   border-bottom:2px solid #d9d9d9;
-  padding-bottom:18px;
-  margin-bottom:28px;
-  max-width:960px;
-  margin: 0 auto 28px auto;
+  padding:16px 0 18px;
+  margin:0 auto 28px;
+  max-width:var(--max); /* match .page */
 }
 
 .mastInner{
@@ -298,12 +297,6 @@ body::after{
   backdrop-filter: blur(2px);
 }
 
-.mastInner{
-  display:flex;
-  align-items:flex-start;
-  gap:18px;
-}
-
 .mastIcon{
   width:72px;       /* adjust if needed */
   height:auto;
@@ -317,12 +310,12 @@ body::after{
 
 /* Footer */
 .foot{
-  margin-top:24px;
-  padding-top:14px;
-  border-top:1px solid var(--line);
-  color:var(--muted);
-  font-size:12px;
-  text-align:center;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  height:70px;
+  font-size:.75rem;
+  color:#666;
 }
 
 /* Mobile */
