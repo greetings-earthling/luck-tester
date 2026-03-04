@@ -48,7 +48,9 @@ body::after{
   max-width:var(--wrapMax);
   margin:0 auto;
   min-height:100vh;
-  background:var(--paper);
+
+  background:rgba(255,255,255,.96);
+
   position:relative;
 }
 
@@ -334,16 +336,4 @@ body::after{
   :root{ --textCol:190px; }
   .grid{ grid-template-columns:1fr; }
   .card.isWide{ grid-column:auto; }
-}
-
-/* DEBUG: force texture visible */
-
-body::after{
-  opacity:1 !important;
-  filter:none !important;
-  mix-blend-mode:normal !important;
-}
-
-.pageWrap::before{
-  opacity:.35 !important;
 }
