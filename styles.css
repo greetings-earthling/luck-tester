@@ -101,9 +101,10 @@ body::after{
 .siteTitle{
   margin:0;
   font-family:"Bebas Neue", sans-serif;
-  letter-spacing:.04em;
+  letter-spacing:.005em;  
   font-size:48px;
   line-height:1;
+  font-weight:700;    
 }
 
 .siteSub{
