@@ -8,54 +8,58 @@
   --radius:6px;
   --max:980px;
   --textCol:240px;
+
+  --wrapMax:1000px;
+  --padX:14px;
 }
 
 *{ box-sizing:border-box; }
+
+html, body{ height:100%; }
 
 body{
   margin:0;
   font-family:"IBM Plex Sans", system-ui, sans-serif;
   color:var(--ink);
 
-  background:url("./ads/wallpaper2.jpg") center / cover no-repeat fixed;
+  /* SPACE (base) */
+  background: url("./ads/wallpaper2.jpg") center / cover no-repeat fixed;
+  position:relative;
 }
 
-body::before{
+/* TEXTURE (top of everything, but we will mask it off the white content area) */
+body::after{
   content:"";
   position:fixed;
   inset:0;
-  background:url("./ads/wallpaper.png") 0 0 / 300px repeat;
-  opacity:.18;
+  background: url("./ads/wallpaper.png") 0 0 / 300px repeat;
+
+  /* beef up linework without washing the space bg */
+  opacity:.22;
+  filter: contrast(190%) brightness(125%);
+  mix-blend-mode: multiply;
+
   pointer-events:none;
   z-index:-1;
 }
 
-.page{
-  max-width:var(--max);
-  margin:0 auto;
-  padding:12px 14px 18px;
-
-  border-bottom:2px solid #000;
-  padding-bottom:18px;
-  margin-bottom:18px;
-}
-
+/* WHITE CENTER STRIP (covers the texture + space behind content) */
 .pageWrap{
-  max-width:1000px;
+  max-width:var(--wrapMax);
   margin:0 auto;
   min-height:100vh;
-  background:#ffffff;
+  background:var(--paper);
   position:relative;
 }
 
+/* Optional: add a *very* subtle texture inside the white area (kept faint) */
 .pageWrap::before{
   content:"";
   position:absolute;
   inset:0;
-
-  background:url("./ads/wallpaper.png") 0 0 / 300px repeat;
-
-  opacity:.10;
+  background: url("./ads/wallpaper.png") 0 0 / 300px repeat;
+  opacity:.06;
+  filter: contrast(180%) brightness(135%);
   pointer-events:none;
   z-index:0;
 }
@@ -65,9 +69,23 @@ body::before{
   z-index:1;
 }
 
+/* MAIN CONTENT */
+.page{
+  max-width:var(--max);
+  margin:0 auto;
+  padding:10px var(--padX) 18px;
+}
+
+/* HEADER */
 .mast{
-  padding:10px 0 18px;
+  border-bottom:2px solid #000;
+  padding:8px 0 16px;
   margin:0 0 18px;
+
+  /* force exact same width as widgets (matches .page max-width + padding) */
+  max-width:var(--max);
+  margin-left:auto;
+  margin-right:auto;
 }
 
 .mastInner{
@@ -102,9 +120,9 @@ body::before{
   font-size:48px;
   line-height:1;
 
-  /* tighter + a touch bolder-looking */
-  letter-spacing:-0.01em;
-  -webkit-text-stroke:0.35px currentColor;
+  /* tighter and bolder-looking */
+  letter-spacing:-0.02em;
+  -webkit-text-stroke:0.45px currentColor;
 }
 
 .siteSub{
@@ -300,19 +318,18 @@ body::before{
   backdrop-filter:blur(2px);
 }
 
-/* Footer */
+/* FOOTER */
 .foot{
   margin-top:18px;
-  padding:18px 0;
+  padding:16px 0;
   display:flex;
   align-items:center;
   justify-content:center;
   font-size:.75rem;
   color:#666;
-
 }
 
-/* Mobile */
+/* MOBILE */
 @media (max-width:820px){
   :root{ --textCol:190px; }
   .grid{ grid-template-columns:1fr; }
