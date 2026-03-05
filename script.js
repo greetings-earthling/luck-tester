@@ -21,7 +21,8 @@ window.addEventListener("DOMContentLoaded", () => {
   function ensureInner(btn){
     let inner = btn.querySelector(".revealInner");
     if (!inner){
-      btn.innerHTML = `<span class="revealInner">TAP TO REVEAL</span>`;
+      const label = btn.dataset.label || "TAP TO REVEAL";
+btn.innerHTML = `<span class="revealInner">${label}</span>`;
       inner = btn.querySelector(".revealInner");
     }
     return inner;
