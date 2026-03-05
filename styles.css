@@ -202,6 +202,31 @@ a:visited{ color:var(--brand); }
   overflow:hidden;
 }
 
+/* widget colour accents */
+
+#reveal-meter   { }
+#reveal-meter   + * {}
+
+.card:nth-of-type(1) .cardText{ background:#f3eefc; }  /* luck */
+
+.card:nth-of-type(2) .cardText{ background:#f6f2ff; }  /* earthling */
+
+.card:nth-of-type(3) .cardText{ background:#eef5ff; }  /* number */
+
+.card:nth-of-type(4) .cardText{ background:#fff0f6; }  /* colour */
+
+.card:nth-of-type(5) .cardText{ background:#fff9e8; }  /* joke */
+
+.card:nth-of-type(6) .cardText{ background:#fff3ea; }  /* dinner */
+
+.card:nth-of-type(7) .cardText{ background:#eef9f7; }  /* watch */
+
+.card:nth-of-type(8) .cardText{ background:#eef8f1; }  /* fact */
+
+.cardText{
+  border-left:4px solid var(--brand);
+}
+
 /* REVEAL */
 .reveal{
   border:0;
