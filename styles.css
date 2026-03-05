@@ -334,6 +334,9 @@ a:visited{ color:var(--brand); }
 /* MOBILE */
 @media (max-width:820px){
   :root{ --textCol:190px; }
+  .kickerThe{
+    display:none;
+  }
 
   .grid{ grid-template-columns:1fr; }
   .card.isWide{ grid-column:auto; }
