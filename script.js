@@ -18,15 +18,17 @@ window.addEventListener("DOMContentLoaded", () => {
     return s.length > 18 || /\s/.test(s);
   }
 
-  function ensureInner(btn){
-    let inner = btn.querySelector(".revealInner");
-    if (!inner){
-      const label = btn.dataset.label || "TAP TO REVEAL";
-btn.innerHTML = `<span class="revealInner">${label}</span>`;
-      inner = btn.querySelector(".revealInner");
-    }
-    return inner;
+function ensureInner(btn){
+  let inner = btn.querySelector(".revealInner");
+
+  if (!inner){
+    const label = btn.textContent.trim() || "Tap to reveal";
+    btn.innerHTML = `<span class="revealInner">${label}</span>`;
+    inner = btn.querySelector(".revealInner");
   }
+
+  return inner;
+}
 
   function ensureFX(btn){
     let video = btn.querySelector(".fxVideo");
