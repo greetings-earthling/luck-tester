@@ -20,13 +20,12 @@ window.addEventListener("DOMContentLoaded", () => {
 
 function ensureInner(btn){
   let inner = btn.querySelector(".revealInner");
-
   if (!inner){
-    const label = btn.textContent.trim() || "Tap to reveal";
-    btn.innerHTML = `<span class="revealInner">${label}</span>`;
+    const label = btn.dataset.label || "TAP TO REVEAL";
+    btn.textContent = ""; // important: clears any existing text
+    btn.insertAdjacentHTML("beforeend", `<span class="revealInner">${label}</span>`);
     inner = btn.querySelector(".revealInner");
   }
-
   return inner;
 }
 
