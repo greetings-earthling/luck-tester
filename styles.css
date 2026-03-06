@@ -54,19 +54,9 @@ body::before{
 .topStrip{
   width:100%;
   background:#9debe9;
-  overflow:hidden;
-  padding:10px 0;
-  margin-bottom:20px;
-  border-radius:6px;
-}
-
-.topStripTrack{
-  display:flex;
-  width:max-content;
-  align-items:center;
-  gap:80px;
-  white-space:nowrap;
-  animation:tickerScroll 26s linear infinite;
+  text-align:center;
+  padding:10px 16px;
+  margin:0 0 24px 0;
 }
 
 .topStrip a{
@@ -74,6 +64,11 @@ body::before{
   text-decoration:none;
   font-size:13px;
   font-weight:600;
+  line-height:1.4;
+}
+
+.topStrip a:hover{
+  text-decoration:underline;
 }
 
 @keyframes tickerScroll{
