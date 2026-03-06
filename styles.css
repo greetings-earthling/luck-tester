@@ -81,7 +81,7 @@ body::before{
   display:flex;
   flex-direction:column;
   justify-content:flex-start;
-  padding-top:6px;
+  padding-top:10px;
   position:relative;
   left:-2px;
 }
