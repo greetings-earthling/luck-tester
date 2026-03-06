@@ -1,4 +1,3 @@
-<!-- index.html -->
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -6,219 +5,216 @@
   <title>The Daily Oracle</title>
   <meta name="viewport" content="width=device-width, initial-scale=1" />
   <meta name="description" content="The Daily Oracle reveals your daily luck, guidance, lucky number, lucky colour, and fun daily insights. Let fate guide your day.">
-  <link rel="preconnect" href="https://fonts.googleapis.com">
+
   <meta property="og:title" content="The Daily Oracle">
   <meta property="og:description" content="Discover your daily luck, guidance, what to watch or eat, and more.">
   <meta property="og:image" content="https://yourdomain.com/oracle-preview.jpg">
   <meta property="og:type" content="website">
+
+  <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=IBM+Plex+Sans:wght@400;600;800&family=IBM+Plex+Mono:wght@400;600&display=swap" rel="stylesheet" />
-
   <link rel="stylesheet" href="styles.css" />
+
+  <script type="application/ld+json">
+  {
+    "@context": "https://schema.org",
+    "@type": "WebApplication",
+    "name": "The Daily Oracle",
+    "description": "A daily oracle that reveals luck, guidance, what to watch or eat, and more.",
+    "applicationCategory": "LifestyleApplication",
+    "operatingSystem": "All"
+  }
+  </script>
 </head>
 
-<script type="application/ld+json">
-{
- "@context": "https://schema.org",
- "@type": "WebApplication",
- "name": "The Daily Oracle",
- "description": "A daily oracle that reveals luck, guidance, what to watch or eat, and more.",
- "applicationCategory": "LifestyleApplication",
- "operatingSystem": "All"
-}
-</script>
-  
 <body>
   <div class="pageWrap">
     <main class="page">
-<header class="mast">
-  <div class="mastInner">
 
-    <div class="mastLeft">
-      <img src="./ads/crystalball.png" alt="Crystal ball" class="mastIcon" />
+      <header class="mast">
+        <div class="mastInner">
+          <div class="mastLeft">
+            <img src="./ads/crystalball.png" alt="Crystal ball" class="mastIcon" />
+            <div class="mastText">
+              <h1 class="siteTitle">THE DAILY ORACLE</h1>
+              <p class="siteSub">Let the universe guide you today.</p>
+            </div>
+          </div>
 
-      <div class="mastText">
-        <h1 class="siteTitle">THE DAILY ORACLE</h1>
-        <p class="siteSub">Let the universe guide you today.</p>
+          <div class="mastRight">
+            <span class="powered">powered by</span>
+            <a href="https://greetingsearthling.ca" target="_blank" rel="noopener">
+              <img src="./ads/greetings_earthling_wordmark.png" alt="Greetings Earthling" class="geLogo">
+            </a>
+          </div>
+        </div>
+      </header>
+
+      <section class="grid" aria-label="Oracle widgets">
+
+        <article class="card isWide" data-mode="oneshot">
+          <div class="cardText">
+            <div class="kicker">Luck Meter</div>
+            <div class="copy pre preClamp">How lucky will your day be?</div>
+          </div>
+          <button
+            class="reveal"
+            id="reveal-meter"
+            type="button"
+            aria-label="Reveal luck meter"
+            data-label="Tap to reveal today’s luck"
+            data-label-mobile="Tap to reveal"
+          ></button>
+        </article>
+
+        <article class="card isWide" data-mode="oneshot">
+          <div class="cardText">
+            <div class="kicker"><span class="kickerThe">The</span> Earthling Code</div>
+            <div class="copy pre preClamp">
+              How to be an Earthling, from
+              <a href="https://greetingsearthling.ca/earthlingcode" target="_blank" rel="noopener">The Earthling Code</a>.
+            </div>
+          </div>
+          <button
+            class="reveal"
+            id="reveal-wisdom"
+            type="button"
+            aria-label="Reveal today’s direction"
+            data-label="Tap for today’s direction"
+            data-label-mobile="Tap to reveal"
+          ></button>
+        </article>
+
+        <article class="card" data-mode="oneshot">
+          <div class="cardText">
+            <div class="kicker">Lucky Number</div>
+            <div class="copy pre preClamp">Today’s lucky digit. For when you need one.</div>
+          </div>
+          <button
+            class="reveal"
+            id="reveal-number"
+            type="button"
+            aria-label="Reveal lucky number"
+            data-label="Tap to reveal"
+            data-label-mobile="Tap to reveal"
+          ></button>
+        </article>
+
+        <article class="card" data-mode="oneshot">
+          <div class="cardText">
+            <div class="kicker">Lucky Colour</div>
+            <div class="copy pre preClamp">Wear it, choose it, let it guide you.</div>
+          </div>
+          <button
+            class="reveal"
+            id="reveal-colour"
+            type="button"
+            aria-label="Reveal lucky colour"
+            data-label="Tap to reveal"
+            data-label-mobile="Tap to reveal"
+          ></button>
+        </article>
+
+        <article class="card isWide" data-mode="oneshot">
+          <div class="cardText">
+            <div class="kicker">Joke of the day</div>
+            <div class="copy pre preClamp">A terrible one. You’ve been warned.</div>
+          </div>
+          <button
+            class="reveal"
+            id="reveal-joke"
+            type="button"
+            aria-label="Reveal joke"
+            data-label="Tap to summon a joke"
+            data-label-mobile="Tap to reveal"
+          ></button>
+        </article>
+
+        <article class="card isWide" data-mode="reroll">
+          <div class="cardText">
+            <div class="kicker">What’s for dinner?</div>
+            <div class="copy pre preClamp">Not sure what to make for dinner? Let fate decide.</div>
+          </div>
+          <button
+            class="reveal"
+            id="reveal-dinner"
+            type="button"
+            aria-label="Spin dinner"
+            data-label="Tap to let fate decide your meal"
+            data-label-mobile="Tap to reveal"
+          ></button>
+        </article>
+
+        <article class="card isWide" data-mode="reroll">
+          <div class="cardText">
+            <div class="kicker">What to watch</div>
+            <div class="copy pre preClamp">Looking for something to watch? The oracle can help.</div>
+          </div>
+          <button
+            class="reveal"
+            id="reveal-watch"
+            type="button"
+            aria-label="Spin watch pick"
+            data-label="Tap for the oracle’s recommendation"
+            data-label-mobile="Tap to reveal"
+          ></button>
+        </article>
+
+        <article class="card isWide" data-mode="oneshot">
+          <div class="cardText">
+            <div class="kicker">Fact of the day</div>
+            <div class="copy pre preClamp">A small true thing to amaze your brain.</div>
+          </div>
+          <button
+            class="reveal"
+            id="reveal-fact"
+            type="button"
+            aria-label="Reveal fact"
+            data-label="Tap to blow your mind"
+            data-label-mobile="Tap to reveal"
+          ></button>
+        </article>
+
+      </section>
+
+      <div class="footerBrand">
+        Powered by <a href="https://greetingsearthling.ca" target="_blank" rel="noopener">Greetings, Earthling</a>
       </div>
-    </div>
 
-    <div class="mastRight">
-      <span class="powered">Powered by</span>
-      <a href="https://greetingsearthling.ca" target="_blank">
-        <img src="./ads/greetings_earthling_wordmark.png" alt="Greetings Earthling" class="geLogo">
-      </a>
-    </div>
+      <footer class="foot">
+        <section class="oracleAbout">
+          <h2>What is The Daily Oracle?</h2>
 
+          <p>
+            The Daily Oracle is a simple tool that reveals your daily luck, guidance,
+            lucky number, lucky colour, and more. Each day the oracle offers a small
+            set of insights to help you make decisions, find inspiration, or just
+            have a little fun with fate.
+          </p>
+
+          <p>
+            Use the oracle to discover your daily luck, get a focus for the day from
+            the Earthling Code, reveal a lucky number, choose a colour to guide your
+            choices, or even let fate decide what to watch or eat.
+          </p>
+
+          <p>
+            Inspired by the philosophy behind
+            <a href="https://greetingsearthling.ca" target="_blank" rel="noopener">Greetings, Earthling</a>,
+            the oracle encourages curiosity, reflection, and a playful approach
+            to everyday decisions.
+          </p>
+        </section>
+      </footer>
+
+    </main>
   </div>
-</header>
-
- <section class="grid" aria-label="Oracle widgets">
-
-  <!-- Luck Meter (FULL WIDTH) -->
-  <article class="card isWide" data-mode="oneshot">
-    <div class="cardText">
-      <div class="kicker">Luck Meter</div>
-      <div class="copy pre preClamp">How lucky will your day be?</div>
-    </div>
-    <button
-      class="reveal"
-      id="reveal-meter"
-      type="button"
-      aria-label="Reveal luck meter"
-      data-label="Tap to reveal today’s luck"
-      data-label-mobile="Tap to reveal"
-    ></button>
-  </article>
-
-  <!-- Earthling Code (FULL WIDTH) -->
-  <article class="card isWide" data-mode="oneshot">
-    <div class="cardText">
-      <div class="kicker"><span class="kickerThe">The</span> Earthling Code</div>
-      <div class="copy pre preClamp">
-        How to be an Earthling, from
-        <a href="https://greetingsearthling.ca/earthlingcode" target="_blank" rel="noopener">The Earthling Code</a>.
-      </div>
-    </div>
-    <button
-      class="reveal"
-      id="reveal-wisdom"
-      type="button"
-      aria-label="Reveal today’s direction"
-      data-label="Tap for today’s direction"
-      data-label-mobile="Tap to reveal"
-    ></button>
-  </article>
-
-  <!-- Row: Lucky Number | Lucky Colour (2-column) -->
-  <article class="card" data-mode="oneshot">
-    <div class="cardText">
-      <div class="kicker">Lucky Number</div>
-      <div class="copy pre preClamp">Today’s lucky digit. For when you need one.</div>
-    </div>
-    <button
-      class="reveal"
-      id="reveal-number"
-      type="button"
-      aria-label="Reveal lucky number"
-      data-label="Tap to reveal"
-      data-label-mobile="Tap to reveal"
-    ></button>
-  </article>
-
-  <article class="card" data-mode="oneshot">
-    <div class="cardText">
-      <div class="kicker">Lucky Colour</div>
-      <div class="copy pre preClamp">Wear it, choose it, let it guide you.</div>
-    </div>
-    <button
-      class="reveal"
-      id="reveal-colour"
-      type="button"
-      aria-label="Reveal lucky colour"
-      data-label="Tap to reveal"
-      data-label-mobile="Tap to reveal"
-    ></button>
-  </article>
-
-  <!-- Joke (FULL WIDTH) -->
-  <article class="card isWide" data-mode="oneshot">
-    <div class="cardText">
-      <div class="kicker">Joke of the day</div>
-      <div class="copy pre preClamp">A terrible one. You’ve been warned.</div>
-    </div>
-    <button
-      class="reveal"
-      id="reveal-joke"
-      type="button"
-      aria-label="Reveal joke"
-      data-label="Tap to summon a joke"
-      data-label-mobile="Tap to reveal"
-    ></button>
-  </article>
-
-  <!-- Dinner (FULL WIDTH) -->
-  <article class="card isWide" data-mode="reroll">
-    <div class="cardText">
-      <div class="kicker">What’s for dinner?</div>
-      <div class="copy pre preClamp">Not sure what to make for dinner? Let fate decide.</div>
-    </div>
-    <button
-      class="reveal"
-      id="reveal-dinner"
-      type="button"
-      aria-label="Spin dinner"
-      data-label="Tap to let fate decide your meal"
-      data-label-mobile="Tap to reveal"
-    ></button>
-  </article>
-
-  <!-- Watch (FULL WIDTH) -->
-  <article class="card isWide" data-mode="reroll">
-    <div class="cardText">
-      <div class="kicker">What to watch</div>
-      <div class="copy pre preClamp">Looking for something to watch? The oracle can help.</div>
-    </div>
-    <button
-      class="reveal"
-      id="reveal-watch"
-      type="button"
-      aria-label="Spin watch pick"
-      data-label="Tap for the oracle’s recommendation"
-      data-label-mobile="Tap to reveal"
-    ></button>
-  </article>
-
-  <!-- Fact (FULL WIDTH) -->
-  <article class="card isWide" data-mode="oneshot">
-    <div class="cardText">
-      <div class="kicker">Fact of the day</div>
-      <div class="copy pre preClamp">A small true thing to amaze your brain.</div>
-    </div>
-    <button
-      class="reveal"
-      id="reveal-fact"
-      type="button"
-      aria-label="Reveal fact"
-      data-label="Tap to blow your mind"
-      data-label-mobile="Tap to reveal"
-    ></button>
-  </article>
-
-</section>
-
-    <footer class="foot">
-      <section class="oracleAbout">
-<h2>What is The Daily Oracle?</h2>
-
-<p>
-The Daily Oracle is a simple tool that reveals your daily luck, guidance,
-lucky number, lucky colour, and more. Each day the oracle offers a small
-set of insights to help you make decisions, find inspiration, or just
-have a little fun with fate.
-</p>
-
-<p>
-Use the oracle to discover your daily luck, get a focus for the day from
-the Earthling Code, reveal a lucky number, choose a colour to guide your
-choices, or even let fate decide what to watch or eat.
-</p>
-
-<p>
-Inspired by the philosophy behind
-<a href="https://greetingsearthling.ca">Greetings, Earthling</a>,
-the oracle encourages curiosity, reflection, and a playful approach
-to everyday decisions.
-</p>
-</section>
-    </footer>
-  </main>
 
   <script defer src="./watchlist.js"></script>
   <script defer src="./dinnerlist.js"></script>
   <script defer src="./jokes.js"></script>
   <script defer src="./funfacts.js"></script>
   <script defer src="./script.js"></script>
-    </main>
-  </div>
 </body>
+</html>
