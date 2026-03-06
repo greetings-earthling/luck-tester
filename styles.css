@@ -41,7 +41,7 @@ body::before{
   max-width:var(--wrapMax);
   margin:0 auto;
   min-height:100vh;
-  background:rgba(230,223,235,.9);
+  background:#ede4f4;
 }
 
 .page{
@@ -159,7 +159,7 @@ a:visited{ color:var(--brand); }
   flex-direction:column;
   gap:6px;
   justify-content:center;
-  background:#cbbdd6;
+  background:#d7cbe1;
   color:var(--deep);
 }
 
