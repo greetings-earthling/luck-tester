@@ -81,16 +81,18 @@ body::before{
 }
 
 .mastIcon{
-  height:92px;
+  height:88px;
   width:auto;
   flex-shrink:0;
   position:relative;
-  top:-2px;
+  top:0px;
 }
 
 .mastText{
   display:flex;
   flex-direction:column;
+   justify-content:flex-start;
+  padding-top:2px;
 }
 
 .siteTitle{
@@ -163,10 +165,10 @@ a:visited{ color:var(--brand); }
   flex-direction:column;
   gap:6px;
   justify-content:center;
-  color:var(--brand);
   background:var(--surface);
   border-right:none;
 }
+
 
 .kicker{
   font-size:14px;
@@ -180,12 +182,11 @@ a:visited{ color:var(--brand); }
 .copy{
   font-size:13px;
   line-height:1.35;
-  color:var(--muted);
+  color:var(--brand);
 }
 
 .cardText a{
   color:var(--brand);
-}
 
 .preClamp{
   display:-webkit-box;
