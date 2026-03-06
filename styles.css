@@ -1,8 +1,7 @@
-/* styles.css */
 :root{
   --paper:#ffffff;
   --ink:#0b0d12;
-  --muted:#5b3f78;
+  --muted:#6d4d89;
   --line:#865ea6;
 
   --radius:6px;
@@ -37,34 +36,23 @@ body::before{
   z-index:-1;
 }
 
-/* CENTER AREA */
 .pageWrap{
   max-width:var(--wrapMax);
   margin:0 auto;
   min-height:100vh;
-  position:relative;
   background:var(--surface);
 }
 
-.pageWrap > *{
-  position:relative;
-  z-index:1;
-}
-
-/* MAIN CONTENT */
 .page{
   max-width:var(--max);
   margin:0 auto;
-  padding:10px var(--padX) 18px;
+  padding:10px var(--padX) 24px;
 }
 
 /* HEADER */
 .mast{
   padding:8px 0 16px;
   margin:0 0 18px;
-  max-width:var(--max);
-  margin-left:auto;
-  margin-right:auto;
 }
 
 .mastInner{
@@ -77,22 +65,22 @@ body::before{
 .mastLeft{
   display:flex;
   align-items:flex-start;
-  gap:8px;
+  gap:6px;
 }
 
 .mastIcon{
-  height:88px;
+  height:98px;
   width:auto;
   flex-shrink:0;
   position:relative;
-  top:0px;
+  top:-2px;
 }
 
 .mastText{
   display:flex;
   flex-direction:column;
-   justify-content:flex-start;
-  padding-top:2px;
+  justify-content:flex-start;
+  padding-top:4px;
 }
 
 .siteTitle{
@@ -101,7 +89,7 @@ body::before{
   font-size:58px;
   line-height:1;
   letter-spacing:-0.02em;
-  color:var(--brand-dark);
+  color:var(--brand);
 }
 
 .siteSub{
@@ -121,9 +109,9 @@ body::before{
 
 .powered{
   font-size:.55rem;
-  letter-spacing:.02em;
+  letter-spacing:.01em;
   text-transform:lowercase;
-  opacity:.7;
+  opacity:.75;
   line-height:1;
   margin:0 0 2px 0;
   color:var(--brand-dark);
@@ -134,7 +122,6 @@ body::before{
   display:block;
 }
 
-/* links */
 a{ color:var(--brand); }
 a:visited{ color:var(--brand); }
 
@@ -157,7 +144,9 @@ a:visited{ color:var(--brand); }
   min-height:92px;
 }
 
-.card.isWide{ grid-column:1 / -1; }
+.card.isWide{
+  grid-column:1 / -1;
+}
 
 .cardText{
   padding:14px 12px;
@@ -166,9 +155,7 @@ a:visited{ color:var(--brand); }
   gap:6px;
   justify-content:center;
   background:var(--surface);
-  border-right:none;
 }
-
 
 .kicker{
   font-size:14px;
@@ -182,11 +169,12 @@ a:visited{ color:var(--brand); }
 .copy{
   font-size:13px;
   line-height:1.35;
-  color:var(--brand);
+  color:var(--brand-dark);
 }
 
 .cardText a{
   color:var(--brand);
+}
 
 .preClamp{
   display:-webkit-box;
@@ -213,7 +201,7 @@ a:visited{ color:var(--brand); }
   text-align:center;
   position:relative;
   overflow:hidden;
-  padding:12px;
+  padding:14px 12px;
 }
 
 .reveal:hover{
@@ -228,11 +216,10 @@ a:visited{ color:var(--brand); }
 }
 
 .reveal.isDone{
-  background:var(--brand);
-  color:#fff;
+  background:var(--brand) !important;
+  color:#fff !important;
   letter-spacing:.02em;
   font-weight:700;
-  border-left:none;
   text-transform:none;
 }
 
@@ -256,6 +243,7 @@ a:visited{ color:var(--brand); }
 
 /* Tap labels */
 .tapMobile{ display:none; }
+
 @media (max-width:820px){
   .tapDesktop{ display:none; }
   .tapMobile{ display:inline; }
@@ -296,7 +284,9 @@ a:visited{ color:var(--brand); }
 }
 
 /* Colour */
-.reveal.isColour{ padding:0; }
+.reveal.isColour{
+  padding:0;
+}
 
 .reveal.isColour.isDone{
   text-align:left;
@@ -317,27 +307,40 @@ a:visited{ color:var(--brand); }
 }
 
 /* FOOTER */
-.foot{
+.footerBrand{
   margin-top:22px;
   padding:14px 0;
-  display:flex;
-  align-items:center;
-  justify-content:center;
-  font-size:.75rem;
+  text-align:center;
   color:var(--brand-dark);
   border-bottom:1px solid var(--line);
 }
 
-.foot a{
+.footerBrand a{
   color:var(--brand);
 }
 
-/* Default */
-.kickerThe{ display:inline; }
+.foot{
+  padding:20px 0 0;
+  color:var(--brand-dark);
+}
+
+.oracleAbout h2{
+  margin:0 0 12px;
+  color:var(--brand-dark);
+}
+
+.oracleAbout p{
+  margin:0 0 14px;
+  line-height:1.5;
+  color:var(--brand-dark);
+}
+
+.kickerThe{
+  display:inline;
+}
 
 /* MOBILE */
 @media (max-width:820px){
-
   :root{ --textCol:190px; }
 
   .kickerThe{ display:none; }
@@ -359,7 +362,7 @@ a:visited{ color:var(--brand); }
 
   .mastLeft{
     align-items:flex-start;
-    gap:8px;
+    gap:6px;
   }
 
   .mastRight{
@@ -382,7 +385,7 @@ a:visited{ color:var(--brand); }
   }
 
   .mastIcon{
-    height:70px;
+    height:76px;
     top:0;
   }
 }
