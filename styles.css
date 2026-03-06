@@ -12,9 +12,9 @@
   --padX:14px;
 
   --brand:#865ea6;
-  --brand-dark:#9174f2;
+  --brand-dark:#162050;
   --surface:#e6dfeb;
-  --deep:#9174f2;
+  --deep:#162050;
 }
 
 *{ box-sizing:border-box; }
@@ -159,8 +159,8 @@ a:visited{ color:var(--brand); }
   flex-direction:column;
   gap:6px;
   justify-content:center;
-  background:var(--deep);
-  color:#ffffff;
+  background:var(--deep,.2);
+  color:var(--deep);
 }
 
 .kicker{
@@ -169,18 +169,18 @@ a:visited{ color:var(--brand); }
   text-transform:uppercase;
   font-weight:800;
   line-height:1.1;
-  color:#ffffff;
+  color:var(--deep);
 }
 
 .copy{
   font-size:13px;
   line-height:1.35;
-  color:#ffffff;
+  color:var(--deep);
   opacity:.85;
 }
 
 .cardText a{
-  color:#ffffff;
+  color:var(--deep);
 }
 
 .preClamp{
