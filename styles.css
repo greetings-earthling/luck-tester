@@ -138,6 +138,14 @@ a:visited{ color:var(--brand); }
   align-items:start;
 }
 
+.headerDivider{
+  display:block;
+  margin:6px auto 18px auto;
+  width:600px;        /* adjust to taste */
+  height:auto;
+  opacity:.9;
+}
+
 /* CARD */
 .card{
   border:1px solid rgba(22,32,80,.22);
