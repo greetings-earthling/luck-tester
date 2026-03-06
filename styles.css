@@ -54,6 +54,7 @@ body::before{
   width:100%;
   height:6px;
   background:#162050;
+  display:none;
 }
 
 /* HEADER */
@@ -356,6 +357,12 @@ a:visited{ color:var(--brand); }
 
   :root{ --textCol:190px; }
 
+  .topBar{
+    display:block;
+    width:100%;
+    height:6px;
+    background:#162050;
+  }
   .kickerThe{ display:none; }
   .titleDesktop{ display:none !important; }
   .titleMobile{ display:inline !important; }
