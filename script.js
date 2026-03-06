@@ -85,17 +85,6 @@ function ensureInner(btn){
     ).join(", ");
   }
 
-  const PALETTES = {
-    "reveal-meter":  [135, 155, 285],
-    "reveal-wisdom": [250, 275, 205],
-    "reveal-number": [35,  15,  300],
-    "reveal-colour": null,
-    "reveal-joke":   [320, 285, 205],
-    "reveal-dinner": [24,  10,  300],
-    "reveal-watch":  [210, 235, 190],
-    "reveal-fact":   [265, 285, 160],
-  };
-
   // data
   const WISDOM = [
     "Earthlings are. Today: Breathe in. Be present. Let go.",
@@ -250,6 +239,8 @@ function ensureInner(btn){
     setTimeout(() => {
       btn.classList.add("isDone");
       btn.classList.remove("isRevealing");
+      btn.style.background = "var(--brand)";
+      btn.style.color = "#ffffff";
 
       if (btn.dataset.kind === "colour" && btn.dataset.hex){
         const hex = btn.dataset.hex;
