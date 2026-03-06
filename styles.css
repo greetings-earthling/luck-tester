@@ -41,7 +41,7 @@ body::before{
   max-width:var(--wrapMax);
   margin:0 auto;
   min-height:100vh;
-  background:var(--surface);
+  background:rgba(230,223,235,.92);
 }
 
 .page{
