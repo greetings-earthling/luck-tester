@@ -386,7 +386,7 @@ a:visited{ color:var(--brand); }
    width:100%;
     justify-content:center;
     align-items:center;
-    gap:6px;
+    gap:4px;
   }
 
   .siteTitle{
