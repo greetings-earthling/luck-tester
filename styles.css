@@ -159,7 +159,7 @@ a:visited{ color:var(--brand); }
   flex-direction:column;
   gap:6px;
   justify-content:center;
-  background:rgba(22,32,80,.15);
+  background:rgba(126, 140, 191,.8);
   color:var(--deep);
 }
 
@@ -205,6 +205,7 @@ a:visited{ color:var(--brand); }
   text-transform:uppercase;
   transition:background-color 900ms ease;
   color:#0b0d12;
+  opacity:.9;
   text-align:center;
   position:relative;
   overflow:hidden;
