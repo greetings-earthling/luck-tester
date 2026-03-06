@@ -1,91 +1,27 @@
-// script.js
 window.addEventListener("DOMContentLoaded", () => {
   const FX_SRC = "./ads/Smoke.mp4";
 
-  // timing
-  const SMOKE_FADE_START  = 1500;
-  const SMOKE_FADE_MS     = 1000;
-  const TEXT_START_MS     = 2000;
-  const TEXT_FADE_MS      = 1500;
-  const TOTAL_MS          = 3500;
-  const STEP_GAP_MS       = 520;
-  const STEP_FADE_MS      = 220;
+  const SMOKE_FADE_START = 1500;
+  const SMOKE_FADE_MS = 1000;
+  const TEXT_START_MS = 2000;
+  const TEXT_FADE_MS = 1500;
+  const TOTAL_MS = 3500;
+  const STEP_GAP_MS = 520;
+  const STEP_FADE_MS = 220;
 
   const pick = (arr) => arr[Math.floor(Math.random() * arr.length)];
 
-  function isLongText(t){
-    const s = String(t || "");
-    return s.length > 18 || /\s/.test(s);
-  }
+  const PALETTES = {
+    "reveal-meter":  [135, 155, 285],
+    "reveal-wisdom": [250, 275, 205],
+    "reveal-number": [35, 15, 300],
+    "reveal-colour": null,
+    "reveal-joke":   [320, 285, 205],
+    "reveal-dinner": [24, 10, 300],
+    "reveal-watch":  [210, 235, 190],
+    "reveal-fact":   [265, 285, 160]
+  };
 
-function ensureInner(btn){
-  let inner = btn.querySelector(".revealInner");
-  if (!inner){
-    const desktop = btn.dataset.label || "Tap to reveal";
-    const mobile  = btn.dataset.labelMobile || "Tap to reveal";
-
-    btn.innerHTML = `
-      <span class="revealInner">
-        <span class="tapDesktop">${desktop}</span>
-        <span class="tapMobile">${mobile}</span>
-      </span>
-    `;
-    inner = btn.querySelector(".revealInner");
-  }
-  return inner;
-}
-
-  function ensureFX(btn){
-    let video = btn.querySelector(".fxVideo");
-    if (!video){
-      video = document.createElement("video");
-      video.className = "fxVideo";
-      video.src = FX_SRC;
-
-      video.muted = true;
-      video.playsInline = true;
-      video.setAttribute("playsinline", "");
-      video.setAttribute("webkit-playsinline", "");
-
-      video.preload = "auto";
-      video.autoplay = false;
-      video.loop = false;
-      video.controls = false;
-
-      btn.insertBefore(video, btn.firstChild);
-    }
-
-    let tint = btn.querySelector(".fxTint");
-    if (!tint){
-      tint = document.createElement("div");
-      tint.className = "fxTint";
-      btn.insertBefore(tint, video.nextSibling);
-    }
-
-    return { video, tint };
-  }
-
-  // tint blobs
-  const rint = (a,b)=> a + Math.floor(Math.random()*(b-a+1));
-  const hsla = (h,a)=> `hsla(${h}, 85%, 58%, ${a})`;
-
-  function buildTintGradient(hues){
-    const [h1,h2,h3] = hues;
-    const blobs = [
-      { h:h1, x:rint(18,82), y:rint(18,82), a:0.55, s:rint(40,78) },
-      { h:h2, x:rint(18,82), y:rint(18,82), a:0.50, s:rint(38,74) },
-      { h:h3, x:rint(18,82), y:rint(18,82), a:0.50, s:rint(36,72) },
-      { h:h1, x:rint(18,82), y:rint(18,82), a:0.35, s:rint(45,85) },
-    ];
-
-    return blobs.map(b =>
-      `radial-gradient(${b.s}% ${b.s}% at ${b.x}% ${b.y}%,
-        ${hsla(b.h, b.a)} 0%,
-        rgba(0,0,0,0) 64%)`
-    ).join(", ");
-  }
-
-  // data
   const WISDOM = [
     "Earthlings are. Today: Breathe in. Be present. Let go.",
     "Earthlings wonder. Today: Stay curious. Get lost. Learn forever.",
@@ -116,10 +52,78 @@ function ensureInner(btn){
     { t: "The universe shrugged today. Anything could happen.", w: 2 },
     { t: "Luck is gathering around you. Pay attention to small opportunities.", w: 5 },
     { t: "Luck moves quietly today. The right choice may be subtle.", w: 6 },
-    { t: "Luck favors the curious today. Follow an interesting path.", w: 5 },
+    { t: "Luck favours the curious today. Follow an interesting path.", w: 5 },
     { t: "Luck is turning in your direction. A good moment may arrive.", w: 4 },
     { t: "A gentle current of luck is present today. Go with the flow.", w: 5 }
   ];
+
+  function isLongText(t){
+    const s = String(t || "");
+    return s.length > 18 || /\s/.test(s);
+  }
+
+  function ensureInner(btn){
+    let inner = btn.querySelector(".revealInner");
+    if (!inner){
+      const desktop = btn.dataset.label || "Tap to reveal";
+      const mobile = btn.dataset.labelMobile || "Tap to reveal";
+
+      btn.innerHTML = `
+        <span class="revealInner">
+          <span class="tapDesktop">${desktop}</span>
+          <span class="tapMobile">${mobile}</span>
+        </span>
+      `;
+      inner = btn.querySelector(".revealInner");
+    }
+    return inner;
+  }
+
+  function ensureFX(btn){
+    let video = btn.querySelector(".fxVideo");
+    if (!video){
+      video = document.createElement("video");
+      video.className = "fxVideo";
+      video.src = FX_SRC;
+      video.muted = true;
+      video.playsInline = true;
+      video.setAttribute("playsinline", "");
+      video.setAttribute("webkit-playsinline", "");
+      video.preload = "auto";
+      video.autoplay = false;
+      video.loop = false;
+      video.controls = false;
+      btn.insertBefore(video, btn.firstChild);
+    }
+
+    let tint = btn.querySelector(".fxTint");
+    if (!tint){
+      tint = document.createElement("div");
+      tint.className = "fxTint";
+      btn.insertBefore(tint, video.nextSibling);
+    }
+
+    return { video, tint };
+  }
+
+  const rint = (a, b) => a + Math.floor(Math.random() * (b - a + 1));
+  const hsla = (h, a) => `hsla(${h}, 85%, 58%, ${a})`;
+
+  function buildTintGradient(hues){
+    const [h1, h2, h3] = hues;
+    const blobs = [
+      { h:h1, x:rint(18,82), y:rint(18,82), a:0.55, s:rint(40,78) },
+      { h:h2, x:rint(18,82), y:rint(18,82), a:0.50, s:rint(38,74) },
+      { h:h3, x:rint(18,82), y:rint(18,82), a:0.50, s:rint(36,72) },
+      { h:h1, x:rint(18,82), y:rint(18,82), a:0.35, s:rint(45,85) }
+    ];
+
+    return blobs.map(b =>
+      `radial-gradient(${b.s}% ${b.s}% at ${b.x}% ${b.y}%,
+        ${hsla(b.h, b.a)} 0%,
+        rgba(0,0,0,0) 64%)`
+    ).join(", ");
+  }
 
   function weightedPick(items){
     const total = items.reduce((sum, x) => sum + x.w, 0);
@@ -133,39 +137,39 @@ function ensureInner(btn){
 
   function hslToHex(h, s, l){
     s /= 100; l /= 100;
-    const c = (1 - Math.abs(2*l - 1)) * s;
-    const x = c * (1 - Math.abs((h/60) % 2 - 1));
-    const m = l - c/2;
-    let r=0,g=0,b=0;
+    const c = (1 - Math.abs(2 * l - 1)) * s;
+    const x = c * (1 - Math.abs((h / 60) % 2 - 1));
+    const m = l - c / 2;
+    let r = 0, g = 0, b = 0;
 
-    if (h < 60) { r=c; g=x; b=0; }
-    else if (h < 120) { r=x; g=c; b=0; }
-    else if (h < 180) { r=0; g=c; b=x; }
-    else if (h < 240) { r=0; g=x; b=c; }
-    else if (h < 300) { r=x; g=0; b=c; }
-    else { r=c; g=0; b=x; }
+    if (h < 60) { r = c; g = x; }
+    else if (h < 120) { r = x; g = c; }
+    else if (h < 180) { g = c; b = x; }
+    else if (h < 240) { g = x; b = c; }
+    else if (h < 300) { r = x; b = c; }
+    else { r = c; b = x; }
 
-    const toHex = (v) => Math.round((v+m)*255).toString(16).padStart(2,"0");
-    return (`#${toHex(r)}${toHex(g)}${toHex(b)}`).toUpperCase();
+    const toHex = (v) => Math.round((v + m) * 255).toString(16).padStart(2, "0");
+    return `#${toHex(r)}${toHex(g)}${toHex(b)}`.toUpperCase();
   }
 
   function rollNiceHex(){
-    const h = Math.floor(Math.random()*360);
+    const h = Math.floor(Math.random() * 360);
     return hslToHex(h, 72, 52);
   }
 
   function hexToRgb(hex){
-    const h = hex.replace("#","");
+    const h = hex.replace("#", "");
     return {
-      r: parseInt(h.slice(0,2),16),
-      g: parseInt(h.slice(2,4),16),
-      b: parseInt(h.slice(4,6),16),
+      r: parseInt(h.slice(0, 2), 16),
+      g: parseInt(h.slice(2, 4), 16),
+      b: parseInt(h.slice(4, 6), 16)
     };
   }
 
   function isDark(hex){
-    const {r,g,b} = hexToRgb(hex);
-    const lum = (0.2126*r + 0.7152*g + 0.0722*b) / 255;
+    const { r, g, b } = hexToRgb(hex);
+    const lum = (0.2126 * r + 0.7152 * g + 0.0722 * b) / 255;
     return lum < 0.55;
   }
 
@@ -185,8 +189,8 @@ function ensureInner(btn){
 
     const isSteps = finalText && typeof finalText === "object" && Array.isArray(finalText.steps);
     const steps = isSteps ? finalText.steps.map(s => String(s)) : null;
-
     const text = isSteps ? steps.join(" - ") : String(finalText);
+
     if (isLongText(text)) btn.classList.add("isLong");
 
     btn.style.background = "#0b0d12";
@@ -205,18 +209,18 @@ function ensureInner(btn){
 
     video.style.display = "block";
     video.style.transition = "none";
-    tint.style.transition  = "none";
+    tint.style.transition = "none";
     video.style.opacity = "1";
 
     try { video.pause(); } catch(e){}
     try { video.load(); } catch(e){}
-    requestAnimationFrame(() => { video.play().catch(()=>{}); });
+    requestAnimationFrame(() => { video.play().catch(() => {}); });
 
     setTimeout(() => {
       video.style.transition = `opacity ${SMOKE_FADE_MS}ms ease`;
-      tint.style.transition  = `opacity ${SMOKE_FADE_MS}ms ease`;
+      tint.style.transition = `opacity ${SMOKE_FADE_MS}ms ease`;
       video.style.opacity = "0";
-      tint.style.opacity  = "0";
+      tint.style.opacity = "0";
 
       setTimeout(() => {
         video.style.display = "none";
@@ -224,14 +228,14 @@ function ensureInner(btn){
       }, SMOKE_FADE_MS + 30);
     }, SMOKE_FADE_START);
 
-    function stepSwap(inner, nextText){
-      inner.style.transition = `opacity ${STEP_FADE_MS}ms ease`;
-      inner.style.opacity = "0";
+    function stepSwap(innerEl, nextText){
+      innerEl.style.transition = `opacity ${STEP_FADE_MS}ms ease`;
+      innerEl.style.opacity = "0";
       setTimeout(() => {
-        inner.textContent = nextText;
+        innerEl.textContent = nextText;
         requestAnimationFrame(() => {
-          inner.style.transition = `opacity ${STEP_FADE_MS}ms ease`;
-          inner.style.opacity = "1";
+          innerEl.style.transition = `opacity ${STEP_FADE_MS}ms ease`;
+          innerEl.style.opacity = "1";
         });
       }, STEP_FADE_MS);
     }
@@ -317,7 +321,7 @@ function ensureInner(btn){
   });
 
   bind("reveal-wisdom", "oneshot", () => pick(WISDOM));
-  bind("reveal-number", "oneshot", () => String(1 + Math.floor(Math.random()*9)));
+  bind("reveal-number", "oneshot", () => String(1 + Math.floor(Math.random() * 9)));
 
   bind("reveal-joke", "oneshot", () => {
     const list = window.JOKES || [];
@@ -333,7 +337,9 @@ function ensureInner(btn){
     const list = window.WATCHLIST || [];
     if (!list.length) return "Add watchlist.js";
     const item = pick(list);
-    return (item && item.type && item.year) ? `${item.title} (${item.year}) — ${item.type}` : (item.title || "Watch something good.");
+    return (item && item.type && item.year)
+      ? `${item.title} (${item.year}) — ${item.type}`
+      : (item.title || "Watch something good.");
   });
 
   bind("reveal-fact", "oneshot", () => {
