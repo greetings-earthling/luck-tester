@@ -1,6 +1,6 @@
 window.addEventListener("DOMContentLoaded", () => {
   const FX_SRC = "./ads/Smoke.mp4";
-
+  
   const SMOKE_FADE_START = 1500;
   const SMOKE_FADE_MS = 1000;
   const TEXT_START_MS = 2000;
@@ -57,6 +57,8 @@ window.addEventListener("DOMContentLoaded", () => {
     { t: "A gentle current of luck is present today. Go with the flow.", w: 5 }
   ];
 
+document.getElementById("year").textContent = new Date().getFullYear();
+  
   function isLongText(t){
     const s = String(t || "");
     return s.length > 18 || /\s/.test(s);
