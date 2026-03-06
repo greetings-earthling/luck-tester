@@ -9,7 +9,7 @@ window.addEventListener("DOMContentLoaded", () => {
   const TEXT_FADE_MS      = 1500;
   const TOTAL_MS          = 3500;
   const STEP_GAP_MS       = 520;
-  const STEP_FADE_MS      = 221;
+  const STEP_FADE_MS      = 220;
 
   const pick = (arr) => arr[Math.floor(Math.random() * arr.length)];
 
