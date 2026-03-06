@@ -29,7 +29,7 @@ body{
   position:relative;
 }
 
-/* purple tint over the space bg */
+/* purple tint over space bg */
 body::before{
   content:"";
   position:fixed;
