@@ -193,7 +193,7 @@ window.addEventListener("DOMContentLoaded", () => {
 
     if (isLongText(text)) btn.classList.add("isLong");
 
-    btn.style.background = "#0b0d12";
+    btn.style.background = "var(--deep)";
     btn.style.color = "#ffffff";
 
     const hues = PALETTES[btn.id] ?? [260, 290, 180];
