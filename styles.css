@@ -319,51 +319,22 @@ a:visited{ color:var(--brand); }
 }
 
 /* FOOTER */
-.footerBrand{
-  margin-top:18px;
-  padding:8px 0 12px 0;
+.footnote{
+  max-width:760px;
+  margin:20px auto 0;
+  font-size:11px;
+  line-height:1.55;
+  color:rgba(22,32,80,.55);
   text-align:center;
-  font-size:12px;
-  color:rgba(22,32,80,.65);
 }
 
-.footerBrand a{
-  color:rgba(22,32,80,.8);
+.footnote a{
+  color:rgba(134,94,166,.9);
   text-decoration:none;
 }
 
-.footerBrand a:hover{
+.footnote a:hover{
   text-decoration:underline;
-}
-
-.foot{
-  padding:14px 0 8px;
-  font-size:13px;
-  color:rgba(22,32,80,.55);
-}
-
-.oracleAbout{
-  margin-top:22px;
-  padding-top:18px;
-  border-top:1px solid rgba(22,32,80,.18);
-  max-width:720px;
-  margin-left:auto;
-  margin-right:auto;
-}
-
-.oracleAbout h2{
-  margin:0 0 12px;
-  color:var(--brand-dark);
-}
-
-.oracleAbout p{
-  margin:0 0 10px;
-  line-height:1.5;
-  color:rgba(22,32,80,.55);
-}
-
-.oracleAbout a{
-  color:rgba(134,94,166,.85);
 }
 
 .kickerThe{
