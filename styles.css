@@ -178,24 +178,18 @@ a:visited{ color:var(--brand); }
   gap:6px;
   justify-content:center;
 
-  background:linear-gradient(
-    135deg,
-    var(--brand),
-    #5a3c8f
-  );
-  color:#ffffff;
+  background:rgba(106,71,157,.08); /* soft purple tint */
+  color:var(--ink);
+
+  border-right:2px solid var(--brand);
 }
 
 .cardText .copy{
-  color:rgba(255,255,255,.85);
+  color:var(--muted);
 }
 
 .cardText a{
-  color:#e7dcff;
-}
-
-.cardText .kicker{
-  color:#ffffff;
+  color:var(--brand);
 }
 
 .kicker{
@@ -204,6 +198,7 @@ a:visited{ color:var(--brand); }
   text-transform:uppercase;
   font-weight:800;
   line-height:1.1;
+  color:var(--ink);
 }
 
 .copy{
